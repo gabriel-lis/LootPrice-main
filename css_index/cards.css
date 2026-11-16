@@ -1,0 +1,126 @@
+/* Catálogo: filtros, títulos e card horizontal. Cores vêm de theme.css. */
+
+.hltb-main-container {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 20px auto 60px auto;
+  padding: 0 16px;
+}
+
+/* Barra de filtros */
+.hltb-filters-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.hltb-filters-bar > .hltb-filter-group > span { color: var(--text-muted); }
+
+.hltb-filter-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.hltb-select {
+  background: var(--surface-2);
+  color: var(--text-color);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font: 500 13px var(--font);
+  cursor: pointer;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.hltb-select:hover { border-color: var(--accent); }
+.hltb-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* Cabeçalho da seção */
+.hltb-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.hltb-section-title {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--heading);
+}
+.hltb-section-title::before {
+  content: ""; width: 4px; height: 24px; border-radius: 4px; background: var(--accent);
+}
+.hltb-results-count { font-size: 13px; color: var(--text-muted); }
+
+/* Grid: 2 colunas no desktop */
+.hltb-games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+@media (max-width: 860px) { .hltb-games-grid { grid-template-columns: 1fr; } }
+
+/* Card horizontal */
+.hltb-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  min-height: 140px;
+  box-sizing: border-box;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.hltb-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px var(--accent-glow);
+}
+
+.hltb-cover-wrap {
+  flex-shrink: 0; width: 92px; display: block;
+  border-radius: 10px; overflow: hidden; position: relative; background: var(--surface-2);
+}
+.hltb-cover-img {
+  width: 100% !important; height: 100% !important; max-width: none;
+  object-fit: cover !important; display: block; transition: transform .25s ease;
+}
+.hltb-card:hover .hltb-cover-img { transform: scale(1.05); }
+
+.hltb-body { display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; min-width: 0; }
+
+.hltb-title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.hltb-title {
+  font-size: 16px; font-weight: 700; color: var(--heading); text-decoration: none; display: block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; flex-grow: 1;
+  transition: color .15s;
+}
+.hltb-title:hover { color: var(--accent-text); }
+
+/* Nota Metacritic (número em fonte preta, como na regra RN12) */
+.hltb-header-meta {
+  flex-shrink: 0; min-width: 30px; height: 24px; padding: 0 7px; border-radius: 6px;
+  font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; justify-content: center;
+  color: #111 !important;
+}
+
+/* Tabela: menor preço / Game Pass */
+.hltb-stats-table { display: flex; flex-direction: column; gap: 6px; }
+.hltb-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  min-height: 32px; padding: 0 0 0 2px;
+}
+.hltb-row-label { font-size: 13px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+.hltb-row-val {
+  min-width: 128px; text-align: center; font-size: 13px; font-weight: 700; padding: 6px 12px;
+  border-radius: 8px; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center;
+  box-sizing: border-box;
+}
+.hltb-val-blue   { background: var(--accent-soft);  color: var(--price-color); }  /* preço */
+.hltb-val-purple { background: var(--success-soft); color: var(--success); }     /* Game Pass: disponível */
+.hltb-val-darkblue { background: transparent; color: var(--text-muted); border: 1px dashed var(--border); } /* não incluso */
+
+.hltb-footer { display: flex; justify-content: flex-end; align-items: center; margin-top: 8px; }
+.hltb-action-link { font-size: 12px; font-weight: 600; color: var(--accent-text); text-decoration: none; transition: color .15s; }
+.hltb-action-link:hover { text-decoration: underline; }

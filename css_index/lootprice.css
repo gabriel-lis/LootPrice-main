@@ -1,29 +1,4 @@
-:root {
-  /* MODO ESCURO PADRÃO */
-  --bg-color: #0e0e1a;
-  --text-color: #e0e0e0;
-  --navbar-gradient: linear-gradient(90deg, #4a00e0, #8e2de2);
-  --btn-bg: #4a00e0;
-  --btn-hover-bg: #8e2de2;
-  --btn-text: #ffffff;
-  --theme-btn-bg: #1b1b2f;
-  --theme-btn-text: #ffffff;
-  --theme-btn-border: #8e2de2;
-  --theme-btn-hover-bg: #8e2de2;
-  --search-bg: #1b1b2f;
-  --search-border: #4a00e0;
-  --search-focus-border: #8e2de2;
-  --search-placeholder: #aaa;
-  --card-shadow: rgba(74, 0, 224, 0.6);
-  --card-hover-shadow: rgba(142, 45, 226, 0.7);
-  --footer-bg: #1b1b2f;
-  --footer-text: #ffffff;
-  --menu-bg: #1b1b2f;
-  --menu-text: #ffffff;
-  --menu-hover-bg: #4a00e0;
-  --menu-btn-color: #e0e0e0;
-  --lootprice: url('../fotos/extras/logoltdark.png')
-}
+/* Cores e variáveis: ver css_index/theme.css */
 
 /* Ajudas visuais e utilitárias */
 .visually-hidden {
@@ -84,40 +59,21 @@
   border-radius: 6px;
 }
 
-body.light-mode {
-  /* MODO CLARO */
-  --bg-color: #f3f1ff;
-  --text-color: #1b1030;
-  --navbar-gradient: linear-gradient(90deg, #b491ff, #d3a8ff);
-  --btn-bg: #c39bff;
-  --btn-hover-bg: #a173ff;
-  --btn-text: #1b1030;
-  --theme-btn-bg: #ffffff;
-  --theme-btn-text: #1b1030;
-  --theme-btn-border: #a173ff;
-  --theme-btn-hover-bg: #a173ff;
-  --search-bg: #eae4ff;
-  --search-border: #c39bff;
-  --search-focus-border: #a173ff;
-  --search-placeholder: #5a4b80;
-  --card-shadow: rgba(163, 115, 255, 0.4);
-  --card-hover-shadow: rgba(163, 115, 255, 0.6);
-  --footer-bg: #eae4ff;
-  --footer-text: #1b1030;
-  --menu-bg: #eae4ff;
-  --menu-text: #1b1030;
-  --menu-hover-bg: #c39bff;
-  --menu-btn-color: #1b1030;
-  --lootprice: url('../fotos/extras/logoltlight.png')
-}
+
 
 /* Reset + layout base */
-html, body {
+html {
   height: 100%;
+  margin: 0;
+  overflow-x: hidden; /* nunca rolar para o lado */
+}
+body {
+  min-height: 100%;
+  box-sizing: border-box;
   margin: 0;
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: var(--font, 'Segoe UI', sans-serif);
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: all 0.3s ease;
@@ -355,14 +311,15 @@ body.light-mode .sidebar.active{ background-color: var(--menu-bg); }
 
 /* Rodapé: fluxo normal (fica no final da página) */
 footer {
-  position: relative; /* fluxo normal */
+  position: relative;
   margin-top: auto; /* empurra para o fim quando o body é flex column */
-  left: 0;
   width: 100%;
-  height: 60px;
+  box-sizing: border-box; /* evita estourar a largura e gerar rolagem lateral */
   background-color: var(--footer-bg);
   color: var(--footer-text);
-  padding: 16px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  padding: 18px 16px;
   text-align: center;
 }
 

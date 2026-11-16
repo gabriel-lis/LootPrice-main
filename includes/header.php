@@ -21,8 +21,12 @@ $platforms = getAllPlatforms();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= sanitize($pageTitle) ?></title>
-  <link rel="stylesheet" href="<?= $basePath ?>css_index/lootprice.css">
-  <link rel="stylesheet" href="<?= $basePath ?>css_index/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="<?= $basePath ?>css_index/theme.css?v=<?= @filemtime(__DIR__ . '/../css_index/theme.css') ?>">
+  <link rel="stylesheet" href="<?= $basePath ?>css_index/lootprice.css?v=<?= @filemtime(__DIR__ . '/../css_index/lootprice.css') ?>">
+  <link rel="stylesheet" href="<?= $basePath ?>css_index/responsive.css?v=<?= @filemtime(__DIR__ . '/../css_index/responsive.css') ?>">
   <link rel="shortcut icon" href="<?= $basePath ?>fotos/extras/logoltdark.png" type="image/png">
   <style>
     /* Estilos aprimorados para filtros, flash messages e badges */
@@ -61,7 +65,7 @@ $platforms = getAllPlatforms();
       align-items: center;
       gap: 6px;
       font-weight: 600;
-      color: var(--text-color);
+      color: var(--header-fg);
       font-size: 14px;
     }
     .user-greet::before {
@@ -93,6 +97,41 @@ $platforms = getAllPlatforms();
       background: #ff4757;
       color: #fff;
     }
+    /* Header: menu + logo | busca centralizada | entrar */
+    .navbar { width: 100%; box-sizing: border-box; padding: 0 20px; gap: 16px; box-shadow: 0 2px 16px rgba(0,0,0,.25); }
+    .navbar .left-section { flex: 0 0 auto; gap: 14px; }
+    .navbar .menu-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; padding: 0; border: none; border-radius: 10px;
+      background: var(--header-control-bg); color: var(--header-fg); cursor: pointer; transition: background .2s;
+    }
+    .navbar .menu-btn:hover { background: var(--header-control-hover); color: var(--header-fg); }
+    .navbar .search-container { flex: 1 1 auto; padding: 0 8px; }
+    .search-pill { position: relative; display: flex; align-items: center; width: 100%; max-width: 620px; }
+    .search-pill-icon { position: absolute; left: 16px; color: var(--search-placeholder); pointer-events: none; }
+    .search-pill .search-input {
+      max-width: none; height: 42px; padding: 0 18px 0 44px; font-size: 15px; font-family: var(--font);
+      border: 1px solid var(--search-border); border-radius: 999px; box-shadow: none;
+      color: var(--text-color); background: var(--search-bg);
+    }
+    .search-pill .search-input:focus { border-color: var(--search-focus-border); box-shadow: 0 0 0 3px rgba(255,255,255,.18); }
+    .navbar .auth-buttons { flex: 0 0 auto; align-items: center; gap: 12px; }
+    .navbar .btn-theme { border-radius: 10px; width: 40px; height: 40px; padding: 0; background: var(--header-control-bg); border: none; }
+    .navbar .btn-theme:hover { background: var(--header-control-hover); }
+    .btn-entrar {
+      background: var(--entrar-bg) !important; color: var(--entrar-text) !important;
+      text-decoration: none; padding: 10px 26px; border-radius: 10px; font-size: 15px; font-weight: 700;
+      box-shadow: none !important;
+    }
+    .btn-entrar:hover { transform: translateY(-1px); filter: brightness(.95); }
+    @media (max-width: 600px) { .navbar { padding: 0 10px; gap: 8px; } .btn-entrar { padding: 8px 14px; } }
+
+    /* Menu lateral */
+    .sidebar { border-right: 1px solid var(--border); }
+    .sidebar a { margin: 2px 12px; padding: 13px 16px; border-radius: 10px; font-size: 15px; font-weight: 600; }
+    .sidebar a:hover { background: var(--accent-soft); color: var(--accent-text); }
+    .sidebar a.is-current { background: var(--accent); color: #fff; }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-6px); }
       to { opacity: 1; transform: translateY(0); }
@@ -104,22 +143,27 @@ $platforms = getAllPlatforms();
   <!-- Barra de Navegação Superior -->
   <header class="navbar">
     <div class="left-section">
-      <button id="menu-btn" class="menu-btn" aria-label="Abrir menu">☰</button>
+      <button id="menu-btn" class="menu-btn" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
       <a href="<?= $basePath ?>index.php" target="_top">
         <img id="lootprice-logo" src="<?= $basePath ?>fotos/extras/logoltdark.png" alt="LootPrice">
       </a>
     </div>
 
     <!-- Barra de busca rápida (RF01) -->
+    <?php if (empty($hideSearch)): ?>
     <div class="search-container">
-      <form action="<?= $basePath ?>index.php" method="GET" style="display: flex; width: 100%;">
+      <form action="<?= $basePath ?>catalogo.php" method="GET" class="search-pill" role="search">
         <label for="searchBar" class="visually-hidden">Pesquisar jogo</label>
-        <input type="text" id="searchBar" name="q" class="search-input" 
-               placeholder="Pesquisar jogo..." 
+        <svg class="search-pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="text" id="searchBar" name="q" class="search-input"
+               placeholder="Buscar jogo ou palavra-chave"
                value="<?= isset($_GET['q']) ? sanitize($_GET['q']) : '' ?>"
                aria-label="Pesquisar jogos">
       </form>
     </div>
+    <?php endif; ?>
 
     <!-- Área de Autenticação e Tema (Dinâmica no PHP) -->
     <div id="auth-area" class="auth-buttons">
@@ -138,45 +182,17 @@ $platforms = getAllPlatforms();
 
         <a href="<?= $basePath ?>logout.php" class="btn-logout">Sair</a>
       <?php else: ?>
-        <a href="<?= $basePath ?>login.php" class="btn-login">Entrar</a>
-        <a href="<?= $basePath ?>cadastro.php" class="btn-login">Registrar</a>
+        <a href="<?= $basePath ?>login.php" class="btn-login btn-entrar">Entrar</a>
       <?php endif; ?>
     </div>
   </header>
 
   <!-- Sidebar Lateral Responsiva -->
   <nav id="sidebar" class="sidebar" role="navigation" aria-label="Menu principal">
-    <div class="sidebar-top">
-      <button id="sidebar-close" class="menu-close" aria-label="Fechar menu">✕</button>
-    </div>
-
-    <div class="sidebar-search" role="search">
-      <form action="<?= $basePath ?>index.php" method="GET" style="display:flex; width:100%;">
-        <input type="text" id="sidebarSearchBar" name="q" class="search-input" placeholder="Pesquisar jogo..."
-               value="<?= isset($_GET['q']) ? sanitize($_GET['q']) : '' ?>" aria-label="Pesquisar jogos">
-        <button id="sidebarSearchBtn" type="submit" aria-label="Pesquisar">
-          <img src="<?= $basePath ?>fotos/extras/search.png" alt="Pesquisar" class="sidebar-search-icon">
-        </button>
-      </form>
-    </div>
-
-    <div class="sidebar-category" style="position:relative;">
-      <button id="categoryBtn" class="category-btn" aria-haspopup="listbox" aria-expanded="false">
-        Categorias ▾
-      </button>
-
-      <div id="categoryDropdown" class="category-dropdown" role="listbox" aria-labelledby="categoryBtn" aria-hidden="true">
-        <a href="<?= $basePath ?>index.php" class="category-option" style="text-decoration:none; display:block;">Todas as Categorias</a>
-        <?php foreach ($categories as $cat): ?>
-          <a href="<?= $basePath ?>index.php?categoria=<?= $cat['id_categoria'] ?>" class="category-option" style="text-decoration:none; display:block;">
-            <?= sanitize($cat['nome']) ?>
-          </a>
-        <?php endforeach; ?>
-      </div>
-    </div>
-
-    <a href="<?= $basePath ?>index.php">Início</a>
-    <a href="<?= $basePath ?>sobre.php">Sobre LootPrice</a>
+    <?php $paginaAtual = basename($_SERVER['SCRIPT_NAME'] ?? ''); ?>
+    <a href="<?= $basePath ?>catalogo.php" <?= $paginaAtual === 'catalogo.php' ? 'class="is-current" aria-current="page"' : '' ?>>Catálogo</a>
+    <a href="<?= $basePath ?>descontos.php" <?= $paginaAtual === 'descontos.php' ? 'class="is-current" aria-current="page"' : '' ?>>Descontos</a>
+    <a href="<?= $basePath ?>sobre.php" <?= $paginaAtual === 'sobre.php' ? 'class="is-current" aria-current="page"' : '' ?>>Sobre LootPrice</a>
 
     <?php if (isAdmin()): ?>
       <a href="<?= $basePath ?>admin/index.php" style="color: #ffc857; font-weight: bold;">⚙️ Painel Admin</a>

@@ -1,0 +1,102 @@
+/* Home, Descontos e card vertical (poster). Cores vêm de theme.css. */
+
+.home-wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 16px 64px;
+  box-sizing: border-box;
+}
+
+.home-section { margin-bottom: 52px; }
+
+.home-section-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  flex-wrap: wrap; gap: 6px 16px; margin-bottom: 18px;
+}
+.home-section-title {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.4px; color: var(--heading);
+}
+.home-section-title::before { content: ""; width: 4px; height: 24px; border-radius: 4px; background: var(--accent); }
+.home-section-sub { margin: 6px 0 0 16px; font-size: 14px; color: var(--text-muted); }
+.home-section-sub a { color: var(--accent-text); font-weight: 600; }
+.home-section-link { font-size: 14px; font-weight: 700; color: var(--accent-text); text-decoration: none; white-space: nowrap; }
+.home-section-link:hover { text-decoration: underline; }
+
+/* Grade de capas */
+.poster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 18px; }
+
+.poster {
+  display: flex; flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; text-decoration: none; color: inherit;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.poster:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 12px 28px var(--accent-glow); }
+
+/* Capa limpa: nada por cima da arte */
+.poster-cover { position: relative; aspect-ratio: 3 / 4; background: var(--surface-2); overflow: hidden; }
+.poster-cover img {
+  position: absolute; inset: 0; width: 100%; height: 100%; max-width: none;
+  object-fit: cover; display: block; transition: transform .3s ease;
+}
+.poster:hover .poster-cover img { transform: scale(1.04); }
+
+.poster-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+
+.poster-tag {
+  align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .2px;
+  color: var(--accent-text); background: var(--accent-soft);
+  padding: 3px 9px; border-radius: 999px; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.poster-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.poster-title {
+  margin: 0; font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--heading);
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.poster-score {
+  flex-shrink: 0; color: #111; font-weight: 800; font-size: 12px; line-height: 1;
+  padding: 5px 6px; border-radius: 6px;
+}
+
+.poster-price { margin-top: auto; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.poster-price strong { font-size: 17px; font-weight: 800; color: var(--price-color); }
+.poster-old { font-size: 12px; color: var(--text-muted); }
+.poster-discount {
+  font-size: 12px; font-weight: 800; color: var(--success); background: var(--success-soft);
+  padding: 2px 8px; border-radius: 6px;
+}
+
+/* Faixas de preço */
+.price-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 24px; }
+.price-chip {
+  padding: 9px 20px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+  color: var(--text-color); background: var(--surface); border: 1px solid var(--border); transition: .15s;
+}
+.price-chip:hover { border-color: var(--accent); color: var(--accent-text); }
+.price-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Botão "Catálogo completo" */
+.home-cta { text-align: center; margin-top: 8px; }
+.btn-catalogo {
+  display: inline-block; padding: 15px 44px; border-radius: 12px;
+  font-size: 16px; font-weight: 800; color: #fff; text-decoration: none;
+  background: var(--accent); box-shadow: 0 8px 24px var(--accent-glow);
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.btn-catalogo:hover { transform: translateY(-2px); background: var(--accent-hover); box-shadow: 0 12px 30px var(--accent-glow); }
+
+.home-empty {
+  text-align: center; padding: 44px 20px; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+}
+
+@media (max-width: 600px) {
+  .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .home-section-title, .hltb-section-title { font-size: 20px; }
+}

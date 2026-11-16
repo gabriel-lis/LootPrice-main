@@ -10,6 +10,8 @@ USE `lootprice`;
 -- Desativa checagem de chaves estrangeiras temporariamente para recriação limpa
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `acessos_jogos`;
+DROP TABLE IF EXISTS `jogo_loja_ref`;
 DROP TABLE IF EXISTS `precos`;
 DROP TABLE IF EXISTS `jogo_assinatura`;
 DROP TABLE IF EXISTS `jogo_plataforma`;
@@ -29,6 +31,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE `usuarios` (
   `id_usuario` INT AUTO_INCREMENT PRIMARY KEY,
   `nome` VARCHAR(100) NOT NULL,
+  `username` VARCHAR(30) NULL UNIQUE,
+  `sexo` ENUM('masculino', 'feminino', 'nao_informado') NOT NULL DEFAULT 'nao_informado',
   `email` VARCHAR(100) NOT NULL UNIQUE,
   `senha` VARCHAR(255) NOT NULL,
   `tipo_usuario` ENUM('visitante', 'usuario', 'administrador') NOT NULL DEFAULT 'usuario',
@@ -132,6 +136,36 @@ CREATE TABLE `precos` (
   CONSTRAINT `fk_precos_plataforma` FOREIGN KEY (`id_plataforma`) REFERENCES `plataformas` (`id_plataforma`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 9. Tabela: acessos_jogos (visitas e buscas: popularidade e recomendações)
+-- ---------------------------------------------------------------------
+CREATE TABLE `acessos_jogos` (
+  `id_acesso` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `id_usuario` INT NULL,
+  `id_jogo` INT NOT NULL,
+  `tipo` ENUM('visita','busca') NOT NULL DEFAULT 'visita',
+  `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_acesso_usuario` (`id_usuario`),
+  INDEX `idx_acesso_jogo` (`id_jogo`, `criado_em`),
+  CONSTRAINT `fk_acesso_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
+  CONSTRAINT `fk_acesso_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 10. Tabela: jogo_loja_ref (qual é o jogo em cada loja; usada pelo robô de preços)
+-- ---------------------------------------------------------------------
+CREATE TABLE `jogo_loja_ref` (
+  `id_jogo` INT NOT NULL,
+  `id_loja` INT NOT NULL,
+  `id_externo` VARCHAR(120) DEFAULT NULL,
+  `titulo` VARCHAR(255) DEFAULT NULL,
+  `encontrado` TINYINT(1) NOT NULL DEFAULT 1,
+  `verificado_em` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_jogo`, `id_loja`),
+  CONSTRAINT `fk_ref_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ref_loja` FOREIGN KEY (`id_loja`) REFERENCES `lojas` (`id_loja`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- =====================================================================
 -- DADOS INICIAIS (SEEDS)
 -- =====================================================================
@@ -165,8 +199,8 @@ INSERT INTO `lojas` (`id_loja`, `nome`, `logo`, `url`, `pais`) VALUES
 (1, 'Steam', 'fotos/extras/steam.png', 'https://store.steampowered.com', 'Global'),
 (2, 'Epic Games', 'fotos/extras/epic.png', 'https://store.epicgames.com', 'Global'),
 (3, 'Xbox Store', 'fotos/extras/xbox.png', 'https://www.xbox.com', 'Global'),
-(4, 'Nuuvem', 'fotos/extras/steam.png', 'https://www.nuuvem.com', 'Brasil'),
-(5, 'GOG', 'fotos/extras/steam.png', 'https://www.gog.com', 'Global');
+(4, 'Nuuvem', 'fotos/extras/nuuvem.png', 'https://www.nuuvem.com', 'Brasil'),
+(5, 'GOG', 'fotos/extras/gog.png', 'https://www.gog.com', 'Global');
 
 -- Serviços de Assinatura
 INSERT INTO `servicos_assinatura` (`id_servico`, `nome`, `descricao`, `logo`) VALUES

@@ -1,0 +1,112 @@
+/* =====================================================================
+   LootPrice - Tema (única fonte de cores do site)
+   Cor de marca: roxo. Verde = desconto / Game Pass. Amarelo/verde/vermelho = nota Metacritic.
+   Escuro é o padrão; o claro vale com body.light-mode (definido por darkmode.js).
+   ===================================================================== */
+
+:root {
+  /* Superfícies */
+  --bg-color: #0d0b17;
+  --surface: #16132a;
+  --surface-2: #1f1b3a;
+  --border: rgba(255, 255, 255, 0.09);
+
+  /* Texto */
+  --text-color: #e8e6f2;
+  --text-muted: #9a96b5;
+  --heading: #ffffff;
+
+  /* Marca */
+  --accent: #7c3aed;
+  --accent-hover: #8b5cf6;
+  --accent-text: #b79cff;          /* links e destaques sobre fundo escuro */
+  --accent-soft: rgba(124, 58, 237, 0.20);
+  --accent-glow: rgba(124, 58, 237, 0.38);
+
+  /* Estados */
+  --success: #22c55e;
+  --success-soft: rgba(34, 197, 94, 0.16);
+  --danger: #ff6b6b;
+
+  /* Preço */
+  --price-color: #ffffff;
+
+  /* Header */
+  --navbar-gradient: linear-gradient(90deg, #3b1a8f 0%, #6d28d9 100%);
+  --header-fg: #ffffff;
+  --header-control-bg: rgba(255, 255, 255, 0.14);
+  --header-control-hover: rgba(255, 255, 255, 0.24);
+  --entrar-bg: #ffffff;
+  --entrar-text: #3b1a8f;
+
+  /* Compatibilidade com o CSS antigo */
+  --btn-bg: var(--accent);
+  --btn-hover-bg: var(--accent-hover);
+  --btn-text: #ffffff;
+  --theme-btn-bg: var(--header-control-bg);
+  --theme-btn-text: #ffffff;
+  --theme-btn-border: transparent;
+  --theme-btn-hover-bg: var(--header-control-hover);
+  --search-bg: rgba(13, 11, 23, 0.55);
+  --search-border: rgba(255, 255, 255, 0.22);
+  --search-focus-border: #ffffff;
+  --search-placeholder: #b8b3d6;
+  --card-shadow: rgba(0, 0, 0, 0.4);
+  --card-hover-shadow: var(--accent-glow);
+  --footer-bg: #0a0812;
+  --footer-text: #b8b3d6;
+  --menu-bg: var(--surface);
+  --menu-text: #ffffff;
+  --menu-hover-bg: var(--accent);
+  --menu-btn-color: #ffffff;
+  --lootprice: url('../fotos/extras/logoltdark.png');
+
+  --radius: 14px;
+  --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body.light-mode {
+  --bg-color: #f6f4ff;
+  --surface: #ffffff;
+  --surface-2: #efeaff;
+  --border: rgba(40, 20, 90, 0.13);
+
+  --text-color: #1c1433;
+  --text-muted: #6b6489;
+  --heading: #1c1433;
+
+  --accent: #6d28d9;
+  --accent-hover: #5b21b6;
+  --accent-text: #6d28d9;
+  --accent-soft: rgba(109, 40, 217, 0.10);
+  --accent-glow: rgba(109, 40, 217, 0.25);
+
+  --success: #15803d;
+  --success-soft: rgba(21, 128, 61, 0.12);
+  --danger: #dc2626;
+
+  --price-color: #3b1a8f;
+
+  --navbar-gradient: linear-gradient(90deg, #d9ccff 0%, #ede6ff 100%);
+  --header-fg: #1c1433;
+  --header-control-bg: rgba(255, 255, 255, 0.7);
+  --header-control-hover: #ffffff;
+  --entrar-bg: #6d28d9;
+  --entrar-text: #ffffff;
+
+  --btn-text: #ffffff;
+  --theme-btn-text: #1c1433;
+  --theme-btn-border: rgba(40, 20, 90, 0.15);
+  --search-bg: #ffffff;
+  --search-border: rgba(40, 20, 90, 0.18);
+  --search-focus-border: #6d28d9;
+  --search-placeholder: #7a7399;
+  --card-shadow: rgba(40, 20, 90, 0.12);
+  --footer-bg: #ece7ff;
+  --footer-text: #4b4470;
+  --menu-bg: #ffffff;
+  --menu-text: #1c1433;
+  --menu-hover-bg: #ede6ff;
+  --menu-btn-color: #1c1433;
+  --lootprice: url('../fotos/extras/logoltlight.png');
+}

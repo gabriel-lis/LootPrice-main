@@ -1,49 +1,23 @@
-/* Escuro */
-:root {
-  --bg-color: #0e0e1a;
-  --text-color: #e0e0e0;
-  --container-bg: #1b1b2f;
-  --container-shadow: rgba(74, 0, 224, 0.3);
-  --title-color: #8e2de2;
-  --label-color: #cbd5e1;
-  --input-bg: #1b1b2f;
-  --input-border: #4a00e0;
-  --input-focus-border: #8e2de2;
-  --input-text: #e0e0e0;
-  --btn-bg: linear-gradient(135deg, #4a00e0, #8e2de2);
+/* Usa as cores do tema (css_index/theme.css) */
+:root, body.light-mode {
+  --container-bg: var(--surface);
+  --container-shadow: var(--accent-glow);
+  --title-color: var(--heading);
+  --label-color: var(--text-muted);
+  --input-bg: var(--surface-2);
+  --input-border: var(--border);
+  --input-focus-border: var(--accent);
+  --input-text: var(--text-color);
+  --btn-bg: var(--accent);
   --btn-text: #ffffff;
-  --btn-hover-shadow: rgba(142, 45, 226, 0.4);
-  --success-bg: #0f3d2f;
-  --success-border: #10b981;
-  --success-text: #059669;
-  --error-bg: #3d0f0f;
+  --btn-hover-shadow: var(--accent-glow);
+  --success-bg: rgba(34, 197, 94, 0.15);
+  --success-border: #22c55e;
+  --success-text: #22c55e;
+  --error-bg: rgba(239, 68, 68, 0.15);
   --error-border: #ef4444;
-  --error-text: #dc2626;
-  --link-color: #8e2de2;
-}
-
-/* Claro */
-body.light-mode {
-  --bg-color: #f3f1ff;
-  --text-color: #1b1030;
-  --container-bg: #ffffff;
-  --container-shadow: rgba(163, 115, 255, 0.2);
-  --title-color: #6b21a8;
-  --label-color: #374151;
-  --input-bg: #f3f1ff;
-  --input-border: #c39bff;
-  --input-focus-border: #a173ff;
-  --input-text: #1b1030;
-  --btn-bg: linear-gradient(135deg, #c39bff, #a173ff);
-  --btn-text: #1b1030;
-  --btn-hover-shadow: rgba(163, 115, 255, 0.3);
-  --success-bg: #ecfdf5;
-  --success-border: #10b981;
-  --success-text: #059669;
-  --error-bg: #fef2f2;
-  --error-border: #ef4444;
-  --error-text: #dc2626;
-  --link-color: #6b21a8;
+  --error-text: #ef4444;
+  --link-color: var(--accent-text);
 }
 
 /* CSS */
@@ -54,7 +28,7 @@ body.light-mode {
 }
 
 body {
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: var(--font);
   background: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
@@ -75,8 +49,9 @@ body {
 }
 
 h2 {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 20px;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 22px;
   color: var(--title-color);
   margin-bottom: 24px;
 }

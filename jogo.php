@@ -19,6 +19,9 @@ if (!$jogo) {
     exit;
 }
 
+// Registra a visita (alimenta popularidade e recomendações)
+logGameAccess($idJogo, 'visita');
+
 $pageTitle = $jogo['nome'] . ' - Comparador de Preços LootPrice';
 $basePath = '';
 
@@ -34,6 +37,13 @@ $menorPrecoId = null;
 if (!empty($precos)) {
     $menorPrecoValor = $precos[0]['valor'];
     $menorPrecoId = $precos[0]['id_preco'];
+
+    // Empate no menor preço (inclusive jogo grátis em 2+ lojas): nenhuma loja leva o selo "Menor Preço"
+    $empatadas = 0;
+    foreach ($precos as $p) {
+        if (round((float)$p['valor'], 2) === round((float)$menorPrecoValor, 2)) $empatadas++;
+    }
+    if ($empatadas >= 2) $menorPrecoId = null;
 }
 
 // Verifica se está no Game Pass
@@ -57,17 +67,17 @@ require_once __DIR__ . '/includes/header.php';
     padding: 0 20px;
   }
   .best-deal-card {
-    border: 2px solid #2ecc71 !important;
-    background: linear-gradient(180deg, rgba(46, 204, 113, 0.08), rgba(0,0,0,0.2)) !important;
-    box-shadow: 0 0 15px rgba(46, 204, 113, 0.35) !important;
+    border: 2px solid var(--success) !important;
+    background: var(--success-soft) !important;
+    box-shadow: 0 0 15px var(--success-soft) !important;
     position: relative;
   }
   .badge-best-deal {
     position: absolute;
     top: -11px;
     right: 14px;
-    background: #2ecc71;
-    color: #111;
+    background: var(--success);
+    color: #fff;
     font-weight: 800;
     font-size: 11px;
     padding: 2px 10px;
@@ -80,16 +90,16 @@ require_once __DIR__ . '/includes/header.php';
     display: flex;
     align-items: center;
     gap: 12px;
-    background: linear-gradient(90deg, rgba(16, 124, 65, 0.25), rgba(16, 124, 65, 0.08));
-    border: 1px solid rgba(16, 124, 65, 0.6);
+    background: var(--success-soft);
+    border: 1px solid var(--success);
     padding: 12px 18px;
     border-radius: 12px;
     margin: 20px 0;
   }
   .category-pill {
-    background: rgba(142, 45, 226, 0.2);
-    border: 1px solid rgba(142, 45, 226, 0.5);
-    color: #e0e0e0;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--text-color);
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
@@ -98,10 +108,13 @@ require_once __DIR__ . '/includes/header.php';
     display: inline-block;
   }
   .category-pill:hover {
-    background: rgba(142, 45, 226, 0.4);
+    background: var(--accent);
+    color: #fff;
   }
   .platform-badge {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-color);
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 12px;
@@ -111,7 +124,7 @@ require_once __DIR__ . '/includes/header.php';
     gap: 6px;
   }
   .btn-buy-direct {
-    background: linear-gradient(90deg, #4a00e0, #8e2de2);
+    background: var(--accent);
     color: #fff;
     padding: 8px 16px;
     border-radius: 8px;
@@ -132,8 +145,9 @@ require_once __DIR__ . '/includes/header.php';
 <div class="game-details-wrapper">
   
   <header style="margin-bottom: 25px;">
-    <a href="index.php" style="color: var(--search-placeholder); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 15px;">
-      ← Voltar ao catálogo
+    <a href="catalogo.php" class="btn-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      Voltar ao catálogo
     </a>
     <h1 style="text-align: left; margin: 0; font-size: 32px;"><?= sanitize($jogo['nome']) ?></h1>
 
@@ -165,8 +179,8 @@ require_once __DIR__ . '/includes/header.php';
 
       <!-- Avaliação Metacritic Oficial (RN12) -->
       <?php if (!empty($jogo['nota_metacritic'])): ?>
-        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 10px; margin-top: 6px; width: 100%; box-sizing: border-box; justify-content: center;">
-          <img src="fotos/extras/metacritic2.png" alt="Metacritic" style="height: 22px; width: auto;">
+        <div style="display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px; border-radius: 10px; margin-top: 6px; width: 100%; box-sizing: border-box; justify-content: center;">
+          <img src="fotos/extras/metacritic-icon.png" alt="Metacritic" style="height: 26px; width: 26px;">
           <span style="font-size: 13px; font-weight: 600;">Metascore:</span>
           <span style="background: <?= getMetacriticColor($jogo['nota_metacritic']) ?>; color: #fff; font-weight: 800; font-size: 14px; padding: 2px 8px; border-radius: 6px;">
             <?= (int)$jogo['nota_metacritic'] ?>
@@ -179,8 +193,8 @@ require_once __DIR__ . '/includes/header.php';
     <section class="game-info" style="flex: 1;">
       
       <!-- Sinopse -->
-      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 18px;">
-        <h3 style="margin-top: 0; color: var(--title-color); font-size: 16px;">Sobre o Jogo</h3>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px;">
+        <h3 style="margin-top: 0; color: var(--heading); font-size: 16px;">Sobre o Jogo</h3>
         <p class="sinopse" style="font-size: 15px; margin: 0; color: var(--text-color);">
           <?= nl2br(sanitize($jogo['descricao'])) ?>
         </p>
@@ -189,9 +203,10 @@ require_once __DIR__ . '/includes/header.php';
       <!-- Disponibilidade em Serviços de Assinatura (RF07) -->
       <?php if (!empty($assinaturas)): ?>
         <div class="subscription-banner">
-          <img src="fotos/extras/xbox.png" alt="Assinatura" style="width: 32px; height: 32px; object-fit: contain;">
+          <img src="fotos/extras/xbox.png" alt="Assinatura" class="logo-dark" style="width: 32px; height: 32px; object-fit: contain;">
+          <img src="fotos/extras/darkxbox.png" alt="Assinatura" class="logo-light" style="width: 32px; height: 32px; object-fit: contain;">
           <div>
-            <div style="font-weight: 800; color: #2ecc71; font-size: 14px;">Incluso em Catálogo de Assinatura!</div>
+            <div style="font-weight: 800; color: var(--success); font-size: 14px;">Incluso em Catálogo de Assinatura!</div>
             <div style="font-size: 13px; color: var(--text-color);">
               Este jogo está disponível sem custo adicional no <strong><?= implode(', ', array_map(fn($a) => sanitize($a['nome']), $assinaturas)) ?></strong>.
             </div>
@@ -201,11 +216,11 @@ require_once __DIR__ . '/includes/header.php';
 
       <!-- Plataformas Suportadas (RF04) -->
       <div style="margin-top: 20px;">
-        <h4 style="margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; color: var(--search-placeholder);">Plataformas Disponíveis:</h4>
+        <h4 style="margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted);">Plataformas Disponíveis:</h4>
         <div style="display: flex; flex-wrap: wrap; gap: 8px;">
           <?php foreach ($plataformas as $plat): ?>
             <span class="platform-badge">
-              🎮 <?= sanitize($plat['nome']) ?>
+              <?= sanitize($plat['nome']) ?>
             </span>
           <?php endforeach; ?>
         </div>
@@ -215,11 +230,11 @@ require_once __DIR__ . '/includes/header.php';
       <div style="margin-top: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h3 style="margin: 0; color: var(--title-color); font-size: 18px;">Comparador de Preços por Loja</h3>
-          <span style="font-size: 12px; color: var(--search-placeholder);">Atualizado automaticamente</span>
+          <span style="font-size: 12px; color: var(--text-muted);">Atualizado automaticamente</span>
         </div>
 
         <?php if (empty($precos)): ?>
-          <div style="padding: 20px; background: rgba(255,255,255,0.03); border-radius: 8px; text-align: center; color: var(--search-placeholder);">
+          <div style="padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-align: center; color: var(--text-muted);">
             Nenhum preço cadastrado para este jogo no momento.
           </div>
         <?php else: ?>
@@ -236,10 +251,16 @@ require_once __DIR__ . '/includes/header.php';
                 <?php endif; ?>
 
                 <div style="display: flex; align-items: center; gap: 14px;">
-                  <img src="<?= sanitize($p['loja_logo'] ?: 'fotos/extras/steam.png') ?>" alt="<?= sanitize($p['loja_nome']) ?>" class="platform-img" style="width: 44px; height: 44px;">
+                  <?php
+                    $logoEscuro = $p['loja_logo'] ?: 'fotos/extras/steam.png';
+                    $logoClaro = preg_replace('#([^/]+)$#', 'dark$1', $logoEscuro);
+                    if (!is_file(__DIR__ . '/' . $logoClaro)) { $logoClaro = $logoEscuro; $logoFiltro = ' logo-invert'; } else { $logoFiltro = ''; }
+                  ?>
+                  <img src="<?= sanitize($logoEscuro) ?>" alt="<?= sanitize($p['loja_nome']) ?>" class="platform-img logo-dark" style="width: 44px; height: 44px;">
+                  <img src="<?= sanitize($logoClaro) ?>" alt="<?= sanitize($p['loja_nome']) ?>" class="platform-img logo-light<?= $logoFiltro ?>" style="width: 44px; height: 44px;">
                   <div>
                     <div class="platform-name" style="font-size: 16px;"><?= sanitize($p['loja_nome']) ?></div>
-                    <div style="font-size: 12px; color: var(--search-placeholder);">Plataforma: <?= sanitize($p['plataforma_nome']) ?></div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Plataforma: <?= sanitize($p['plataforma_nome']) ?></div>
                   </div>
                 </div>
 
@@ -254,7 +275,7 @@ require_once __DIR__ . '/includes/header.php';
                       </div>
                     <?php else: ?>
                       <div class="platform-price" style="margin: 0;">
-                        <span class="normal-price" style="color: <?= $isBestDeal ? '#2ecc71' : 'var(--highlight)' ?>;"><?= formatPrice($p['valor']) ?></span>
+                        <span class="normal-price" style="color: <?= $isBestDeal ? 'var(--success)' : 'var(--highlight)' ?>;"><?= formatPrice($p['valor']) ?></span>
                       </div>
                     <?php endif; ?>
                   </div>

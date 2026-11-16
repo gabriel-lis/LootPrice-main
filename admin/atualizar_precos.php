@@ -1,126 +1,103 @@
 <?php
 /**
- * Atualização Automática de Valores via APIs Externas
- * LootPrice (RF08, RN02, RN03)
+ * Atualização de preços (RF08, RN02, RN03)
+ * Executa o robô de coleta (includes/coletor.php) manualmente.
+ * No dia a dia ele roda sozinho às 14:00 (robo/agendar_14h.ps1).
  */
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/coletor.php';
 requireAdmin('../login.php');
 
-$pdo = getDB();
-$relatorio = [];
-$executado = false;
+date_default_timezone_set('America/Sao_Paulo');
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' || isset($_GET['executar'])) {
-    $executado = true;
-    
-    // Busca todas as cotações para sincronização
-    $stmt = $pdo->query("SELECT pr.*, j.nome AS jogo_nome, l.nome AS loja_nome 
-                         FROM precos pr
-                         INNER JOIN jogos j ON pr.id_jogo = j.id_jogo
-                         INNER JOIN lojas l ON pr.id_loja = l.id_loja");
-    $precos = $stmt->fetchAll();
+$arquivoResumo = __DIR__ . '/../robo/logs/ultima_execucao.json';
+$resumo = null;
+$executou = false;
 
-    $upd = $pdo->prepare("UPDATE precos SET 
-                            valor = :valor, 
-                            porcentagem_desconto = :desconto, 
-                            data_atualizacao = NOW() 
-                          WHERE id_preco = :id");
-
-    foreach ($precos as $p) {
-        $precoAntigo = (float)$p['valor'];
-        $precoOriginal = (float)($p['valor_original'] ?: $p['valor']);
-        
-        // Simulação / Cálculo dinâmico de promoção para demonstração da API externa (RN02/RN03)
-        // Se o jogo for gratuito (R$ 0,00), mantém gratuito
-        if ($precoOriginal > 0) {
-            // Variação de promoção de 0% a 70% simulando retorno de API
-            $descontosPossiveis = [0, 15, 25, 33, 50, 67, 75];
-            $pctDesconto = $descontosPossiveis[array_rand($descontosPossiveis)];
-            $novoValor = round($precoOriginal * (1 - ($pctDesconto / 100)), 2);
-        } else {
-            $novoValor = 0.00;
-            $pctDesconto = 0;
-        }
-
-        $upd->execute([
-            'valor' => $novoValor,
-            'desconto' => $pctDesconto,
-            'id' => $p['id_preco']
-        ]);
-
-        $relatorio[] = [
-            'jogo' => $p['jogo_nome'],
-            'loja' => $p['loja_nome'],
-            'preco_anterior' => $precoAntigo,
-            'preco_novo' => $novoValor,
-            'desconto' => $pctDesconto
-        ];
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    $executou = true;
+    ignore_user_abort(true);
+    $resumo = lp_executar();
+    if ($resumo['erro']) {
+        setFlash('error', $resumo['erro']);
+    } else {
+        setFlash('success', $resumo['atualizados'] . ' preços atualizados e ' . count($resumo['novos']) . ' jogos novos cadastrados.');
     }
-
-    setFlash('success', 'Sincronização de APIs externas concluída! ' . count($relatorio) . ' ofertas foram atualizadas.');
+} elseif (is_file($arquivoResumo)) {
+    $resumo = json_decode(file_get_contents($arquivoResumo), true);
 }
 
 $pageTitle = 'Atualização de Preços - Admin LootPrice';
 $basePath = '../';
 
 require_once __DIR__ . '/../includes/header.php';
+
+$caixa = 'background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 24px;';
 ?>
 
 <div style="max-width: 900px; margin: 30px auto; padding: 0 20px;">
-  
+
   <div style="margin-bottom: 25px;">
-    <a href="index.php" style="color: var(--search-placeholder); text-decoration: none; font-size: 13px;">← Voltar ao Dashboard</a>
-    <h1 style="text-align: left; margin: 5px 0 0 0; font-size: 24px;">🔄 Consumo e Atualização Automática de APIs (RF08)</h1>
-    <p style="color: var(--search-placeholder); margin: 6px 0 0 0; font-size: 14px;">
-      Conforme a regra de negócio <strong>RN02</strong>, os preços do sistema são atualizados periodicamente através do consumo automatizado das APIs das lojas digitais parceiras (Steam Store API, Xbox Marketplace, Nuuvem e Epic Games).
+    <a href="index.php" style="color: var(--text-muted); text-decoration: none; font-size: 13px;">← Voltar ao Dashboard</a>
+    <h1 style="text-align: left; margin: 5px 0 0 0; font-size: 24px;">Robô de preços</h1>
+    <p style="color: var(--text-muted); margin: 6px 0 0 0; font-size: 14px; line-height: 1.6;">
+      As lojas não oferecem API pública de preços. Por isso o robô consulta Steam, GOG, Xbox, Nuuvem e Epic Games
+      <strong>todos os dias às 14:00</strong>, grava os valores no banco e cadastra jogos populares novos.
     </p>
   </div>
 
-  <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 25px; margin-bottom: 30px;">
-    <h3 style="margin-top: 0; font-size: 16px;">Executar Rotina de Sincronização em Tempo Real</h3>
-    <p style="color: var(--text-color); font-size: 14px; line-height: 1.6;">
-      Ao acionar o botão abaixo, o backend consulta as cotações vigentes, aplica os descontos atuais em relação ao preço de tabela (<em>full price</em> - RN03) e recalcula as menores ofertas em todas as plataformas.
+  <div style="<?= $caixa ?>">
+    <h3 style="margin-top: 0; font-size: 16px;">Rodar agora</h3>
+    <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">
+      A coleta leva alguns minutos. Mantenha esta página aberta até terminar.
     </p>
-
-    <form method="POST" action="atualizar_precos.php" style="margin-top: 20px;">
-      <button type="submit" class="btn-login" style="padding: 12px 24px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; background: linear-gradient(90deg, #4a00e0, #8e2de2);">
-        🚀 Sincronizar Preços Agora
+    <form method="POST" action="atualizar_precos.php" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').textContent = 'Coletando preços…';">
+      <button type="submit" class="btn-login" style="padding: 12px 24px; font-size: 15px; font-weight: 700; border: none; cursor: pointer;">
+        Atualizar preços agora
       </button>
     </form>
   </div>
 
-  <?php if ($executado): ?>
-    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px;">
-      <h3 style="margin-top: 0; font-size: 16px; margin-bottom: 15px;">📊 Relatório da Última Sincronização</h3>
-      
-      <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-        <thead>
-          <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--search-placeholder);">
-            <th style="padding: 8px;">Jogo</th>
-            <th style="padding: 8px;">Loja</th>
-            <th style="padding: 8px;">Preço Anterior</th>
-            <th style="padding: 8px;">Novo Preço</th>
-            <th style="padding: 8px;">Desconto</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($relatorio as $r): ?>
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-              <td style="padding: 8px;"><strong><?= sanitize($r['jogo']) ?></strong></td>
-              <td style="padding: 8px; color: #a78bfa;"><?= sanitize($r['loja']) ?></td>
-              <td style="padding: 8px;"><?= formatPrice($r['preco_anterior']) ?></td>
-              <td style="padding: 8px; color: #5ee7df; font-weight: 700;"><?= formatPrice($r['preco_novo']) ?></td>
-              <td style="padding: 8px;">
-                <?php if ($r['desconto'] > 0): ?>
-                  <span style="background: #ff4757; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700;">-<?= $r['desconto'] ?>%</span>
-                <?php else: ?>
-                  <span style="color: var(--search-placeholder);">Preço padrão</span>
-                <?php endif; ?>
-              </td>
+  <?php if ($resumo): ?>
+    <div style="<?= $caixa ?>">
+      <h3 style="margin-top: 0; font-size: 16px;"><?= $executou ? 'Resultado desta coleta' : 'Última coleta' ?></h3>
+      <p style="color: var(--text-muted); font-size: 13px; margin-top: 0;">
+        <?= sanitize($resumo['inicio'] ?? '') ?> → <?= sanitize($resumo['fim'] ?? '') ?>
+        · <?= (int)($resumo['jogos'] ?? 0) ?> jogos
+        · <strong><?= (int)($resumo['atualizados'] ?? 0) ?></strong> preços atualizados
+        · <?= count($resumo['novos'] ?? []) ?> jogos novos
+      </p>
+      <?php if (!empty($resumo['erro'])): ?>
+        <p style="color: var(--text);"><strong>Erro:</strong> <?= sanitize($resumo['erro']) ?></p>
+      <?php endif; ?>
+      <?php if (!empty($resumo['novos'])): ?>
+        <p style="font-size: 13px;"><strong>Novos jogos:</strong> <?= sanitize(implode(', ', $resumo['novos'])) ?></p>
+      <?php endif; ?>
+
+      <?php if (!empty($resumo['relatorio'])): ?>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; margin-top: 12px;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+              <th style="padding: 8px;">Jogo</th>
+              <th style="padding: 8px;">Loja</th>
+              <th style="padding: 8px;">Antes</th>
+              <th style="padding: 8px;">Agora</th>
+              <th style="padding: 8px;">Desconto</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($resumo['relatorio'] as $r): ?>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 8px;"><strong><?= sanitize($r['jogo']) ?></strong></td>
+                <td style="padding: 8px; color: var(--accent);"><?= sanitize($r['loja']) ?></td>
+                <td style="padding: 8px; color: var(--text-muted);"><?= $r['antes'] === null ? 'novo' : formatPrice($r['antes']) ?></td>
+                <td style="padding: 8px; font-weight: 700;"><?= formatPrice($r['depois']) ?></td>
+                <td style="padding: 8px;"><?= $r['desconto'] > 0 ? '-' . (int)$r['desconto'] . '%' : '—' ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
     </div>
   <?php endif; ?>
 
