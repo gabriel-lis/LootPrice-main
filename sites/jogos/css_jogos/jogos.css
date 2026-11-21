@@ -1,15 +1,13 @@
 
 :root {
   /* Escuro */
-  --title-color: var(--accent-text);
-  --title-glow: rgba(142, 45, 226, 0.7);
+  --title-glow: var(--accent-glow);
   --box-bg: #1b1b1b;
   --panel-bg: var(--surface);
   --panel-border: var(--border);
   --old-price: rgba(224, 224, 224, 0.7);
   --logo-dark-display: inline-block;
   --logo-light-display: none;
-  --highlight: #f2b35b;
   --shadow: rgba(142, 45, 226, 0.7);
   --footer-color: #fff;
   /* Imagens Escuro */
@@ -20,10 +18,8 @@
 
 /* Claro */
 body.light-mode {
-  --title-color: var(--accent-text);
   --title-glow: transparent;
   --box-bg: #eae4ff;
-  --highlight: #6d28d9;
   --old-price: #7a7399;
   --logo-dark-display: none;
   --logo-light-display: inline-block;
@@ -42,7 +38,7 @@ body {
   color: var(--text-color);
   font-family: 'Segoe UI', sans-serif;
     --epic-img: url('../../../fotos/extras/epic.png'); /* Escuro */
-  padding: 84px 20px 20px; /* topo livre do header fixo */
+  padding: 84px 20px 0; /* topo livre do header fixo; sem vão embaixo (footer encosta no fim) */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -129,10 +125,6 @@ body.light-mode .release-date {
 @media (max-width: 900px) {
   footer {
     /* neutraliza padding */
-    margin-left: -20px;
-    margin-right: -20px;
-    width: calc(100% + 40px);
-    box-sizing: border-box;
     padding-left: 20px;
     padding-right: 20px;
   }
@@ -419,7 +411,10 @@ footer {
   position: relative;
   margin-top: auto;
   left: 0;
-  width: 100%;
+  margin-left: -20px;   /* anula o padding lateral do body: footer de ponta a ponta */
+  margin-right: -20px;
+  width: calc(100% + 40px);
+  box-sizing: border-box;
   height: 60px;
   background-color: var(--footer-bg);
   color: var(--footer-color);

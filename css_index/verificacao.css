@@ -1,0 +1,35 @@
+/* Telas de código por e-mail: confirmar e-mail, esqueci a senha, redefinir senha.
+   Só variáveis do theme.css. */
+.verif-wrap { max-width: 440px; margin: 48px auto; padding: 0 20px; }
+.verif-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px 28px; }
+.verif-card h1 { margin: 0 0 8px; font-size: 24px; color: var(--heading); text-align: center; }
+.verif-sub { text-align: center; color: var(--text-muted); font-size: 14px; line-height: 1.55; margin: 0 0 20px; }
+.verif-sub strong { color: var(--text-color); }
+
+.verif-campo { margin-bottom: 14px; text-align: left; }
+.verif-campo label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600; color: var(--text-color); }
+.verif-campo input {
+  width: 100%; box-sizing: border-box; padding: 11px 14px; font: 400 16px var(--font);
+  border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-color);
+}
+.verif-campo input:focus, .verif-codigo:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.verif-codigo {
+  width: 100%; box-sizing: border-box; text-align: center; font: 700 30px/1 var(--font); letter-spacing: 10px;
+  padding: 14px 10px 14px 20px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text-color);
+}
+.verif-btn {
+  width: 100%; margin-top: 14px; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
+  background: var(--accent); color: var(--btn-text); font: 700 16px var(--font);
+}
+.verif-btn:hover { background: var(--accent-hover); }
+.verif-link { background: none; border: none; padding: 0; cursor: pointer; font: inherit; font-weight: 600; color: var(--accent-text); text-decoration: underline; }
+.verif-link:disabled { color: var(--text-muted); text-decoration: none; cursor: default; }
+
+.verif-msg { padding: 10px 12px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+.verif-erro { background: var(--accent-soft); border: 1px solid var(--danger); color: var(--danger); }
+.verif-info { background: var(--success-soft); border: 1px solid var(--success); color: var(--success); }
+
+.verif-rodape { text-align: center; font-size: 14px; color: var(--text-muted); margin-top: 18px; line-height: 1.9; }
+.verif-rodape a { color: var(--accent-text); }

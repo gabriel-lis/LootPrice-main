@@ -8,12 +8,27 @@ require_once __DIR__ . '/includes/functions.php';
 $pageTitle = 'Catálogo Completo - LootPrice';
 $basePath = '';
 
-$searchTerm = isset($_GET['q']) ? trim($_GET['q']) : null;
-$categoryId = !empty($_GET['categoria']) ? (int)$_GET['categoria'] : null;
-$platformId = !empty($_GET['plataforma']) ? (int)$_GET['plataforma'] : null;
-$priceRange = !empty($_GET['preco']) ? trim($_GET['preco']) : null;
+$precisaFiltros = true; // o header carrega categorias e plataformas só aqui
 
-$jogos = getGamesCatalog($searchTerm, $categoryId, $platformId, $priceRange);
+// lp_get() aceita só texto: ?q[]=x vira vazio em vez de erro 500
+$searchTerm = lp_get('q', 100) ?: null;
+$categoryId = (int)lp_get('categoria', 10) ?: null;
+$platformId = (int)lp_get('plataforma', 10) ?: null;
+$priceRange = in_array(lp_get('preco', 10), ['free', 'under50', 'under100', 'over100'], true) ? lp_get('preco', 10) : null;
+
+// Paginação: 24 jogos por página
+const POR_PAGINA = 24;
+$total = countGamesCatalog($searchTerm, $categoryId, $platformId, $priceRange);
+$totalPaginas = max(1, (int)ceil($total / POR_PAGINA));
+$pagina = min(max(1, (int)lp_get('pagina', 6)), $totalPaginas);
+$jogos = getGamesCatalog($searchTerm, $categoryId, $platformId, $priceRange, POR_PAGINA, ($pagina - 1) * POR_PAGINA);
+
+/** Link para outra página mantendo os filtros. */
+function linkPagina(int $p): string {
+    $q = array_filter(['q' => lp_get('q', 100), 'categoria' => lp_get('categoria', 10), 'plataforma' => lp_get('plataforma', 10), 'preco' => lp_get('preco', 10)], fn($v) => $v !== '');
+    if ($p > 1) $q['pagina'] = $p;
+    return 'catalogo.php' . ($q ? '?' . http_build_query($q) : '');
+}
 
 // Quem pesquisa um jogo demonstra interesse nele: isso alimenta as recomendações da home
 if (!empty($searchTerm) && isLoggedIn()) {
@@ -71,7 +86,7 @@ $temFiltro = !empty($searchTerm) || !empty($categoryId) || !empty($platformId) |
 
   <div class="hltb-section-header">
     <h2 class="hltb-section-title"><?= !empty($searchTerm) ? 'Resultados para "' . sanitize($searchTerm) . '"' : 'Catálogo completo' ?></h2>
-    <span class="hltb-results-count"><?= count($jogos) ?> <?= count($jogos) === 1 ? 'jogo' : 'jogos' ?></span>
+    <span class="hltb-results-count"><?= $total ?> <?= $total === 1 ? 'jogo' : 'jogos' ?></span>
   </div>
 
   <?php if (empty($jogos)): ?>
@@ -84,6 +99,14 @@ $temFiltro = !empty($searchTerm) || !empty($categoryId) || !empty($platformId) |
     <div class="hltb-games-grid">
       <?php foreach ($jogos as $j) renderGameRowCard($j); ?>
     </div>
+
+    <?php if ($totalPaginas > 1): ?>
+      <nav class="paginacao" aria-label="Páginas do catálogo">
+        <?php if ($pagina > 1): ?><a href="<?= sanitize(linkPagina($pagina - 1)) ?>" rel="prev">← Anterior</a><?php endif; ?>
+        <span>Página <?= $pagina ?> de <?= $totalPaginas ?></span>
+        <?php if ($pagina < $totalPaginas): ?><a href="<?= sanitize(linkPagina($pagina + 1)) ?>" rel="next">Próxima →</a><?php endif; ?>
+      </nav>
+    <?php endif; ?>
   <?php endif; ?>
 
 </div>

@@ -1,0 +1,21 @@
+# Segredos (senha do e-mail etc.)
+config/mail.php
+
+# Gerados em execução
+robo/logs/
+fotos/perfis/*
+!fotos/perfis/.htaccess
+logs/*
+!logs/.htaccess
+
+# Repositório aninhado e dependências
+LootPrice-2/
+vendor/
+
+# Configuração local do banco (credenciais) e marcadores de ajuste automático do banco
+config/db.local.php
+logs/schema_*.ok
+
+# Cache do Graphify (o grafo pronto - graph.json, GRAPH_REPORT.md, graph.html - continua versionado)
+graphify-out/cache/
+graphify-out/.graphify_*

@@ -1,0 +1,99 @@
+/* Painel administrativo. Cores só via variáveis de theme.css (funciona nos dois temas). */
+
+.adm-wrap { max-width: 1100px; margin: 30px auto; padding: 0 20px; box-sizing: border-box; }
+.adm-wrap.adm-estreito { max-width: 800px; }
+
+.adm-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
+.adm-voltar { color: var(--text-muted); text-decoration: none; font-size: 13px; }
+.adm-voltar:hover { color: var(--accent-text); }
+.adm-title { text-align: left; margin: 5px 0 0; font-size: 24px; color: var(--heading); }
+.adm-sub { color: var(--text-muted); margin: 5px 0 0; font-size: 14px; line-height: 1.6; }
+.adm-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Botões */
+.btn-adm {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 18px; border-radius: 10px; border: 1px solid transparent; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 700; text-decoration: none; transition: .2s;
+  background: var(--accent); color: var(--on-accent);
+}
+.btn-adm:hover { background: var(--accent-hover); }
+.btn-adm.sec { background: transparent; border-color: var(--border); color: var(--text-color); }
+.btn-adm.sec:hover { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+.btn-adm.ok { background: var(--success); }
+.btn-adm.perigo { background: transparent; border-color: var(--danger-border); color: var(--danger); }
+.btn-adm.perigo:hover { background: var(--danger-soft); }
+.btn-adm:disabled { opacity: .6; cursor: not-allowed; }
+.btn-link { background: transparent; border: none; cursor: pointer; font: inherit; font-weight: 600; font-size: 13px; padding: 0; text-decoration: none; color: var(--accent-text); }
+.btn-link.perigo { color: var(--danger); }
+.btn-link.aviso { color: var(--warning); }
+
+/* Caixas e tabelas */
+.adm-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+.adm-card h3 { margin: 0 0 14px; font-size: 16px; color: var(--heading); }
+.adm-tabela-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+.adm-tabela { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.adm-tabela th { padding: 12px 14px; color: var(--text-muted); background: var(--surface-2); border-bottom: 1px solid var(--border); font-weight: 700; white-space: nowrap; }
+.adm-tabela td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.adm-tabela tr:last-child td { border-bottom: none; }
+.adm-tabela .dir { text-align: right; white-space: nowrap; }
+.adm-vazio { padding: 25px !important; text-align: center; color: var(--text-muted); }
+.adm-capa { width: 40px; height: 52px; object-fit: cover; border-radius: 4px; background: var(--surface-2); }
+.adm-mini { font-size: 11px; color: var(--text-muted); }
+.adm-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+.adm-badge.meta { color: #111; }   /* sobre as cores da nota Metacritic (verde/amarelo/vermelho) */
+.adm-badge.desc { background: var(--danger-border); color: var(--on-accent); }
+.adm-badge.adm { background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning); }
+.adm-valor { font-weight: 800; color: var(--success); }
+.adm-riscado { text-decoration: line-through; opacity: .6; font-size: 11px; display: block; }
+
+/* Estatísticas */
+.adm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 30px; }
+.adm-stat { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--cor, var(--accent)); border-radius: 12px; padding: 20px; }
+.adm-stat .rotulo { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+.adm-stat .numero { font-size: 28px; font-weight: 800; color: var(--heading); margin-top: 6px; }
+.adm-stat a { font-size: 12px; color: var(--cor, var(--accent-text)); text-decoration: none; display: inline-block; margin-top: 8px; }
+.adm-stat.c1 { --cor: var(--accent); }
+.adm-stat.c2 { --cor: var(--info); }
+.adm-stat.c3 { --cor: var(--warning); }
+.adm-stat.c4 { --cor: var(--success); }
+
+/* Layouts */
+.adm-2col { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start; }
+.adm-atalhos { display: flex; flex-direction: column; gap: 10px; }
+.adm-atalhos a { background: var(--surface-2); color: var(--text-color); padding: 12px; border-radius: 8px; text-decoration: none; display: flex; justify-content: space-between; }
+.adm-atalhos a:hover { background: var(--accent-soft); color: var(--accent-text); }
+@media (max-width: 800px) { .adm-2col { grid-template-columns: 1fr; } }
+
+/* Formulários */
+.adm-campo { margin-bottom: 16px; }
+.adm-campo label, .adm-rotulo { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--text-color); }
+.adm-campo input[type=text], .adm-campo input[type=url], .adm-campo input[type=number], .adm-campo input[type=date],
+.adm-campo input[type=file], .adm-campo select, .adm-campo textarea, .adm-select {
+  width: 100%; box-sizing: border-box; padding: 10px 14px; border-radius: 8px; font: inherit; font-size: 14px;
+  border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text);
+}
+.adm-select { width: auto; padding: 8px 12px; font-size: 13px; }
+.adm-campo input:focus, .adm-campo select:focus, .adm-campo textarea:focus { outline: none; border-color: var(--input-focus-border); }
+.adm-dica { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.adm-linha3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.adm-linha2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 700px) { .adm-linha3, .adm-linha2 { grid-template-columns: 1fr; } }
+.adm-checks { display: flex; flex-wrap: wrap; gap: 10px; }
+.adm-check { display: flex; align-items: center; gap: 6px; font-size: 13px; background: var(--surface-2); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+.adm-check.assin { background: var(--success-soft); border: 1px solid var(--success-border); color: var(--success); }
+.adm-rodape-form { display: flex; justify-content: flex-end; gap: 12px; }
+.adm-form-inline { display: inline; margin: 0; }
+.adm-capa-atual { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+.adm-capa-atual img { width: 60px; height: 80px; object-fit: cover; border-radius: 6px; background: var(--surface-2); }
+
+/* Avisos */
+.adm-aviso { padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; border: 1px solid; }
+.adm-aviso.erro { background: var(--danger-soft); border-color: var(--danger-border); color: var(--danger); }
+.adm-aviso.alerta { background: var(--warning-soft); border-color: var(--warning); color: var(--warning); }
+.adm-aviso.info { background: var(--info-soft); border-color: var(--info-border); color: var(--info); }
+
+/* Andamento do robô */
+.adm-barra { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 10px 0; }
+.adm-barra > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .4s; }
+.adm-log { background: var(--surface-2); border-radius: 8px; padding: 12px; font: 12px/1.5 Consolas, monospace; max-height: 260px; overflow: auto; white-space: pre-wrap; color: var(--text-muted); }

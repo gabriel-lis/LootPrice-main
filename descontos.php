@@ -9,7 +9,7 @@ $pageTitle = 'Descontos - LootPrice';
 $basePath = '';
 
 $faixas = [10 => 'Até R$ 10', 50 => 'Até R$ 50', 100 => 'Até R$ 100'];
-$ate = isset($_GET['ate']) ? (int)$_GET['ate'] : 0;
+$ate = (int)lp_get('ate', 6);
 if (!isset($faixas[$ate])) $ate = 0; // 0 = todas as faixas
 
 $jogos = getDiscountedGames($ate ?: null);

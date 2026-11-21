@@ -16,6 +16,8 @@ const LP_MAX_NOVOS_POR_EXECUCAO = 8;     // jogos novos cadastrados por execuç�
 const LP_MAX_JOGOS_NO_SITE = 100;        // para de cadastrar populares ao chegar nesse total
 const LP_LIMIAR_NOME = 0.88;             // semelhança mínima entre nomes para aceitar o jogo da loja
 const LP_RETENTAR_NAO_ENCONTRADO_DIAS = 7;
+const LP_ESPERA_BANCO_TENTATIVAS = 40;   // tarefa agendada: espera o MySQL subir (40 x 30 s = 20 min)
+const LP_ESPERA_BANCO_SEGUNDOS = 30;
 
 /* ====================================================================
  * Utilidades: HTTP, JSON e comparação de nomes
@@ -25,7 +27,7 @@ const LP_RETENTAR_NAO_ENCONTRADO_DIAS = 7;
 function lp_http(string $url, ?string $postJson = null, array $headers = []): ?string
 {
     static $ultima = 0.0;
-    $cafile = 'C:\xampp\apache\bin\curl-ca-bundle.crt';
+    $cafile = lp_cafile();
 
     for ($tentativa = 1; $tentativa <= 2; $tentativa++) {
         $espera = 0.35 - (microtime(true) - $ultima);
@@ -42,7 +44,7 @@ function lp_http(string $url, ?string $postJson = null, array $headers = []): ?s
             CURLOPT_ENCODING       => '',
             CURLOPT_HTTPHEADER     => $headers,
         ];
-        if (!ini_get('curl.cainfo') && is_file($cafile)) $opts[CURLOPT_CAINFO] = $cafile;
+        if ($cafile) $opts[CURLOPT_CAINFO] = $cafile;
         if ($postJson !== null) {
             $opts[CURLOPT_POST] = true;
             $opts[CURLOPT_POSTFIELDS] = $postJson;
@@ -361,13 +363,20 @@ function lp_salvar_preco(PDO $pdo, int $idJogo, int $idLoja, int $idPlataforma, 
     $sel->execute([$idJogo, $idLoja]);
     $atual = $sel->fetch();
 
+    $guardarHistorico = $pdo->prepare('INSERT INTO historico_precos (id_jogo, id_loja, valor, valor_original) VALUES (?,?,?,?)');
+
     if ($atual) {
         $pdo->prepare('UPDATE precos SET valor=?, valor_original=?, porcentagem_desconto=?, link_compra=?, data_atualizacao=NOW() WHERE id_preco=?')
             ->execute([$r['valor'], $r['original'], $r['desconto'], $url, $atual['id_preco']]);
+        // Só entra no histórico quando o preço mudou (o gráfico não enche de pontos repetidos)
+        if (abs((float)$atual['valor'] - (float)$r['valor']) > 0.001) {
+            $guardarHistorico->execute([$idJogo, $idLoja, $r['valor'], $r['original']]);
+        }
         return (float)$atual['valor'];
     }
     $pdo->prepare('INSERT INTO precos (id_jogo,id_loja,id_plataforma,valor,valor_original,porcentagem_desconto,link_compra) VALUES (?,?,?,?,?,?,?)')
         ->execute([$idJogo, $idLoja, $idPlataforma, $r['valor'], $r['original'], $r['desconto'], $url]);
+    $guardarHistorico->execute([$idJogo, $idLoja, $r['valor'], $r['original']]);
     return null;
 }
 
@@ -498,6 +507,19 @@ function lp_descobrir_populares(PDO $pdo, int $max, array &$resumo): void
  * Execução completa
  * ==================================================================== */
 
+/**
+ * Andamento da coleta em robo/logs/andamento.json (lido por admin/atualizar_precos.php, que mostra o progresso).
+ * Cada chamada junta os campos novos aos que já existiam.
+ */
+function lp_andamento(array $campos = []): array
+{
+    static $estado = ['rodando' => false, 'jogo_atual' => 0, 'jogos' => 0, 'linhas' => []];
+    $estado = array_merge($estado, $campos, ['atualizado_em' => date('Y-m-d H:i:s')]);
+    $arq = __DIR__ . '/../robo/logs/andamento.json';
+    if (is_dir(dirname($arq))) @file_put_contents($arq, json_encode($estado, JSON_UNESCAPED_UNICODE), LOCK_EX);
+    return $estado;
+}
+
 /** Registra uma linha de log (e mostra na tela se houver $eco). Sem argumento, devolve todas as linhas. */
 function lp_log(?string $msg = null): array
 {
@@ -506,6 +528,7 @@ function lp_log(?string $msg = null): array
         $linha = '[' . date('H:i:s') . '] ' . $msg;
         $linhas[] = $linha;
         if (!empty($GLOBALS['lp_eco'])) ($GLOBALS['lp_eco'])($linha);
+        lp_andamento(['linhas' => array_slice($linhas, -25)]);
     }
     return $linhas;
 }
@@ -537,8 +560,12 @@ function lp_coletar(PDO $pdo, array &$resumo): void
 
     $jogos = $pdo->query('SELECT id_jogo, nome FROM jogos ORDER BY id_jogo')->fetchAll();
     $resumo['jogos'] = count($jogos);
+    $lojasFuncionaram = []; // lojas que devolveram pelo menos um preço nesta execução
+    $numero = 0;
+    lp_andamento(['jogos' => count($jogos), 'jogo_atual' => 0]);
 
     foreach ($jogos as $jogo) {
+        lp_andamento(['jogo_atual' => ++$numero]);
         lp_log("» {$jogo['nome']}");
         $valorSteam = null; // referência: se a Steam cobra e outra loja diz R$ 0, o dado da outra é suspeito
         foreach ($lojas as $loja) {
@@ -575,6 +602,7 @@ function lp_coletar(PDO $pdo, array &$resumo): void
                 $resumo['sem_preco']++;
                 continue;
             }
+            $lojasFuncionaram[$idLoja] = $loja['chave'];
             if ($loja['chave'] === 'steam') $valorSteam = $r['valor'];
             if ($r['valor'] > 5000 || ($r['valor'] == 0 && $valorSteam > 0)) {
                 lp_log("   {$loja['nome']}: preço suspeito (R$ {$r['valor']}), ignorado");
@@ -592,6 +620,54 @@ function lp_coletar(PDO $pdo, array &$resumo): void
                                       'antes' => $antes, 'depois' => $r['valor'], 'desconto' => $r['desconto']];
             lp_log(sprintf('   %-12s R$ %s%s', $loja['nome'], number_format($r['valor'], 2, ',', '.'),
                 $r['desconto'] ? " (-{$r['desconto']}%)" : ''));
+        }
+    }
+
+    // Loja que não devolveu preço NENHUM nesta execução: o site dela provavelmente mudou (ou bloqueou o robô).
+    // A Epic já é conhecida por bloquear (Cloudflare), então não conta como alerta.
+    $resumo['lojas_sem_dados'] = [];
+    foreach ($lojas as $loja) {
+        if ($loja['chave'] !== 'epic' && !isset($lojasFuncionaram[(int)$loja['id_loja']])) {
+            $resumo['lojas_sem_dados'][] = $loja['nome'];
+            lp_log("ALERTA: {$loja['nome']} não devolveu nenhum preço nesta coleta. O site da loja pode ter mudado; revise includes/coletor.php.");
+        }
+    }
+
+    lp_limpar_precos_velhos($pdo, $lojasFuncionaram, $resumo);
+    try { lp_reparar_capas($pdo); } catch (Throwable $e) { lp_log('Falha ao reparar capas: ' . $e->getMessage()); }
+}
+
+/**
+ * Remove o preço de uma loja que deixou de vender o jogo: se a loja respondeu normalmente nesta execução
+ * (devolveu preço de outros jogos) e este preço não é atualizado há mais de 14 dias, ele sai do site.
+ * A Epic fica de fora: ela bloqueia o robô, então "não atualizou" não significa "deixou de vender".
+ */
+function lp_limpar_precos_velhos(PDO $pdo, array $lojasFuncionaram, array &$resumo): void
+{
+    $resumo['removidos'] = 0;
+    foreach ($lojasFuncionaram as $idLoja => $chave) {
+        if ($chave === 'epic') continue;
+        $del = $pdo->prepare('DELETE FROM precos WHERE id_loja = ? AND data_atualizacao < (NOW() - INTERVAL 14 DAY)');
+        $del->execute([$idLoja]);
+        if ($del->rowCount() > 0) {
+            $resumo['removidos'] += $del->rowCount();
+            lp_log("Removidos {$del->rowCount()} preço(s) antigos da loja {$chave} (a loja deixou de vender esses jogos).");
+        }
+    }
+}
+
+/** Jogos cadastrados sem capa (o download falhou antes): tenta baixar de novo a da Steam. */
+function lp_reparar_capas(PDO $pdo): void
+{
+    $sem = $pdo->query("SELECT j.id_jogo, r.id_externo FROM jogos j
+                          JOIN jogo_loja_ref r ON r.id_jogo = j.id_jogo AND r.encontrado = 1
+                          JOIN lojas l ON l.id_loja = r.id_loja AND LOWER(l.nome) LIKE '%steam%'
+                          WHERE (j.imagem_capa IS NULL OR j.imagem_capa = '') AND r.id_externo REGEXP '^[0-9]+$' LIMIT 10")->fetchAll();
+    foreach ($sem as $j) {
+        $capa = lp_baixar_capa((int)$j['id_externo'], null);
+        if ($capa) {
+            $pdo->prepare('UPDATE jogos SET imagem_capa = ? WHERE id_jogo = ?')->execute([$capa, $j['id_jogo']]);
+            lp_log("Capa recuperada do jogo #{$j['id_jogo']}.");
         }
     }
 }
@@ -618,10 +694,20 @@ function lp_executar(?callable $eco = null): array
         return $resumo;
     }
 
+    // Pela linha de comando (tarefa agendada) espera o MySQL subir: o PC costuma ligar e rodar a tarefa
+    // antes de o XAMPP iniciar o banco. Pela web tenta uma vez só (o admin já está com o banco ligado).
     $pdo = getDB();
+    if (!$pdo && PHP_SAPI === 'cli') {
+        for ($t = 1; $t <= LP_ESPERA_BANCO_TENTATIVAS && !$pdo; $t++) {
+            lp_log('Banco indisponível; nova tentativa em ' . LP_ESPERA_BANCO_SEGUNDOS . ' s (' . $t . '/' . LP_ESPERA_BANCO_TENTATIVAS . ')...');
+            sleep(LP_ESPERA_BANCO_SEGUNDOS);
+            $pdo = getDB();
+        }
+    }
     if (!$pdo) {
         $resumo['erro'] = 'Sem conexão com o banco (o MySQL do XAMPP está ligado?).';
     } else {
+        lp_andamento(['rodando' => true, 'inicio' => $resumo['inicio'], 'jogo_atual' => 0, 'jogos' => 0, 'linhas' => []]);
         lp_log('Início da coleta de preços');
         try {
             lp_coletar($pdo, $resumo);
@@ -630,12 +716,30 @@ function lp_executar(?callable $eco = null): array
             $resumo['erro'] = $e->getMessage();
             lp_log('ERRO: ' . $e->getMessage());
         }
+
+        // Preços novos gravados: avisa quem tem jogo em promoção na lista de desejos
+        if ($resumo['ok']) {
+            try {
+                require_once __DIR__ . '/avisos.php';
+                $av = lp_enviar_avisos_promocao($pdo);
+                $resumo['avisos'] = ['enviados' => $av['enviados'], 'falhas' => $av['falhas'], 'jogos' => $av['jogos']];
+                lp_log("Avisos de promoção: {$av['enviados']} e-mail(s) enviado(s), {$av['falhas']} falha(s).");
+            } catch (Throwable $e) {
+                lp_log('Falha nos avisos de promoção: ' . $e->getMessage());
+            }
+        }
+        // Manutenção: acessos com mais de 180 dias não servem mais para recomendação/popularidade
+        try { $pdo->exec('DELETE FROM acessos_jogos WHERE criado_em < (NOW() - INTERVAL 180 DAY)'); } catch (Throwable $e) {}
         lp_log("Fim: {$resumo['atualizados']} preços atualizados, " . count($resumo['novos']) . ' jogos novos.');
     }
 
     $resumo['fim'] = date('Y-m-d H:i:s');
     @file_put_contents($pasta . '/ultima_execucao.json', json_encode($resumo, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-    @file_put_contents($pasta . '/coletor.log', "=== {$resumo['inicio']} ===\n" . implode("\n", lp_log()) . "\n\n", FILE_APPEND);
+    // O coletor.log não cresce sem limite: passando de 1 MB vira coletor.log.1 (só o anterior fica guardado)
+    $logArq = $pasta . '/coletor.log';
+    if (is_file($logArq) && filesize($logArq) > 1048576) @rename($logArq, $logArq . '.1');
+    @file_put_contents($logArq, "=== {$resumo['inicio']} ===\n" . implode("\n", lp_log()) . "\n\n", FILE_APPEND);
+    lp_andamento(['rodando' => false, 'fim' => $resumo['fim'], 'erro' => $resumo['erro']]);
 
     flock($trava, LOCK_UN);
     fclose($trava);

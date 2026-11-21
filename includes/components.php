@@ -13,10 +13,11 @@ function renderPosterCard(array $j, ?string $selo = null): void {
     $preco = (float)($j['menor_preco'] ?? 0);
     $desconto = (int)($j['desconto'] ?? 0);
     $score = !empty($j['nota_metacritic']) ? (int)$j['nota_metacritic'] : null;
+    $logado = isLoggedIn(); // visitante vê o preço borrado (mesma regra da página do jogo)
     ?>
     <a class="poster" href="jogo.php?id=<?= $id ?>" title="<?= sanitize($j['nome']) ?>">
       <div class="poster-cover">
-        <img src="<?= sanitize($j['imagem_capa']) ?>" alt="<?= sanitize($j['nome']) ?>" loading="lazy">
+        <img src="<?= sanitize(capaJogo($j['imagem_capa'])) ?>" alt="<?= sanitize($j['nome']) ?>" loading="lazy">
       </div>
       <div class="poster-body">
         <?php if ($selo): ?><span class="poster-tag"><?= sanitize($selo) ?></span><?php endif; ?>
@@ -27,8 +28,12 @@ function renderPosterCard(array $j, ?string $selo = null): void {
           <?php endif; ?>
         </div>
         <div class="poster-price">
+          <?php if (!$logado): ?>
+            <strong><?= precoBorrado() ?></strong>
+          <?php else: ?>
           <strong><?= formatPrice($j['menor_preco']) ?></strong>
-          <?php if ($desconto > 0 && $preco > 0): ?>
+          <?php endif; ?>
+          <?php if ($logado && $desconto > 0 && $preco > 0): ?>
             <span class="poster-discount">-<?= $desconto ?>%</span>
             <?php if (!empty($j['valor_original'])): ?><s class="poster-old"><?= formatPrice($j['valor_original']) ?></s><?php endif; ?>
           <?php endif; ?>
@@ -46,10 +51,11 @@ function renderGameRowCard(array $j): void {
     $hasGamePass = !empty($j['has_game_pass']);
     $score = !empty($j['nota_metacritic']) ? (int)$j['nota_metacritic'] : null;
     $ano = !empty($j['data_lancamento']) ? ' (' . date('Y', strtotime($j['data_lancamento'])) . ')' : '';
+    $logado = isLoggedIn();
     ?>
     <div class="hltb-card">
       <a href="jogo.php?id=<?= $id ?>" class="hltb-cover-wrap" title="<?= sanitize($j['nome']) ?>">
-        <img src="<?= sanitize($j['imagem_capa']) ?>" alt="<?= sanitize($j['nome']) ?>" class="hltb-cover-img" loading="lazy">
+        <img src="<?= sanitize(capaJogo($j['imagem_capa'])) ?>" alt="<?= sanitize($j['nome']) ?>" class="hltb-cover-img" loading="lazy">
       </a>
       <div class="hltb-body">
         <div class="hltb-title-row">
@@ -65,7 +71,7 @@ function renderGameRowCard(array $j): void {
         <div class="hltb-stats-table">
           <div class="hltb-row">
             <span class="hltb-row-label">Menor Preço</span>
-            <span class="hltb-row-val hltb-val-blue"><?= formatPrice($j['menor_preco']) ?></span>
+            <span class="hltb-row-val hltb-val-blue"><?= $logado ? formatPrice($j['menor_preco']) : precoBorrado() ?></span>
           </div>
           <div class="hltb-row">
             <span class="hltb-row-label">Game Pass</span>

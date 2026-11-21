@@ -7,6 +7,9 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/recomendacoes.php';
+require_once __DIR__ . '/desejos.php';
+require_once __DIR__ . '/verificacao.php';
+require_once __DIR__ . '/avisos.php';
 require_once __DIR__ . '/components.php';
 
 /**
@@ -62,200 +65,127 @@ function getMetacriticColor(?float $score): string {
 }
 
 /**
- * Lista padrão de jogos semeados para fallback caso o banco não esteja importado ainda
+ * Mensagem padrão quando uma consulta ao banco falha: o erro vai para logs/erros.log
+ * e a página mostra "sem dados" (nunca dados inventados).
  */
-function getDefaultMockGames(): array {
-    return [
-        [
-            'id_jogo' => 1,
-            'nome' => 'Death Stranding (Director\'s Cut)',
-            'descricao' => 'Death Stranding é um jogo de ação e aventura em mundo aberto desenvolvido por Kojima Productions.',
-            'data_lancamento' => '2019-11-08',
-            'nota_metacritic' => 86.0,
-            'imagem_capa' => 'fotos/jogos/ds.jpg',
-            'menor_preco' => 63.60,
-            'has_game_pass' => 1,
-            'categorias_nomes' => 'Aventura'
-        ],
-        [
-            'id_jogo' => 2,
-            'nome' => 'Tom Clancy\'s Rainbow Six Siege',
-            'descricao' => 'Rainbow Six Siege é um jogo de tiro tático focado em combate tático e destruição ambiental.',
-            'data_lancamento' => '2015-12-01',
-            'nota_metacritic' => 79.0,
-            'imagem_capa' => 'fotos/jogos/r6.jpg',
-            'menor_preco' => 29.99,
-            'has_game_pass' => 0,
-            'categorias_nomes' => 'Shooter, Multiplayer'
-        ],
-        [
-            'id_jogo' => 3,
-            'nome' => 'Apex Legends',
-            'descricao' => 'Apex Legends é um battle royale gratuito ambientado no universo de Titanfall.',
-            'data_lancamento' => '2019-02-04',
-            'nota_metacritic' => 89.0,
-            'imagem_capa' => 'fotos/jogos/apex.jpg',
-            'menor_preco' => 0.00,
-            'has_game_pass' => 1,
-            'categorias_nomes' => 'Battle Royale, Shooter'
-        ],
-        [
-            'id_jogo' => 4,
-            'nome' => 'Dead by Daylight',
-            'descricao' => 'Dead by Daylight é um jogo de terror e sobrevivência multiplayer assimétrico (4vs1).',
-            'data_lancamento' => '2016-06-14',
-            'nota_metacritic' => 71.0,
-            'imagem_capa' => 'fotos/jogos/dbd.png',
-            'menor_preco' => 34.99,
-            'has_game_pass' => 1,
-            'categorias_nomes' => 'Terror, Multiplayer'
-        ],
-        [
-            'id_jogo' => 5,
-            'nome' => 'Elden Ring',
-            'descricao' => 'Elden Ring é um RPG de ação em mundo aberto desenvolvido pela FromSoftware.',
-            'data_lancamento' => '2022-02-25',
-            'nota_metacritic' => 96.0,
-            'imagem_capa' => 'fotos/jogos/er.jpg',
-            'menor_preco' => 219.90,
-            'has_game_pass' => 0,
-            'categorias_nomes' => 'RPG, Soulslike'
-        ],
-        [
-            'id_jogo' => 6,
-            'nome' => 'Risk of Rain 2',
-            'descricao' => 'Risk of Rain 2 é um clássico jogo roguelike de ação em terceira pessoa multiplayer.',
-            'data_lancamento' => '2020-08-11',
-            'nota_metacritic' => 85.0,
-            'imagem_capa' => 'fotos/jogos/ror2.jpg',
-            'menor_preco' => 19.79,
-            'has_game_pass' => 0,
-            'categorias_nomes' => 'Roguelike'
-        ],
-        [
-            'id_jogo' => 7,
-            'nome' => 'Sea of Thieves',
-            'descricao' => 'Sea of Thieves é um jogo de aventura multiplayer em mundo aberto em um universo pirata.',
-            'data_lancamento' => '2018-03-20',
-            'nota_metacritic' => 82.0,
-            'imagem_capa' => 'fotos/jogos/sot.jpg',
-            'menor_preco' => 89.50,
-            'has_game_pass' => 1,
-            'categorias_nomes' => 'Aventura, Multiplayer'
-        ],
-        [
-            'id_jogo' => 8,
-            'nome' => 'Warframe',
-            'descricao' => 'Warframe é um jogo cooperativo de ação rápida e tiro focado em ninjas espaciais cibernéticos.',
-            'data_lancamento' => '2013-03-25',
-            'nota_metacritic' => 85.0,
-            'imagem_capa' => 'fotos/jogos/warframe.png',
-            'menor_preco' => 0.00,
-            'has_game_pass' => 0,
-            'categorias_nomes' => 'MMO RPG, Shooter'
-        ],
-        [
-            'id_jogo' => 9,
-            'nome' => 'The Witcher 3: Wild Hunt',
-            'descricao' => 'The Witcher 3 é um RPG épico de ação em mundo aberto desenvolvido pela CD Projekt Red.',
-            'data_lancamento' => '2015-05-18',
-            'nota_metacritic' => 93.0,
-            'imagem_capa' => 'fotos/jogos/witcher.jpg',
-            'menor_preco' => 12.99,
-            'has_game_pass' => 0,
-            'categorias_nomes' => 'RPG'
-        ],
-        [
-            'id_jogo' => 10,
-            'nome' => 'Dark Souls III',
-            'descricao' => 'Dark Souls III é um RPG de ação com combate visceral e chefes lendários.',
-            'data_lancamento' => '2016-04-12',
-            'nota_metacritic' => 89.0,
-            'imagem_capa' => 'fotos/jogos/ds3.png',
-            'menor_preco' => 114.95,
-            'has_game_pass' => 0,
-            'categorias_nomes' => 'RPG, Soulslike'
-        ]
-    ];
+function lp_consulta_falhou(string $onde, Throwable $e): void {
+    lp_log_erro("Consulta falhou em $onde", $e);
+}
+
+/** Escapa % e _ digitados na busca (para usar com LIKE ... ESCAPE '\\'). */
+function lp_like(string $texto): string {
+    return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $texto) . '%';
 }
 
 /**
- * Busca a lista de jogos com suporte a filtros de busca, categoria, plataforma e faixa de preço (RF01, RF02, RF03)
+ * Monta a consulta base do catálogo (sem ORDER/LIMIT) e preenche $params.
  */
-function getGamesCatalog(?string $search = null, ?int $categoryId = null, ?int $platformId = null, ?string $priceRange = null): array {
-    $pdo = getDB();
-    if (!$pdo) {
-        // Fallback para mock caso banco não esteja pronto
-        $mock = getDefaultMockGames();
-        if (!empty($search)) {
-            $mock = array_filter($mock, fn($j) => stripos($j['nome'], $search) !== false);
-        }
-        return array_values($mock);
+function lp_catalogo_sql(?string $search, ?int $categoryId, ?int $platformId, ?string $priceRange, array &$params): string {
+    $sql = "SELECT j.*,
+                   MIN(pr.valor) AS menor_preco,
+                   GROUP_CONCAT(DISTINCT c.nome SEPARATOR ', ') AS categorias_nomes,
+                   GROUP_CONCAT(DISTINCT c.id_categoria) AS categorias_ids,
+                   GROUP_CONCAT(DISTINCT p.nome SEPARATOR ', ') AS plataformas_nomes,
+                   GROUP_CONCAT(DISTINCT sa.nome SEPARATOR ', ') AS assinaturas_nomes,
+                   MAX(CASE WHEN sa.nome LIKE '%Game Pass%' THEN 1 ELSE 0 END) AS has_game_pass
+            FROM jogos j
+            LEFT JOIN jogo_categoria jc ON j.id_jogo = jc.id_jogo
+            LEFT JOIN categorias c ON jc.id_categoria = c.id_categoria
+            LEFT JOIN jogo_plataforma jp ON j.id_jogo = jp.id_jogo
+            LEFT JOIN plataformas p ON jp.id_plataforma = p.id_plataforma
+            LEFT JOIN jogo_assinatura ja ON j.id_jogo = ja.id_jogo
+            LEFT JOIN servicos_assinatura sa ON ja.id_servico = sa.id_servico
+            LEFT JOIN precos pr ON j.id_jogo = pr.id_jogo
+            WHERE 1=1";
+
+    $search = trim((string)$search);
+    if ($search !== '') {
+        // Palavra-chave: procura no nome, na sinopse e nas categorias
+        $sql .= " AND (j.nome LIKE :s1 ESCAPE '\\\\'
+                    OR j.descricao LIKE :s2 ESCAPE '\\\\'
+                    OR j.id_jogo IN (SELECT jc2.id_jogo FROM jogo_categoria jc2
+                                     JOIN categorias c2 ON c2.id_categoria = jc2.id_categoria
+                                     WHERE c2.nome LIKE :s3 ESCAPE '\\\\'))";
+        $like = lp_like($search);
+        $params['s1'] = $params['s2'] = $params['s3'] = $like;
+    }
+    if (!empty($categoryId)) {
+        $sql .= " AND j.id_jogo IN (SELECT id_jogo FROM jogo_categoria WHERE id_categoria = :catId)";
+        $params['catId'] = $categoryId;
+    }
+    if (!empty($platformId)) {
+        $sql .= " AND j.id_jogo IN (SELECT id_jogo FROM jogo_plataforma WHERE id_plataforma = :platId)";
+        $params['platId'] = $platformId;
     }
 
+    $sql .= " GROUP BY j.id_jogo";
+
+    // Faixa de preço (RF03). "Até R$ X" sempre inclui os jogos grátis.
+    switch ($priceRange) {
+        case 'free':     $sql .= " HAVING MIN(pr.valor) = 0"; break;
+        case 'under50':  $sql .= " HAVING MIN(pr.valor) <= 50.00"; break;
+        case 'under100': $sql .= " HAVING MIN(pr.valor) <= 100.00"; break;
+        case 'over100':  $sql .= " HAVING MIN(pr.valor) > 100.00"; break;
+    }
+    return $sql;
+}
+
+/**
+ * Busca a lista de jogos com suporte a filtros de busca, categoria, plataforma e faixa de preço (RF01, RF02, RF03).
+ * $limit/$offset servem para paginar (catalogo.php). O resultado fica em cache durante a requisição
+ * (a home chama esta função várias vezes).
+ */
+function getGamesCatalog(?string $search = null, ?int $categoryId = null, ?int $platformId = null, ?string $priceRange = null, ?int $limit = null, int $offset = 0): array {
+    static $cache = [];
+    $chave = md5(json_encode([$search, $categoryId, $platformId, $priceRange, $limit, $offset]));
+    if (isset($cache[$chave])) return $cache[$chave];
+
+    $pdo = getDB();
+    if (!$pdo) return [];
+
     try {
-        $sql = "SELECT j.*, 
-                       MIN(pr.valor) AS menor_preco,
-                       GROUP_CONCAT(DISTINCT c.nome SEPARATOR ', ') AS categorias_nomes,
-                       GROUP_CONCAT(DISTINCT c.id_categoria) AS categorias_ids,
-                       GROUP_CONCAT(DISTINCT p.nome SEPARATOR ', ') AS plataformas_nomes,
-                       GROUP_CONCAT(DISTINCT sa.nome SEPARATOR ', ') AS assinaturas_nomes,
-                       MAX(CASE WHEN sa.nome LIKE '%Game Pass%' THEN 1 ELSE 0 END) AS has_game_pass
-                FROM jogos j
-                LEFT JOIN jogo_categoria jc ON j.id_jogo = jc.id_jogo
-                LEFT JOIN categorias c ON jc.id_categoria = c.id_categoria
-                LEFT JOIN jogo_plataforma jp ON j.id_jogo = jp.id_jogo
-                LEFT JOIN plataformas p ON jp.id_plataforma = p.id_plataforma
-                LEFT JOIN jogo_assinatura ja ON j.id_jogo = ja.id_jogo
-                LEFT JOIN servicos_assinatura sa ON ja.id_servico = sa.id_servico
-                LEFT JOIN precos pr ON j.id_jogo = pr.id_jogo
-                WHERE 1=1";
-
         $params = [];
-
-        if (!empty($search)) {
-            $sql .= " AND j.nome LIKE :search";
-            $params['search'] = '%' . trim($search) . '%';
-        }
-
-        if (!empty($categoryId)) {
-            $sql .= " AND j.id_jogo IN (SELECT id_jogo FROM jogo_categoria WHERE id_categoria = :catId)";
-            $params['catId'] = $categoryId;
-        }
-
-        if (!empty($platformId)) {
-            $sql .= " AND j.id_jogo IN (SELECT id_jogo FROM jogo_plataforma WHERE id_plataforma = :platId)";
-            $params['platId'] = $platformId;
-        }
-
-        $sql .= " GROUP BY j.id_jogo";
-
-        // Filtro por faixa de preço (RF03)
-        if (!empty($priceRange)) {
-            if ($priceRange === 'free') {
-                $sql .= " HAVING MIN(pr.valor) = 0";
-            } elseif ($priceRange === 'under50') {
-                $sql .= " HAVING MIN(pr.valor) <= 50.00 AND MIN(pr.valor) > 0";
-            } elseif ($priceRange === 'under100') {
-                $sql .= " HAVING MIN(pr.valor) <= 100.00";
-            } elseif ($priceRange === 'over100') {
-                $sql .= " HAVING MIN(pr.valor) > 100.00";
-            }
-        }
-
+        $sql = lp_catalogo_sql($search, $categoryId, $platformId, $priceRange, $params);
         $sql .= " ORDER BY j.nome ASC";
-
+        if ($limit !== null) $sql .= " LIMIT " . max(1, (int)$limit) . " OFFSET " . max(0, $offset);
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-        $results = $stmt->fetchAll();
+        return $cache[$chave] = $stmt->fetchAll();
+    } catch (Throwable $e) {
+        lp_consulta_falhou('getGamesCatalog', $e);
+        return [];
+    }
+}
 
-        if (empty($results) && empty($search) && empty($categoryId) && empty($platformId) && empty($priceRange)) {
-            return getDefaultMockGames();
-        }
+/** Quantos jogos o catálogo tem com esses filtros (para a paginação). */
+function countGamesCatalog(?string $search = null, ?int $categoryId = null, ?int $platformId = null, ?string $priceRange = null): int {
+    $pdo = getDB();
+    if (!$pdo) return 0;
+    try {
+        $params = [];
+        $sql = "SELECT COUNT(*) FROM (" . lp_catalogo_sql($search, $categoryId, $platformId, $priceRange, $params) . ") t";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    } catch (Throwable $e) {
+        lp_consulta_falhou('countGamesCatalog', $e);
+        return 0;
+    }
+}
 
-        return $results;
-    } catch (Exception $e) {
-        return getDefaultMockGames();
+/**
+ * Executa uma consulta que devolve várias linhas; em caso de erro registra no log e devolve [].
+ */
+function lp_consulta(string $onde, string $sql, array $params = []): array {
+    $pdo = getDB();
+    if (!$pdo) return [];
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        lp_consulta_falhou($onde, $e);
+        return [];
     }
 }
 
@@ -263,223 +193,116 @@ function getGamesCatalog(?string $search = null, ?int $categoryId = null, ?int $
  * Busca detalhes completos de um jogo pelo ID (RF04, RF07, RN12)
  */
 function getGameById(int $id): ?array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM jogos WHERE id_jogo = :id LIMIT 1");
-            $stmt->execute(['id' => $id]);
-            $game = $stmt->fetch();
-            if ($game) return $game;
-        } catch (Exception $e) {}
-    }
-
-    // Mock fallback
-    $mock = getDefaultMockGames();
-    foreach ($mock as $m) {
-        if ($m['id_jogo'] === $id) return $m;
-    }
-    return null;
+    return lp_consulta('getGameById', "SELECT * FROM jogos WHERE id_jogo = :id LIMIT 1", ['id' => $id])[0] ?? null;
 }
 
 /**
  * Retorna os preços de um jogo em todas as lojas cadastradas ordenado pelo menor preço (RN01, RF05, RF06)
  */
 function getGamePrices(int $idJogo): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            $sql = "SELECT pr.*, 
-                           l.nome AS loja_nome, 
-                           l.logo AS loja_logo, 
-                           l.url AS loja_url,
-                           p.nome AS plataforma_nome,
-                           p.icone AS plataforma_icone
-                    FROM precos pr
-                    INNER JOIN lojas l ON pr.id_loja = l.id_loja
-                    INNER JOIN plataformas p ON pr.id_plataforma = p.id_plataforma
-                    WHERE pr.id_jogo = :id_jogo
-                    ORDER BY pr.valor ASC";
+    return lp_consulta('getGamePrices',
+        "SELECT pr.*,
+                l.nome AS loja_nome,
+                l.logo AS loja_logo,
+                l.url AS loja_url,
+                p.nome AS plataforma_nome,
+                p.icone AS plataforma_icone
+         FROM precos pr
+         INNER JOIN lojas l ON pr.id_loja = l.id_loja
+         INNER JOIN plataformas p ON pr.id_plataforma = p.id_plataforma
+         WHERE pr.id_jogo = :id_jogo
+         ORDER BY pr.valor ASC, l.nome ASC", ['id_jogo' => $idJogo]);
+}
 
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id_jogo' => $idJogo]);
-            $res = $stmt->fetchAll();
-            if (!empty($res)) return $res;
-        } catch (Exception $e) {}
-    }
-
-    // Fallback de preços para visualização
-    return [
-        [
-            'id_preco' => 1,
-            'id_jogo' => $idJogo,
-            'loja_nome' => 'Steam',
-            'loja_logo' => 'fotos/extras/steam.png',
-            'plataforma_nome' => 'PC',
-            'valor' => 12.99,
-            'valor_original' => 129.99,
-            'porcentagem_desconto' => 90,
-            'link_compra' => 'https://store.steampowered.com'
-        ],
-        [
-            'id_preco' => 2,
-            'id_jogo' => $idJogo,
-            'loja_nome' => 'Xbox Store',
-            'loja_logo' => 'fotos/extras/xbox.png',
-            'plataforma_nome' => 'Xbox',
-            'valor' => 14.30,
-            'valor_original' => 143.00,
-            'porcentagem_desconto' => 90,
-            'link_compra' => 'https://www.xbox.com'
-        ],
-        [
-            'id_preco' => 3,
-            'id_jogo' => $idJogo,
-            'loja_nome' => 'Epic Games',
-            'loja_logo' => 'fotos/extras/epic.png',
-            'plataforma_nome' => 'PC',
-            'valor' => 99.96,
-            'valor_original' => 99.96,
-            'porcentagem_desconto' => 0,
-            'link_compra' => 'https://store.epicgames.com'
-        ]
-    ];
+/**
+ * Menor preço já registrado para o jogo (histórico) e a evolução do menor preço por dia.
+ * @return array ['menor' => ?array{valor,registrado_em,loja}, 'serie' => array<array{dia,valor}>]
+ */
+function getPriceHistory(int $idJogo): array {
+    $menor = lp_consulta('getPriceHistory/menor',
+        "SELECT h.valor, h.registrado_em, l.nome AS loja
+         FROM historico_precos h JOIN lojas l ON l.id_loja = h.id_loja
+         WHERE h.id_jogo = :id ORDER BY h.valor ASC, h.registrado_em DESC LIMIT 1", ['id' => $idJogo])[0] ?? null;
+    $serie = lp_consulta('getPriceHistory/serie',
+        "SELECT DATE(registrado_em) AS dia, MIN(valor) AS valor
+         FROM historico_precos WHERE id_jogo = :id
+         GROUP BY DATE(registrado_em) ORDER BY dia ASC", ['id' => $idJogo]);
+    return ['menor' => $menor, 'serie' => $serie];
 }
 
 /**
  * Retorna as categorias associadas a um jogo
  */
 function getGameCategories(int $idJogo): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            $sql = "SELECT c.* FROM categorias c
-                    INNER JOIN jogo_categoria jc ON c.id_categoria = jc.id_categoria
-                    WHERE jc.id_jogo = :id_jogo
-                    ORDER BY c.nome ASC";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id_jogo' => $idJogo]);
-            $res = $stmt->fetchAll();
-            if (!empty($res)) return $res;
-        } catch (Exception $e) {}
-    }
-    return [['id_categoria' => 1, 'nome' => 'RPG'], ['id_categoria' => 4, 'nome' => 'Aventura']];
+    return lp_consulta('getGameCategories',
+        "SELECT c.* FROM categorias c
+         INNER JOIN jogo_categoria jc ON c.id_categoria = jc.id_categoria
+         WHERE jc.id_jogo = :id_jogo ORDER BY c.nome ASC", ['id_jogo' => $idJogo]);
 }
 
 /**
  * Retorna as plataformas associadas a um jogo (RF04)
  */
 function getGamePlatforms(int $idJogo): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            $sql = "SELECT p.* FROM plataformas p
-                    INNER JOIN jogo_plataforma jp ON p.id_plataforma = jp.id_plataforma
-                    WHERE jp.id_jogo = :id_jogo
-                    ORDER BY p.nome ASC";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id_jogo' => $idJogo]);
-            $res = $stmt->fetchAll();
-            if (!empty($res)) return $res;
-        } catch (Exception $e) {}
-    }
-    return [
-        ['id_plataforma' => 1, 'nome' => 'PC'],
-        ['id_plataforma' => 2, 'nome' => 'Xbox'],
-        ['id_plataforma' => 3, 'nome' => 'PlayStation']
-    ];
+    return lp_consulta('getGamePlatforms',
+        "SELECT p.* FROM plataformas p
+         INNER JOIN jogo_plataforma jp ON p.id_plataforma = jp.id_plataforma
+         WHERE jp.id_jogo = :id_jogo ORDER BY p.nome ASC", ['id_jogo' => $idJogo]);
 }
 
 /**
  * Retorna os serviços de assinatura associados a um jogo (ex: Game Pass - RF07)
  */
 function getGameSubscriptions(int $idJogo): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            $sql = "SELECT sa.* FROM servicos_assinatura sa
-                    INNER JOIN jogo_assinatura ja ON sa.id_servico = ja.id_servico
-                    WHERE ja.id_jogo = :id_jogo";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id_jogo' => $idJogo]);
-            return $stmt->fetchAll();
-        } catch (Exception $e) {}
-    }
-    return [];
+    return lp_consulta('getGameSubscriptions',
+        "SELECT sa.* FROM servicos_assinatura sa
+         INNER JOIN jogo_assinatura ja ON sa.id_servico = ja.id_servico
+         WHERE ja.id_jogo = :id_jogo", ['id_jogo' => $idJogo]);
 }
 
-/**
- * Lista todas as categorias cadastradas
- */
+/** Lista todas as categorias cadastradas */
 function getAllCategories(): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            return $pdo->query("SELECT * FROM categorias ORDER BY nome ASC")->fetchAll();
-        } catch (Exception $e) {}
-    }
-    return [
-        ['id_categoria' => 1, 'nome' => 'RPG'],
-        ['id_categoria' => 2, 'nome' => 'Shooter'],
-        ['id_categoria' => 3, 'nome' => 'Battle Royale'],
-        ['id_categoria' => 4, 'nome' => 'Aventura'],
-        ['id_categoria' => 5, 'nome' => 'Terror'],
-        ['id_categoria' => 6, 'nome' => 'Roguelike'],
-        ['id_categoria' => 7, 'nome' => 'Soulslike'],
-        ['id_categoria' => 8, 'nome' => 'MMO RPG'],
-        ['id_categoria' => 9, 'nome' => 'Multiplayer']
-    ];
+    return lp_consulta('getAllCategories', "SELECT * FROM categorias ORDER BY nome ASC");
 }
 
-/**
- * Lista todas as plataformas cadastradas
- */
+/** Lista todas as plataformas cadastradas */
 function getAllPlatforms(): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            return $pdo->query("SELECT * FROM plataformas ORDER BY nome ASC")->fetchAll();
-        } catch (Exception $e) {}
-    }
-    return [
-        ['id_plataforma' => 1, 'nome' => 'PC'],
-        ['id_plataforma' => 2, 'nome' => 'Xbox'],
-        ['id_plataforma' => 3, 'nome' => 'PlayStation'],
-        ['id_plataforma' => 4, 'nome' => 'Nintendo Switch']
-    ];
+    return lp_consulta('getAllPlatforms', "SELECT * FROM plataformas ORDER BY nome ASC");
 }
 
-/**
- * Lista todas as lojas cadastradas
- */
+/** Lista todas as lojas cadastradas */
 function getAllStores(): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            return $pdo->query("SELECT * FROM lojas ORDER BY nome ASC")->fetchAll();
-        } catch (Exception $e) {}
-    }
-    return [
-        ['id_loja' => 1, 'nome' => 'Steam'],
-        ['id_loja' => 2, 'nome' => 'Epic Games'],
-        ['id_loja' => 3, 'nome' => 'Xbox Store'],
-        ['id_loja' => 4, 'nome' => 'Nuuvem'],
-        ['id_loja' => 5, 'nome' => 'GOG']
-    ];
+    return lp_consulta('getAllStores', "SELECT * FROM lojas ORDER BY nome ASC");
+}
+
+/** Lista todos os serviços de assinatura */
+function getAllSubscriptions(): array {
+    return lp_consulta('getAllSubscriptions', "SELECT * FROM servicos_assinatura ORDER BY nome ASC");
 }
 
 /**
- * Lista todos os serviços de assinatura
+ * Caminho da capa do jogo; se não houver arquivo, usa a capa padrão (evita imagem quebrada nos cards).
  */
-function getAllSubscriptions(): array {
-    $pdo = getDB();
-    if ($pdo) {
-        try {
-            return $pdo->query("SELECT * FROM servicos_assinatura ORDER BY nome ASC")->fetchAll();
-        } catch (Exception $e) {}
-    }
-    return [
-        ['id_servico' => 1, 'nome' => 'Xbox Game Pass'],
-        ['id_servico' => 2, 'nome' => 'EA Play'],
-        ['id_servico' => 3, 'nome' => 'PlayStation Plus']
-    ];
+function capaJogo(?string $caminho): string {
+    $padrao = 'fotos/jogos/sem-capa.svg';
+    if (!$caminho || strpos($caminho, '..') !== false) return $padrao;
+    return is_file(__DIR__ . '/../' . $caminho) ? $caminho : $padrao;
+}
+
+/**
+ * Preço "de enfeite" mostrado (borrado) a quem não está logado: o valor real nunca sai do servidor.
+ */
+function precoBorrado(): string {
+    return '<span class="preco-borrado" title="Entre na sua conta para ver o preço" aria-label="Preço disponível após entrar">R$ 99,99</span>';
+}
+
+/**
+ * Quando o preço foi coletado, em texto, e se já está velho (mais de 3 dias).
+ * @return array{texto:string, velho:bool}
+ */
+function idadeDoPreco(?string $dataAtualizacao): array {
+    if (!$dataAtualizacao) return ['texto' => 'data desconhecida', 'velho' => true];
+    $t = strtotime($dataAtualizacao);
+    $dias = (time() - $t) / 86400;
+    return ['texto' => date('d/m/Y H:i', $t), 'velho' => $dias > 3];
 }
