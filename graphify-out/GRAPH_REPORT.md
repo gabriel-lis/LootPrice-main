@@ -1,7 +1,7 @@
 # Graph Report - LootPrice-main  (2026-11-21)
 
 ## Corpus Check
-- 54 files · ~63,990 words
+- 54 files · ~64,026 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 20 file(s) not represented in the graph (top: .css 11, (none) 9)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `64620564`
+- Built from commit: `c8f990bc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -44,20 +44,20 @@
 6. `getDB()` - 20 edges
 7. `lp_enviar_email()` - 14 edges
 8. `lp_consulta()` - 13 edges
-9. `lp_log_erro()` - 12 edges
-10. `lp_descobrir_populares()` - 12 edges
+9. `lp_descobrir_populares()` - 12 edges
+10. `lp_log_erro()` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Crítico / alto` --references--> `refreshSessionUser()`  [INFERRED]
-  documentacao/Relatorio-Correcoes-2026-11-21.md → includes/auth.php
 - `Estrutura do projeto` --references--> `idadeDoPreco()`  [INFERRED]
   CLAUDE.md → includes/functions.php
+- `Crítico / alto` --references--> `refreshSessionUser()`  [INFERRED]
+  documentacao/Relatorio-Correcoes-2026-11-21.md → includes/auth.php
 - `Estrutura do projeto` --references--> `lp_enviar_avisos_promocao()`  [INFERRED]
   CLAUDE.md → includes/avisos.php
-- `Registro de alterações` --references--> `lp_melhor()`  [INFERRED]
-  CLAUDE.md → includes/coletor.php
 - `Estrutura do projeto` --references--> `lp_executar()`  [INFERRED]
   CLAUDE.md → includes/coletor.php
+- `Estrutura do projeto` --references--> `capaJogo()`  [INFERRED]
+  CLAUDE.md → includes/functions.php
 
 ## Import Cycles
 - None detected.

@@ -62,6 +62,8 @@ Nós mais centrais no grafo: `getDB()`, `LootPrice Home`, `Catalogo de jogos`.
 
 ## Registro de alterações
 
+- 2026-11-21: criada `documentacao/Apresentacao-LootPrice.pdf` (16 slides, divisão igual entre Gabriel, Pedro Duarte e Daniel Cinquine, com perguntas prováveis do professor, funcionamento do robô e roteiro de demonstração). Gerada fora do projeto (script em pasta temporária, reportlab).
+
 - 2026-11-21: refeita a documentação `documentacao/Lootprice2-1.pdf` (versão 2.1, texto em primeira pessoa de estudante, modelagem de dados): cobre confirmação de e-mail, recuperar senha, aviso de promoção, histórico de preços, robô e painel admin novos; 15 prints novos tirados com conta de teste (apagada depois). Gerada fora do projeto (script em pasta temporária). Arquivo: `documentacao/Lootprice2-1.pdf`.
 
 - 2026-11-21: removida a função de avaliações/comentários de usuários (adicionada por engano na revisão geral; o site não terá avaliação de usuário). Apagados `avaliar.php`, `includes/avaliacoes.php`, `admin/avaliacoes.php`, o bloco em `jogo.php` e a tabela `avaliacoes` (schema.sql, migrações e banco local; estava vazia).
