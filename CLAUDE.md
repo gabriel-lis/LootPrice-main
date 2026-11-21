@@ -41,7 +41,7 @@ Não pular esses passos mesmo em mudanças pequenas.
 | `css_index/` | Estilos. **`theme.css` é a única fonte de cores/fonte** (modo escuro `:root`, claro `body.light-mode`); `cards.css` (catálogo), `home.css` (home/descontos/poster), `lootprice.css` (base/navbar/sidebar) |
 | `fotos/` | Imagens (logos de lojas, capas de jogos, ícones de tema) |
 | `ideias/` | Diagrama de casos de uso e rascunhos (`.docx`) |
-| `documentacao/LootPrice2.pdf` | Documentação do projeto (requisitos RF01–RF09, RNF01–RNF05) |
+| `documentacao/LootPrice2.pdf`, `documentacao/Lootprice2-1.pdf` | Documentação do projeto. `LootPrice2.pdf` = versão 1 (RF01–RF09, RNF01–RNF05); `Lootprice2-1.pdf` = versão 2.1 do módulo de modelagem de dados (introdução, objetivos, RN01–RN25, RF01–RF21, casos de uso, classes, MER/DER/modelo lógico, telas); `Lootprice2-2.pdf` = versão 2.2 (RN01–RN35, RF01–RF28, com perfil, lista de desejos e preços borrados para visitante) |
 | `graphify-out/` | Grafo de conhecimento (`graph.html`, `graph.json`, `GRAPH_REPORT.md`) |
 
 Nós mais centrais no grafo: `getDB()`, `LootPrice Home`, `Catalogo de jogos`.
@@ -55,6 +55,32 @@ Nós mais centrais no grafo: `getDB()`, `LootPrice Home`, `Catalogo de jogos`.
 
 ## Registro de alterações
 
+- 2026-11-20: nova documentação `documentacao/Lootprice2-2.pdf` (versão 2.2, 31 páginas, em primeira pessoa): inclui perfil, lista de desejos e a regra do visitante (preços borrados); RN01–RN35, RF01–RF28, casos de uso/classes/MER/DER atualizados (13 tabelas, com `lista_desejos`) e 15 prints. Gerada fora do projeto. Arquivo: `documentacao/Lootprice2-2.pdf`.
+
+- 2026-11-20: regra para visitantes: na página do jogo, quem não está logado vê os preços borrados (valores falsos gerados no servidor, sem links de compra) com botão "Entrar" e link "Criar conta"; após entrar/cadastrar volta para o jogo (`login.php?voltar=jogo.php?id=N`, guardado em `$_SESSION['voltar_para']`, só aceita esse formato). Arquivos: `jogo.php`, `login.php`.
+
+- 2026-11-20: lista de desejos do perfil mostra "Gratuito" (em vez de "A partir de Grátis") quando o menor preço é 0. Arquivo: `perfil.php`.
+
+- 2026-11-20: capas da lista de desejos no perfil passaram de 16:9 (cortava muito) para 3:4 (72px de largura), próximo da proporção real das capas. Arquivo: `css_index/perfil.css`.
+
+- 2026-11-20: box do perfil alargada (`.perfil-wrap` com `width:100%` e máx. 1040px; antes encolhia ao conteúdo, ~420px). Arquivo: `css_index/perfil.css`.
+
+- 2026-11-20: lista de desejos do perfil agora é uma lista (linhas com capa pequena, nome, menor preço e botão "Remover") em vez de cards em grade. Arquivos: `perfil.php`, `css_index/perfil.css`.
+
+- 2026-11-20: mensagens flash (login, perfil atualizado etc.) viraram um toast fixo no topo que some sozinho após 1,5 s, com barra de tempo diminuindo. Arquivo: `includes/header.php`.
+
+- 2026-11-20: edição de perfil em blocos "Informações públicas" (nome de exibição, username, fotos) e "Informações pessoais" (sexo, data de nascimento, telefone, e-mail), todos editáveis e salvos no banco; novo bloco "Alterar senha" (senha atual + nova + confirmação; `password_hash`, mín. 6 caracteres; POST com `acao=senha`). Sem CPF. Novas colunas `usuarios.data_nascimento` e `usuarios.telefone` (aplicadas no banco local e em `database/schema.sql`). Arquivos: `perfil.php`, `css_index/perfil.css`, `database/schema.sql`.
+
+- 2026-11-20: botão da lista de desejos na página do jogo movido para a direita da linha do título. Arquivo: `css_index/perfil.css`.
+- 2026-11-20: lista de desejos: botão "Adicionar à lista de desejos" na página do jogo (deslogado leva ao login) e aba "Lista de desejos" no perfil com os jogos salvos e opção de remover. Nova tabela `lista_desejos`. Arquivos: `desejos.php`, `includes/desejos.php`, `includes/functions.php`, `jogo.php`, `perfil.php`, `css_index/perfil.css`, `database/schema.sql`.
+- 2026-11-20: editor de recorte no perfil (arrastar + zoom; foto de perfil em quadro redondo, fundo em faixa 3,5:1; recorte feito no navegador e enviado já cortado) e correção do botão "Alterar fundo", que estava coberto pela faixa do avatar. Arquivos: `perfil.php`, `css_index/perfil.css`.
+- 2026-11-20: removido o círculo roxo vazio ao lado do avatar no header (restos de `.user-greet::before` em `css_index/lootprice.css`).
+- 2026-11-20: e-mail não aparece mais na tela do perfil (só no formulário de edição); aviso claro quando o username já está em uso. Arquivo: `perfil.php`.
+- 2026-11-20: perfil maior (capa 280px, avatar 160px) e edição de e-mail com confirmação da senha atual. Arquivos: `perfil.php`, `css_index/perfil.css`.
+- 2026-11-20: sistema de perfil de usuário: nova página `perfil.php` (abre só para visualizar; ícone "Editar perfil" libera a edição; foto de perfil, imagem de fundo, nome e username editáveis; avatar com inicial do nome quando não há foto), avatar clicável no header levando ao perfil, item "Meu perfil" no menu lateral. Novas colunas `usuarios.foto_perfil`/`foto_fundo` (já aplicadas no banco local e em `database/schema.sql`). Arquivos: `perfil.php`, `css_index/perfil.css`, `includes/auth.php` (`avatarHtml`), `includes/header.php`, `login.php`, `fotos/perfis/`.
+
+- 2026-11-20: nova documentação `documentacao/Lootprice2-1.pdf` (24 páginas, escrita em primeira pessoa de estudante): introdução, objetivos, 25 regras de negócio, 21 requisitos funcionais, casos de uso, 2 diagramas de classes, MER, DER, modelo lógico e 11 prints das telas. Gerada fora do projeto (script em pasta temporária). Arquivo: `documentacao/Lootprice2-1.pdf`.
+- 2026-11-16: footer da página do jogo (claro e escuro) agora encosta no fim da página e vai de ponta a ponta: removido o padding-bottom do `body` e o padding lateral é anulado no footer (sem vão). Arquivo: `sites/jogos/css_jogos/jogos.css`.
 - 2026-11-16: auditoria dos links de compra (57 verificados, 0 com problema; Epic não verificável). Corrigido no robô: comparação de nomes agora só aceita título idêntico ou mesma edição (antes confundia Risk of Rain/2 e Rainbow Six Siege/Vegas); Nuuvem só aceita link `/item/` cuja lista de plataformas inclui Windows/PC (nunca PS/Xbox/Switch puro); nova opção `php robo\coletar.php --sem-novos` (só preços, sem cadastrar jogos). Dados de GOG/Nuuvem/Xbox recoletados. Arquivos: `includes/coletor.php`, `robo/coletar.php`.
 - 2026-11-16: selo "⭐ Menor Preço" da página do jogo some quando 2+ lojas empatam no menor preço (inclui jogo grátis em várias lojas). Arquivo: `jogo.php`.
 - 2026-11-16: robô de preços em PHP (substitui a simulação aleatória de `admin/atualizar_precos.php`). Lê preços reais em BRL de Steam (API da loja), GOG (catálogo), Xbox (DisplayCatalog), Nuuvem (HTML da busca); Epic bloqueada pelo Cloudflare (mantém último preço). Casa o jogo em cada loja pelo nome (`lp_melhor`, prefere título exato à edição), ignora preço R$ 0 quando a Steam cobra. Cadastra até 8 jogos populares novos por execução (capa baixada em `fotos/jogos/steam_ID.jpg`). Nova tabela `jogo_loja_ref`. Agendado todo dia às 14:00 (tarefa do Windows). Arquivos: `includes/coletor.php`, `robo/coletar.php`, `robo/agendar_14h.ps1`, `admin/atualizar_precos.php`, `database/schema.sql`.

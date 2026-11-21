@@ -1,17 +1,17 @@
-# Graph Report - LootPrice-main  (2026-11-16)
+# Graph Report - LootPrice-main  (2026-11-20)
 
 ## Corpus Check
-- 38 files · ~24,752 words
+- 41 files · ~28,595 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 13 file(s) not represented in the graph (top: .css 9, (none) 2, .lock 1)
+- Unclassified: 15 file(s) not represented in the graph (top: .css 10, (none) 3, .lock 1)
 
 ## Summary
-- 265 nodes · 366 edges · 39 communities (17 shown, 22 thin omitted)
-- Extraction: 86% EXTRACTED · 14% INFERRED · 0% AMBIGUOUS · INFERRED: 50 edges (avg confidence: 0.84)
+- 282 nodes · 402 edges · 41 communities (18 shown, 23 thin omitted)
+- Extraction: 84% EXTRACTED · 16% INFERRED · 0% AMBIGUOUS · INFERRED: 63 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `78d50b2a`
+- Built from commit: `09fe79df`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -36,30 +36,31 @@
 - Search feature
 - Light theme
 - coletor.php
-- renderGameRowCard
+- recomendacoes.php
+- perfil.php
 
 ## God Nodes (most connected - your core abstractions)
 1. `LootPrice project` - 24 edges
-2. `getDB()` - 19 edges
+2. `getDB()` - 23 edges
 3. `lp_descobrir_populares()` - 12 edges
 4. `Catalogo de jogos` - 11 edges
 5. `LootPrice Home` - 11 edges
-6. `Game cover art` - 10 edges
-7. `lp_json()` - 8 edges
-8. `lp_norm()` - 8 edges
-9. `lp_melhor()` - 8 edges
-10. `lp_coletar()` - 8 edges
+6. `Estrutura do projeto` - 10 edges
+7. `Game cover art` - 10 edges
+8. `lp_coletar()` - 8 edges
+9. `lp_json()` - 8 edges
+10. `lp_melhor()` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Estrutura do projeto` --references--> `avatarHtml()`  [INFERRED]
+  CLAUDE.md → includes/auth.php
+- `Convenções` --references--> `getDB()`  [INFERRED]
+  CLAUDE.md → config/db.php
 - `Registro de alterações` --references--> `lp_melhor()`  [INFERRED]
   CLAUDE.md → includes/coletor.php
 - `Estrutura do projeto` --references--> `getDB()`  [INFERRED]
   CLAUDE.md → config/db.php
-- `Convenções` --references--> `getDB()`  [INFERRED]
-  CLAUDE.md → config/db.php
 - `Estrutura do projeto` --references--> `renderGameRowCard()`  [INFERRED]
-  CLAUDE.md → includes/components.php
-- `Estrutura do projeto` --references--> `renderPosterCard()`  [INFERRED]
   CLAUDE.md → includes/components.php
 
 ## Import Cycles
@@ -74,23 +75,23 @@
 - **Price comparison flow** — documentacao_lootprice2_rf04, documentacao_lootprice2_rf05, documentacao_lootprice2_rf06, documentacao_lootprice2_rf09 [INFERRED 0.85]
 - **Game cover gallery** — fotos_jogos_apex, fotos_jogos_dbd, fotos_jogos_ds, fotos_jogos_ds3, fotos_jogos_er, fotos_jogos_r6, fotos_jogos_ror2, fotos_jogos_sot, fotos_jogos_warframe, fotos_jogos_witcher [INFERRED 0.85]
 
-## Communities (39 total, 22 thin omitted)
+## Communities (41 total, 23 thin omitted)
 
 ### Community 0 - "LootPrice project"
 Cohesion: 0.08
 Nodes (27): Actor: savings-seeking consumer, Actor: content creators and streamers, Actor: Game Pass-checking consumer, Class diagram, DER (entity-relationship diagram), External price APIs, Game search/catalog page, Xbox Game Pass subscription (+19 more)
 
 ### Community 1 - "getDB"
-Cohesion: 0.11
-Nodes (22): getDB(), currentUser(), getAllCategories(), getAllPlatforms(), getAllStores(), getAllSubscriptions(), getDefaultMockGames(), getGameById() (+14 more)
+Cohesion: 0.12
+Nodes (24): Estrutura do projeto, getDB(), renderGameRowCard(), renderPosterCard(), countWishlist(), ensureDesejosTable(), getWishlistGames(), isInWishlist() (+16 more)
 
 ### Community 2 - "Catalogo de jogos"
 Cohesion: 0.09
 Nodes (22): Catalogo de jogos, Hero O melhor preco, jogo.php?id=1 (Death Stranding), jogo.php?id=10 (Dark Souls 3), jogo.php?id=2 (Rainbow Six Siege), jogo.php?id=3 (Apex Legends), jogo.php?id=4 (Dead by Daylight), jogo.php?id=5 (Elden Ring) (+14 more)
 
 ### Community 3 - "LootPrice Home"
-Cohesion: 0.12
-Nodes (18): Area de autenticacao, Barra de pesquisa, Filtro de categorias, Navbar, LootPrice Home, js_index scripts (pesquisa, darkmode, menulateral, auth), Sidebar menu, Alternar tema (+10 more)
+Cohesion: 0.10
+Nodes (19): Area de autenticacao, Barra de pesquisa, Filtro de categorias, Navbar, LootPrice Home, js_index scripts (pesquisa, darkmode, menulateral, auth), Sidebar menu, Alternar tema (+11 more)
 
 ### Community 4 - "Ator: Administrador"
 Cohesion: 0.16
@@ -105,8 +106,8 @@ Cohesion: 0.18
 Nodes (11): Game cover art, Apex Legends game cover, Dead by Daylight game cover, Death Stranding game cover, Dark Souls III game cover, Elden Ring game cover, Rainbow Six Siege game cover, Risk of Rain 2 game cover (+3 more)
 
 ### Community 7 - "auth.php"
-Cohesion: 0.19
-Nodes (10): 1. Antes de responder ou alterar: consultar o Graphify, 2. Depois de qualquer alteração no código: atualizar Graphify e este arquivo, Convenções, LootPrice, Registro de alterações, Regras de trabalho (obrigatórias), isAdmin(), isLoggedIn() (+2 more)
+Cohesion: 0.18
+Nodes (11): 1. Antes de responder ou alterar: consultar o Graphify, 2. Depois de qualquer alteração no código: atualizar Graphify e este arquivo, Convenções, LootPrice, Registro de alterações, Regras de trabalho (obrigatórias), avatarHtml(), isAdmin() (+3 more)
 
 ### Community 8 - "admin.js"
 Cohesion: 0.68
@@ -140,9 +141,13 @@ Nodes (3): Metacritic, Metacritic logo on black, Metacritic logo (white text, tr
 Cohesion: 0.20
 Nodes (26): lp_baixar_capa(), lp_categoria_id(), lp_categorias_do_jogo(), lp_coletar(), lp_core(), lp_data_lancamento(), lp_descobrir_populares(), lp_executar() (+18 more)
 
-### Community 36 - "renderGameRowCard"
+### Community 36 - "recomendacoes.php"
 Cohesion: 0.23
-Nodes (8): Estrutura do projeto, renderGameRowCard(), renderPosterCard(), formatPrice(), getMetacriticColor(), sanitize(), {closure#1}(), {closure#1}()
+Nodes (10): currentUser(), attachBestOffer(), {closure#1}(), ensureAcessosTable(), gameCategoryList(), getDiscountedGames(), getPopularGameCounts(), getRecommendedGames() (+2 more)
+
+### Community 39 - "perfil.php"
+Cohesion: 0.36
+Nodes (4): abrir(), aplicarZoom(), desenhar(), limitar()
 
 ## Ambiguous Edges - Review These
 - `Fluxo: Cadastro do usuario` → `Passo: Sinopse do jogo`  [AMBIGUOUS]
@@ -150,24 +155,24 @@ Nodes (8): Estrutura do projeto, renderGameRowCard(), renderPosterCard(), format
 
 ## Knowledge Gaps
 - **60 isolated node(s):** `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer`, `Metacritic rating`, `Problem: scattered game price/rating info` (+55 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 107 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 112 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `sanitize()` connect `renderGameRowCard` to `getDB`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
-- **Are the 17 inferred relationships involving `getDB()` (e.g. with `Convenções` and `Estrutura do projeto`) actually correct?**
-  _`getDB()` has 17 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `sanitize()` connect `getDB` to `LootPrice Home`?**
+  _High betweenness centrality (0.108) - this node is a cross-community bridge._
+- **Are the 21 inferred relationships involving `getDB()` (e.g. with `Convenções` and `Estrutura do projeto`) actually correct?**
+  _`getDB()` has 21 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer` to the rest of the system?**
   _60 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `LootPrice project` be split into smaller, more focused modules?**
   _Cohesion score 0.08262108262108261 - nodes in this community are weakly interconnected._
-- **Why does `getDB()` connect `getDB` to `coletor.php`, `renderGameRowCard`, `auth.php`?**
-  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `{closure#1}()` connect `LootPrice Home` to `getDB`?**
+  _High betweenness centrality (0.102) - this node is a cross-community bridge._
 - **Should `getDB` be split into smaller, more focused modules?**
-  _Cohesion score 0.11491935483870967 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.125 - nodes in this community are weakly interconnected._
 
 ### Low-confidence Hints
 _AMBIGUOUS edges — the extractor was unsure. Verify before acting on these._

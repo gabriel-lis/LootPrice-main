@@ -48,9 +48,9 @@
     "semantic_hash": ""
   },
   "includes/auth.php": {
-    "mtime": 1794589204.4930346,
-    "seen": 1794798930.0489955,
-    "ast_hash": "ac2db9a0e9ca690086d881b11b890e5b",
+    "mtime": 1795211158.5172324,
+    "seen": 1795211208.580672,
+    "ast_hash": "fbcb3c072f1c7fcf5a5295eb5efabcb7",
     "semantic_hash": ""
   },
   "includes/footer.php": {
@@ -60,15 +60,15 @@
     "semantic_hash": ""
   },
   "includes/functions.php": {
-    "mtime": 1794800773.2062013,
-    "seen": 1794800819.6363797,
-    "ast_hash": "432fd462a3df0a5f872c39c8b43ff983",
+    "mtime": 1795217404.5491354,
+    "seen": 1795217445.0888472,
+    "ast_hash": "155b3fca5fe2ed00e59e427754ce4e05",
     "semantic_hash": ""
   },
   "includes/header.php": {
-    "mtime": 1794802361.170176,
-    "seen": 1794802362.572693,
-    "ast_hash": "ff34839560829c1890ac67c28624a77e",
+    "mtime": 1795219652.231963,
+    "seen": 1795220726.859867,
+    "ast_hash": "a0379b727061bb239c27c126e309aa57",
     "semantic_hash": ""
   },
   "index.php": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "jogo.php": {
-    "mtime": 1794804913.5849578,
-    "seen": 1794804926.300069,
-    "ast_hash": "a91d2fb7abda4823dae5b68f19a38e0c",
+    "mtime": 1795224710.5994031,
+    "seen": 1795224720.3298972,
+    "ast_hash": "4f3fc5554291b852584164b716f26aa1",
     "semantic_hash": ""
   },
   "js_index/auth.js": {
@@ -108,9 +108,9 @@
     "semantic_hash": ""
   },
   "login.php": {
-    "mtime": 1794801330.8580637,
-    "seen": 1794801342.4924772,
-    "ast_hash": "793e7cb748f4aad138319c5f8b84abca",
+    "mtime": 1795224710.5979035,
+    "seen": 1795224720.3311546,
+    "ast_hash": "1ecef6479e042dd574614dc0a2cfda7a",
     "semantic_hash": ""
   },
   "logout.php": {
@@ -162,9 +162,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1794805564.2040334,
-    "seen": 1794805568.7095327,
-    "ast_hash": "2614043f37d7eccb2053d0f84443d65d",
+    "mtime": 1795226327.1379244,
+    "seen": 1795226340.5647058,
+    "ast_hash": "62e35af12542bcf1090e36aef1b45c96",
     "semantic_hash": ""
   },
   "README.md": {
@@ -486,9 +486,9 @@
     "semantic_hash": ""
   },
   "robo/logs/ultima_execucao.json": {
-    "mtime": 1794805508.4431345,
-    "seen": 1794805568.7087536,
-    "ast_hash": "a64b06d91a2fafc557f716a1ad5df79d",
+    "mtime": 1795207845.1782353,
+    "seen": 1795208559.0242605,
+    "ast_hash": "27617b46dfa765729fa0d50d0d91d594",
     "semantic_hash": ""
   },
   "fotos/jogos/steam_10.jpg": {
@@ -585,6 +585,48 @@
     "mtime": 1794804291.0713897,
     "seen": 1794804577.0388353,
     "ast_hash": "e433e89dd9d0083bd3199efa7f3f0754",
+    "semantic_hash": ""
+  },
+  "documentacao/Lootprice2-1.pdf": {
+    "mtime": 1795208542.3919327,
+    "seen": 1795208559.026313,
+    "ast_hash": "3a8a86009b422ddd62a318e33b95f36e",
+    "semantic_hash": ""
+  },
+  "perfil.php": {
+    "mtime": 1795222155.0101771,
+    "seen": 1795224720.3313935,
+    "ast_hash": "dbc560e22e15908ec85ee23d16c73e26",
+    "semantic_hash": ""
+  },
+  "desejos.php": {
+    "mtime": 1795217404.523494,
+    "seen": 1795217445.0885403,
+    "ast_hash": "9fe8478e3f10d9ccabb82ded0e29b361",
+    "semantic_hash": ""
+  },
+  "includes/desejos.php": {
+    "mtime": 1795217404.502869,
+    "seen": 1795217445.088772,
+    "ast_hash": "7ae181349c083c0900232f3f9675406a",
+    "semantic_hash": ""
+  },
+  "fotos/perfis/u4_fundo_3a9a53def93f.webp": {
+    "mtime": 1795216535.5639982,
+    "seen": 1795217445.0960197,
+    "ast_hash": "39bbaea29c55af0e0ce91db3182f4d76",
+    "semantic_hash": ""
+  },
+  "fotos/perfis/u4_perfil_d916661ce9be.png": {
+    "mtime": 1795216535.5659988,
+    "seen": 1795217445.0960214,
+    "ast_hash": "dc822f9a9ab3e7bf82ada00ef0f72b9b",
+    "semantic_hash": ""
+  },
+  "documentacao/Lootprice2-2.pdf": {
+    "mtime": 1795226325.8354292,
+    "seen": 1795226340.566751,
+    "ast_hash": "74149bfef99ad52844dcffe1f37e401c",
     "semantic_hash": ""
   }
 }
