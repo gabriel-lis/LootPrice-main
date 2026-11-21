@@ -170,7 +170,9 @@ require_once __DIR__ . '/includes/header.php';
         $naLista = $logado && isInWishlist((int)currentUser()['id_usuario'], $idJogo);
         $iconeCoracao = '<svg viewBox="0 0 24 24" width="18" height="18" fill="' . ($naLista ? 'currentColor' : 'none') . '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
       ?>
-      <?php if ($logado): ?>
+      <?php if ($logado && !isEmailVerified()): ?>
+        <a href="verificar_email.php" class="btn-desejo" title="Confirme seu e-mail para usar a lista de desejos"><?= $iconeCoracao ?> Confirmar e-mail para usar a lista de desejos</a>
+      <?php elseif ($logado): ?>
         <form method="POST" action="desejos.php" class="desejo-form">
           <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
           <input type="hidden" name="acao" value="<?= $naLista ? 'remover' : 'adicionar' ?>">

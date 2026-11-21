@@ -1,0 +1,13 @@
+# Segredos (senha do e-mail etc.)
+config/mail.php
+
+# Gerados em execução
+robo/logs/
+fotos/perfis/*
+!fotos/perfis/.htaccess
+logs/*
+!logs/.htaccess
+
+# Repositório aninhado e dependências
+LootPrice-2/
+vendor/

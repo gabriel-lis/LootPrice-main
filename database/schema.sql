@@ -10,6 +10,8 @@ USE `lootprice`;
 -- Desativa checagem de chaves estrangeiras temporariamente para recriação limpa
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `avisos_preco`;
+DROP TABLE IF EXISTS `verificacoes_email`;
 DROP TABLE IF EXISTS `lista_desejos`;
 DROP TABLE IF EXISTS `acessos_jogos`;
 DROP TABLE IF EXISTS `jogo_loja_ref`;
@@ -39,6 +41,8 @@ CREATE TABLE `usuarios` (
   `foto_perfil` VARCHAR(255) NULL,
   `foto_fundo` VARCHAR(255) NULL,
   `email` VARCHAR(100) NOT NULL UNIQUE,
+  `email_verificado` TINYINT(1) NOT NULL DEFAULT 0,
+  `alertas_email` TINYINT(1) NOT NULL DEFAULT 1,
   `senha` VARCHAR(255) NOT NULL,
   `tipo_usuario` ENUM('visitante', 'usuario', 'administrador') NOT NULL DEFAULT 'usuario',
   `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -183,14 +187,41 @@ CREATE TABLE `jogo_loja_ref` (
   CONSTRAINT `fk_ref_loja` FOREIGN KEY (`id_loja`) REFERENCES `lojas` (`id_loja`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 11. Tabela: verificacoes_email (código de 6 dígitos para confirmar o e-mail)
+-- ---------------------------------------------------------------------
+CREATE TABLE `verificacoes_email` (
+  `id_usuario` INT NOT NULL,
+  `tipo` VARCHAR(20) NOT NULL DEFAULT 'cadastro',
+  `codigo_hash` VARCHAR(255) NOT NULL,
+  `expira_em` DATETIME NOT NULL,
+  `tentativas` TINYINT NOT NULL DEFAULT 0,
+  `enviado_em` DATETIME NOT NULL,
+  PRIMARY KEY (`id_usuario`, `tipo`),
+  CONSTRAINT `fk_verif_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 12. Tabela: avisos_preco (último preço avisado por e-mail; evita avisar o mesmo desconto duas vezes)
+-- ---------------------------------------------------------------------
+CREATE TABLE `avisos_preco` (
+  `id_usuario` INT NOT NULL,
+  `id_jogo` INT NOT NULL,
+  `preco_avisado` DECIMAL(10,2) NOT NULL,
+  `avisado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_usuario`, `id_jogo`),
+  CONSTRAINT `fk_aviso_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
+  CONSTRAINT `fk_aviso_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- =====================================================================
 -- DADOS INICIAIS (SEEDS)
 -- =====================================================================
 
 -- Usuários iniciais (senha de ambos é 'admin123' e 'gamer123')
-INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `senha`, `tipo_usuario`) VALUES
-(1, 'Administrador LootPrice', 'admin@lootprice.com', '$2y$10$QPW/wzQpae4AzIB0Y7dUeetRVlh/JmBDlJt2GcrKbIawa9CqZGukW', 'administrador'),
-(2, 'Jogador Padrão', 'gamer@lootprice.com', '$2y$10$BU7m9H/xEL/rwXvXfYNH5.ko1cHeAvuGeB3NfDLtk5KUOrl4WucHK', 'usuario');
+INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `email_verificado`, `senha`, `tipo_usuario`) VALUES
+(1, 'Administrador LootPrice', 'admin@lootprice.com', 1, '$2y$10$QPW/wzQpae4AzIB0Y7dUeetRVlh/JmBDlJt2GcrKbIawa9CqZGukW', 'administrador'),
+(2, 'Jogador Padrão', 'gamer@lootprice.com', 1, '$2y$10$BU7m9H/xEL/rwXvXfYNH5.ko1cHeAvuGeB3NfDLtk5KUOrl4WucHK', 'usuario');
 
 -- Categorias
 INSERT INTO `categorias` (`id_categoria`, `nome`) VALUES

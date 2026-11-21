@@ -13,6 +13,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || $idJogo <= 0) {
 }
 requireLogin('login.php');
 
+// A lista de desejos (e os avisos de preço) só funcionam com o e-mail confirmado
+if (!isEmailVerified()) {
+    setFlash('error', 'Confirme seu e-mail para usar a lista de desejos.');
+    header('Location: verificar_email.php');
+    exit;
+}
+
 if (!getGameById($idJogo)) {
     setFlash('error', 'Jogo não encontrado no catálogo.');
     header('Location: index.php');

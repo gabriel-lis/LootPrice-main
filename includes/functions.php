@@ -8,6 +8,8 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/recomendacoes.php';
 require_once __DIR__ . '/desejos.php';
+require_once __DIR__ . '/verificacao.php';
+require_once __DIR__ . '/avisos.php';
 require_once __DIR__ . '/components.php';
 
 /**

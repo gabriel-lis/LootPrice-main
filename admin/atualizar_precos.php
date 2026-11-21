@@ -66,6 +66,9 @@ $caixa = 'background: var(--surface); border: 1px solid var(--border); border-ra
         · <?= (int)($resumo['jogos'] ?? 0) ?> jogos
         · <strong><?= (int)($resumo['atualizados'] ?? 0) ?></strong> preços atualizados
         · <?= count($resumo['novos'] ?? []) ?> jogos novos
+        <?php if (isset($resumo['avisos'])): ?>
+          · <?= (int)$resumo['avisos']['enviados'] ?> e-mails de promoção enviados<?= !empty($resumo['avisos']['falhas']) ? ' (' . (int)$resumo['avisos']['falhas'] . ' falharam)' : '' ?>
+        <?php endif; ?>
       </p>
       <?php if (!empty($resumo['erro'])): ?>
         <p style="color: var(--text);"><strong>Erro:</strong> <?= sanitize($resumo['erro']) ?></p>

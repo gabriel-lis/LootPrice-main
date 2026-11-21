@@ -9,6 +9,8 @@ require_once __DIR__ . '/includes/functions.php';
 requireLogin('login.php');
 
 $pdo = getDB();
+ensureVerificacaoSchema($pdo); // coluna email_verificado
+ensureAvisosSchema($pdo);      // coluna alertas_email
 $sessao = currentUser();
 $id = (int)($sessao['id_usuario'] ?? 0);
 
@@ -47,11 +49,27 @@ $erroSenha = null;
 $sexosValidos = ['masculino', 'feminino', 'nao_informado'];
 $metodoPost = ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST';
 
-if ($metodoPost && ($_POST['acao'] ?? '') === 'senha') {
+$avisoSenha = null;
+// Com o e-mail confirmado, trocar a senha exige também um código enviado por e-mail
+$exigeCodigoSenha = (int)($u['email_verificado'] ?? 1) === 1;
+
+if ($metodoPost && !csrfValido()) {
+    setFlash('error', 'Sessão expirada. Tente de novo.');
+    header('Location: perfil.php');
+    exit;
+}
+
+if ($metodoPost && ($_POST['acao'] ?? '') === 'senha_codigo') {
+    // ---- Pedir o código de confirmação da troca de senha ----
+    [$ok, $msg] = enviarCodigoVerificacao($pdo, $id, 'senha_alterar');
+    if ($ok) $avisoSenha = 'Enviamos um código para ' . mascararEmail($u['email']) . '. Digite-o abaixo junto com a nova senha.';
+    else $erroSenha = $msg;
+} elseif ($metodoPost && ($_POST['acao'] ?? '') === 'senha') {
     // ---- Alterar senha (a senha é guardada só como hash) ----
     $atual = $_POST['senha_atual'] ?? '';
     $nova  = $_POST['nova_senha'] ?? '';
     $conf  = $_POST['confirma_senha'] ?? '';
+    $codigoSenha = trim($_POST['codigo_senha'] ?? '');
     if ($atual === '' || $nova === '' || $conf === '') {
         $erroSenha = 'Preencha a senha atual, a nova senha e a confirmação.';
     } elseif (!password_verify($atual, $u['senha'])) {
@@ -62,9 +80,14 @@ if ($metodoPost && ($_POST['acao'] ?? '') === 'senha') {
         $erroSenha = 'A confirmação não é igual à nova senha.';
     } elseif (password_verify($nova, $u['senha'])) {
         $erroSenha = 'A nova senha precisa ser diferente da atual.';
+    } elseif ($exigeCodigoSenha && $codigoSenha === '') {
+        $erroSenha = 'Peça o código por e-mail e digite-o para confirmar a troca.';
+    } elseif ($exigeCodigoSenha && !(($r = confirmarCodigoVerificacao($pdo, $id, $codigoSenha, 'senha_alterar'))[0])) {
+        $erroSenha = $r[1];
     } else {
         $pdo->prepare("UPDATE usuarios SET senha = :s WHERE id_usuario = :id")
             ->execute(['s' => password_hash($nova, PASSWORD_DEFAULT), 'id' => $id]);
+        enviarAvisoSenhaAlterada($u['email'], $u['nome']);
         $stmt->execute(['id' => $id]);
         loginUser($stmt->fetch());
         setFlash('success', 'Senha alterada com sucesso!');
@@ -147,11 +170,22 @@ if ($metodoPost && ($_POST['acao'] ?? '') === 'senha') {
         if ($novoFundo) { lp_apagar_imagem($fundo); $fundo = $novoFundo; }
         elseif (!empty($_POST['remover_fundo'])) { lp_apagar_imagem($fundo); $fundo = null; }
 
-        $up = $pdo->prepare("UPDATE usuarios SET nome = :n, username = :u, sexo = :sx, data_nascimento = :dn, telefone = :tel, email = :em, foto_perfil = :fp, foto_fundo = :ff WHERE id_usuario = :id");
-        $up->execute(['n' => $nome, 'u' => $username, 'sx' => $sexo, 'dn' => $nascimento, 'tel' => $telefone, 'em' => $emailNovo, 'fp' => $foto, 'ff' => $fundo, 'id' => $id]);
+        // Trocar o e-mail exige confirmar o novo endereço por código
+        $emailMudou = strcasecmp($emailNovo, $u['email']) !== 0;
+        $verificado = $emailMudou ? 0 : (int)($u['email_verificado'] ?? 1);
+
+        $up = $pdo->prepare("UPDATE usuarios SET nome = :n, username = :u, sexo = :sx, data_nascimento = :dn, telefone = :tel, email = :em, email_verificado = :ev, alertas_email = :al, foto_perfil = :fp, foto_fundo = :ff WHERE id_usuario = :id");
+        $up->execute(['n' => $nome, 'u' => $username, 'sx' => $sexo, 'dn' => $nascimento, 'tel' => $telefone, 'em' => $emailNovo, 'ev' => $verificado, 'al' => !empty($_POST['alertas_email']) ? 1 : 0, 'fp' => $foto, 'ff' => $fundo, 'id' => $id]);
 
         $stmt->execute(['id' => $id]);
         loginUser($stmt->fetch());
+        if ($emailMudou) {
+            [$enviou] = enviarCodigoVerificacao($pdo, $id);
+            setFlash($enviou ? 'success' : 'info', $enviou ? 'Perfil atualizado! Enviamos um código para confirmar o novo e-mail.'
+                                                          : 'Perfil atualizado! Peça o código para confirmar o novo e-mail.');
+            header('Location: verificar_email.php');
+            exit;
+        }
         setFlash('success', 'Perfil atualizado!');
         header('Location: perfil.php');
         exit;
@@ -162,6 +196,7 @@ if ($metodoPost && ($_POST['acao'] ?? '') === 'senha') {
     $u['sexo'] = $sexo;
     $u['data_nascimento'] = $nascForm;
     $u['telefone'] = $telForm;
+    $u['alertas_email'] = !empty($_POST['alertas_email']) ? 1 : 0;
     $emailDigitado = $emailForm;
 }
 $emailDigitado = $emailDigitado ?? $u['email'];
@@ -183,6 +218,7 @@ $fundoUrl = $fundoOk ? sanitize($u['foto_fundo']) . '?v=' . filemtime(__DIR__ . 
   <?php endif; ?>
 
   <form method="POST" enctype="multipart/form-data" class="perfil-card<?= ($erro || $erroSenha) ? ' is-editing' : '' ?><?= $aba === 'desejos' ? ' is-desejos' : '' ?>" id="perfilForm">
+    <?= csrfField() ?>
     <div class="perfil-banner" id="banner" <?= $fundoOk ? 'style="background-image:url(\'' . $fundoUrl . '\')"' : '' ?>>
       <label class="perfil-edit perfil-edit-banner" title="Alterar imagem de fundo">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -259,12 +295,24 @@ $fundoUrl = $fundoOk ? sanitize($u['foto_fundo']) . '?v=' . filemtime(__DIR__ . 
         <div class="perfil-campo">
           <label for="email">E-mail</label>
           <input type="email" id="email" name="email" maxlength="100" value="<?= sanitize($emailDigitado) ?>" required autocomplete="email">
+          <?php if ((int)($u['email_verificado'] ?? 1) !== 1): ?>
+            <small>E-mail ainda não confirmado. <a href="verificar_email.php" style="color: var(--accent-text);">Confirmar agora</a></small>
+          <?php endif; ?>
         </div>
         <div class="perfil-campo" id="campoSenha" hidden>
           <label for="senha_atual">Senha atual</label>
           <input type="password" id="senha_atual" name="senha_atual" autocomplete="current-password" placeholder="Confirme sua senha para trocar o e-mail">
           <small>Necessária apenas quando você muda o e-mail.</small>
         </div>
+      </section>
+
+      <section class="perfil-bloco">
+        <h2>Avisos por e-mail</h2>
+        <p class="perfil-bloco-sub">Só enviamos para e-mails confirmados.</p>
+        <label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer; color: var(--text-color);">
+          <input type="checkbox" name="alertas_email" value="1" style="margin-top: 4px;" <?= (int)($u['alertas_email'] ?? 1) === 1 ? 'checked' : '' ?>>
+          <span>Avisar quando um jogo da minha lista de desejos entrar em promoção</span>
+        </label>
       </section>
 
       <div class="perfil-acoes">
@@ -275,13 +323,16 @@ $fundoUrl = $fundoOk ? sanitize($u['foto_fundo']) . '?v=' . filemtime(__DIR__ . 
   </form>
 
   <form method="POST" class="perfil-senha-card" id="senhaForm" autocomplete="off">
+    <?= csrfField() ?>
     <input type="hidden" name="acao" value="senha">
     <section class="perfil-bloco">
       <h2>Alterar senha</h2>
-      <p class="perfil-bloco-sub">Sua senha é guardada criptografada (hash); ninguém consegue vê-la.</p>
-      <button type="button" class="perfil-btn-senha" id="btnSenha" aria-expanded="<?= $erroSenha ? 'true' : 'false' ?>">Alterar senha</button>
-      <div class="perfil-senha-campos" id="senhaCampos" <?= $erroSenha ? '' : 'hidden' ?>>
+      <p class="perfil-bloco-sub">Sua senha é guardada criptografada (hash); ninguém consegue vê-la.<?= $exigeCodigoSenha ? ' Para sua segurança, a troca é confirmada com um código enviado ao seu e-mail.' : '' ?></p>
+      <?php $senhaAberta = ($erroSenha || $avisoSenha); ?>
+      <button type="button" class="perfil-btn-senha" id="btnSenha" aria-expanded="<?= $senhaAberta ? 'true' : 'false' ?>">Alterar senha</button>
+      <div class="perfil-senha-campos" id="senhaCampos" <?= $senhaAberta ? '' : 'hidden' ?>>
         <?php if ($erroSenha): ?><div class="flash-alert flash-error" role="alert"><span><?= sanitize($erroSenha) ?></span></div><?php endif; ?>
+        <?php if ($avisoSenha): ?><div class="flash-alert flash-info" role="status"><span><?= sanitize($avisoSenha) ?></span></div><?php endif; ?>
         <div class="perfil-campo">
           <label for="sa">Senha atual</label>
           <input type="password" id="sa" name="senha_atual" autocomplete="current-password" required>
@@ -296,9 +347,23 @@ $fundoUrl = $fundoOk ? sanitize($u['foto_fundo']) . '?v=' . filemtime(__DIR__ . 
             <input type="password" id="cs" name="confirma_senha" minlength="6" autocomplete="new-password" required>
           </div>
         </div>
+        <?php if ($exigeCodigoSenha): ?>
+        <div class="perfil-campo">
+          <label for="cod">Código recebido por e-mail</label>
+          <input type="text" id="cod" name="codigo_senha" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000">
+          <small>
+            <button type="submit" form="senhaCodigoForm" class="perfil-btn-senha" style="padding: 6px 14px; margin-top: 6px;">Enviar código para <?= sanitize(mascararEmail($u['email'])) ?></button>
+          </small>
+        </div>
+        <?php endif; ?>
         <div class="perfil-acoes"><button type="submit" class="perfil-salvar">Salvar nova senha</button></div>
       </div>
     </section>
+  </form>
+  <!-- Formulário do botão "Enviar código" (fica fora do outro para não exigir os campos de senha) -->
+  <form method="POST" id="senhaCodigoForm" hidden>
+    <?= csrfField() ?>
+    <input type="hidden" name="acao" value="senha_codigo">
   </form>
 
   <?php if ($aba === 'desejos'): ?>

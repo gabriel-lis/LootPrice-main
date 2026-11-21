@@ -28,6 +28,7 @@ $aba = (($_GET['aba'] ?? '') === 'cadastro') ? 'cadastro' : 'login';
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $acao = ($_POST['acao'] ?? '') === 'cadastro' ? 'cadastro' : 'login';
     $aba = $acao;
+    if ($pdoInicial = getDB()) ensureVerificacaoSchema($pdoInicial); // coluna email_verificado
 
     if ($acao === 'login') {
         $login = trim($_POST['login'] ?? '');
@@ -97,17 +98,23 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     ]);
 
                     if ($sucesso) {
+                        $novoId = (int)$pdo->lastInsertId();
                         loginUser([
-                            'id_usuario' => $pdo->lastInsertId(),
+                            'id_usuario' => $novoId,
                             'nome' => $nome,
                             'username' => $username,
                             'foto_perfil' => null,
                             'foto_fundo' => null,
                             'email' => $email,
+                            'email_verificado' => 0,
                             'tipo_usuario' => 'usuario'
                         ]);
-                        setFlash('success', 'Cadastro realizado com sucesso! Bem-vindo(a) ao LootPrice.');
-                        header('Location: ' . destinoPosLogin('index.php'));
+                        // Manda o código de confirmação; se o envio falhar, a tela de confirmação permite reenviar
+                        [$enviou] = enviarCodigoVerificacao($pdo, $novoId);
+                        setFlash($enviou ? 'success' : 'info',
+                            $enviou ? 'Conta criada! Enviamos um código para o seu e-mail.'
+                                    : 'Conta criada! Não conseguimos enviar o código agora; peça um novo na próxima tela.');
+                        header('Location: verificar_email.php'); // o "voltar_para" continua guardado na sessão
                         exit;
                     }
                     $erro = 'Ocorreu um erro ao cadastrar sua conta. Tente novamente.';
@@ -206,6 +213,7 @@ $v = fn(string $k) => isset($_POST[$k]) ? sanitize($_POST[$k]) : '';
         </div>
 
         <button type="submit" class="btn">Acessar</button>
+        <p class="auth-troca" style="margin-top: 10px;"><a href="esqueci_senha.php" style="color: var(--accent-text); font-weight: 600;">Esqueci minha senha</a></p>
       </form>
 
       <p class="auth-troca">Ainda não tem conta? <button type="button" data-ir="cadastro">Criar minha conta</button></p>

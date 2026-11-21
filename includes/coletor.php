@@ -630,6 +630,18 @@ function lp_executar(?callable $eco = null): array
             $resumo['erro'] = $e->getMessage();
             lp_log('ERRO: ' . $e->getMessage());
         }
+
+        // Preços novos gravados: avisa quem tem jogo em promoção na lista de desejos
+        if ($resumo['ok']) {
+            try {
+                require_once __DIR__ . '/avisos.php';
+                $av = lp_enviar_avisos_promocao($pdo);
+                $resumo['avisos'] = ['enviados' => $av['enviados'], 'falhas' => $av['falhas'], 'jogos' => $av['jogos']];
+                lp_log("Avisos de promoção: {$av['enviados']} e-mail(s) enviado(s), {$av['falhas']} falha(s).");
+            } catch (Throwable $e) {
+                lp_log('Falha nos avisos de promoção: ' . $e->getMessage());
+            }
+        }
         lp_log("Fim: {$resumo['atualizados']} preços atualizados, " . count($resumo['novos']) . ' jogos novos.');
     }
 

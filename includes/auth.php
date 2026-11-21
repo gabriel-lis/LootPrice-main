@@ -9,7 +9,36 @@ if (session_status() === PHP_SESSION_NONE) {
     if (empty($savePath) || !@is_writable($savePath)) {
         @session_save_path(sys_get_temp_dir());
     }
+    // Cookie de sessão: inacessível ao JavaScript e não enviado em requisições de outros sites
+    @session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
     @session_start();
+}
+
+/**
+ * Token anti-CSRF da sessão. Use csrfField() dentro dos formulários POST
+ * e csrfValido() no início do tratamento do POST.
+ */
+function csrfToken(): string {
+    if (empty($_SESSION['csrf'])) {
+        $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf'];
+}
+
+function csrfField(): string {
+    return '<input type="hidden" name="csrf" value="' . csrfToken() . '">';
+}
+
+function csrfValido(): bool {
+    $t = $_POST['csrf'] ?? '';
+    return is_string($t) && !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $t);
+}
+
+/**
+ * O e-mail da conta já foi confirmado? Sessões antigas (sem o campo) contam como confirmadas.
+ */
+function isEmailVerified(): bool {
+    return isLoggedIn() && (int)($_SESSION['usuario']['email_verificado'] ?? 1) === 1;
 }
 
 /**
@@ -66,6 +95,10 @@ function requireAdmin(string $redirectTo = '../login.php'): void {
  */
 function loginUser(array $user): void {
     unset($user['senha']);
+    // Novo id de sessão a cada login evita fixação de sessão
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        @session_regenerate_id(true);
+    }
     $_SESSION['usuario'] = $user;
 }
 
