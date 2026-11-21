@@ -35,7 +35,9 @@
   "33": "coletor.php",
   "34": "catalogo.php",
   "35": "descontos.php",
-  "36": "renderGameRowCard",
+  "36": "recomendacoes.php",
   "37": "coletar.php",
-  "38": "agendar_14h.ps1"
+  "38": "agendar_14h.ps1",
+  "39": "perfil.php",
+  "40": "desejos.php"
 }

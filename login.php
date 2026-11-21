@@ -11,6 +11,16 @@ if (isLoggedIn()) {
     exit;
 }
 
+// Volta para o jogo que o visitante estava vendo (só aceita jogo.php?id=N)
+if (isset($_GET['voltar']) && preg_match('/^jogo\.php\?id=\d+$/', $_GET['voltar'])) {
+    $_SESSION['voltar_para'] = $_GET['voltar'];
+}
+function destinoPosLogin(string $padrao): string {
+    $d = $_SESSION['voltar_para'] ?? null;
+    unset($_SESSION['voltar_para']);
+    return $d ?: $padrao;
+}
+
 $sexosValidos = ['masculino', 'feminino', 'nao_informado'];
 $erro = null;
 $aba = (($_GET['aba'] ?? '') === 'cadastro') ? 'cadastro' : 'login';
@@ -37,7 +47,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 if ($usuario && password_verify($senha, $usuario['senha'])) {
                     loginUser($usuario);
                     setFlash('success', 'Bem-vindo(a) de volta, ' . $usuario['nome'] . '!');
-                    header('Location: ' . ($usuario['tipo_usuario'] === 'administrador' ? 'admin/index.php' : 'index.php'));
+                    header('Location: ' . destinoPosLogin($usuario['tipo_usuario'] === 'administrador' ? 'admin/index.php' : 'index.php'));
                     exit;
                 }
                 $erro = 'E-mail/usuário ou senha incorretos.';
@@ -90,11 +100,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         loginUser([
                             'id_usuario' => $pdo->lastInsertId(),
                             'nome' => $nome,
+                            'username' => $username,
+                            'foto_perfil' => null,
+                            'foto_fundo' => null,
                             'email' => $email,
                             'tipo_usuario' => 'usuario'
                         ]);
                         setFlash('success', 'Cadastro realizado com sucesso! Bem-vindo(a) ao LootPrice.');
-                        header('Location: index.php');
+                        header('Location: ' . destinoPosLogin('index.php'));
                         exit;
                     }
                     $erro = 'Ocorreu um erro ao cadastrar sua conta. Tente novamente.';

@@ -1,0 +1,168 @@
+/* Perfil do usuário. Cores só via variáveis de theme.css */
+
+/* Avatar (usado no header e no perfil) */
+.avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--accent); color: #fff; font-weight: 800; line-height: 1; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-sm { width: 34px; height: 34px; font-size: 15px; }
+.avatar-xl { width: 160px; height: 160px; font-size: 68px; border: 4px solid var(--surface); box-sizing: border-box; }
+
+.perfil-wrap { width: 100%; box-sizing: border-box; max-width: 1040px; margin: 0 auto; padding: 32px 24px 64px; }
+.perfil-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+
+.perfil-banner {
+  position: relative; height: 280px;
+  background: linear-gradient(135deg, var(--accent), var(--surface-2)) center / cover no-repeat;
+}
+.perfil-edit {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  background: rgba(0, 0, 0, .55); color: #fff; font-size: 13px; font-weight: 600;
+  padding: 8px 12px; border-radius: 999px; transition: background .2s;
+}
+.perfil-edit:hover { background: rgba(0, 0, 0, .75); }
+.perfil-edit-banner { position: absolute; right: 14px; bottom: 14px; }
+
+.perfil-head { display: flex; align-items: flex-end; gap: 24px; padding: 0 40px; margin-top: -80px; position: relative; }
+.perfil-avatar-box { position: relative; }
+.perfil-edit-avatar { position: absolute; right: 0; bottom: 4px; padding: 8px; border: 2px solid var(--surface); }
+.perfil-ident { padding-bottom: 8px; min-width: 0; }
+.perfil-nome { margin: 0; font-size: 34px; color: var(--text-color); overflow-wrap: anywhere; }
+.perfil-user { margin: 4px 0 0; color: var(--text-muted); font-size: 18px; }
+.perfil-email { margin: 4px 0 0; color: var(--text-muted); font-size: 15px; overflow-wrap: anywhere; }
+
+/* Modo visualização por padrão; o formulário e os botões de foto só aparecem ao editar */
+.perfil-btn-editar {
+  margin: 0 0 8px auto; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: inherit; font-weight: 600; font-size: 14px; padding: 9px 16px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-color); border: 1px solid var(--border); transition: .2s;
+}
+.perfil-btn-editar:hover { background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent); }
+.perfil-card:not(.is-editing) .perfil-form,
+.perfil-card:not(.is-editing) .perfil-edit { display: none; }
+.perfil-card.is-editing .perfil-btn-editar { display: none; }
+.perfil-card:not(.is-editing) { padding-bottom: 24px; }
+
+.perfil-form { padding: 32px 40px 40px; display: grid; gap: 22px; }
+.perfil-campo label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 6px; color: var(--text-color); }
+.perfil-campo input[type=text], .perfil-campo input[type=email], .perfil-campo input[type=password] {
+  width: 100%; box-sizing: border-box; height: 50px; padding: 0 16px; font: inherit; font-size: 16px;
+  background: var(--surface-2); color: var(--text-color); border: 1px solid var(--border); border-radius: 10px;
+}
+.perfil-campo input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.perfil-campo small { display: block; margin-top: 5px; color: var(--text-muted); font-size: 12px; }
+.perfil-arroba { display: flex; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; }
+.perfil-arroba span { padding-left: 14px; color: var(--text-muted); font-weight: 600; }
+.perfil-arroba input { border: none !important; box-shadow: none !important; background: transparent !important; }
+.perfil-arroba:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.perfil-remover { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--text-muted); }
+.perfil-remover label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.perfil-dica { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+.perfil-acoes { display: flex; align-items: center; gap: 16px; }
+.perfil-salvar { border: none; cursor: pointer; font: inherit; font-weight: 700; padding: 12px 26px; border-radius: 10px; background: var(--accent); color: #fff; transition: background .2s; }
+.perfil-salvar:hover { background: var(--accent-hover); }
+.perfil-cancelar { color: var(--accent-text); text-decoration: none; font-weight: 600; }
+.perfil-cancelar:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .perfil-banner { height: 170px; }
+  .avatar-xl { width: 120px; height: 120px; font-size: 52px; }
+  .perfil-head { margin-top: -60px; }
+  .perfil-head { flex-direction: column; align-items: flex-start; gap: 8px; padding: 0 18px; }
+  .perfil-btn-editar { margin-left: 0; }
+  .perfil-form { padding: 20px 18px 24px; }
+  .perfil-nome { font-size: 26px; }
+}
+
+/* O botão "Alterar fundo" ficava coberto pela faixa do avatar (margem negativa): a faixa deixa o clique passar */
+.perfil-head { pointer-events: none; }
+.perfil-head > * { pointer-events: auto; }
+.perfil-edit-banner { z-index: 2; }
+
+/* Capa com proporção fixa = a mesma do recorte (o que a pessoa escolhe é o que aparece) */
+.perfil-banner { height: auto; aspect-ratio: 7 / 2; min-height: 120px; }
+
+/* Editor de recorte */
+.crop-modal { position: fixed; inset: 0; z-index: 5000; background: rgba(0, 0, 0, .72); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.crop-modal[hidden] { display: none; }
+.crop-box { width: 100%; max-width: 720px; max-height: 100%; overflow-y: auto; background: var(--surface); color: var(--text-color); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px 24px; box-sizing: border-box; }
+.crop-titulo { margin: 0 0 4px; font-size: 20px; }
+.crop-dica { margin: 0 0 16px; color: var(--text-muted); font-size: 14px; }
+.crop-stage { position: relative; overflow: hidden; margin: 0 auto; width: 100%; background: var(--surface-2); cursor: grab; touch-action: none; user-select: none; border-radius: 8px; }
+.crop-stage:active { cursor: grabbing; }
+.crop-stage img { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; pointer-events: none; }
+.crop-mascara { position: absolute; inset: 0; pointer-events: none; }
+/* Foto de perfil: quadro quadrado de no máximo 360px, com recorte redondo (o que fica fora do círculo não aparece) */
+.crop-redondo { max-width: 360px; border-radius: 0; }
+.crop-redondo .crop-mascara { border-radius: 50%; box-shadow: 0 0 0 999px rgba(0, 0, 0, .6); border: 2px solid #fff; box-sizing: border-box; }
+.crop-faixa .crop-mascara { border: 2px solid #fff; box-sizing: border-box; }
+.crop-zoom { display: flex; align-items: center; gap: 10px; margin: 16px auto 0; max-width: 360px; color: var(--text-muted); }
+.crop-zoom input { flex: 1; accent-color: var(--accent); }
+.crop-acoes { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+.crop-cancelar { background: none; border: none; cursor: pointer; font: inherit; font-weight: 600; color: var(--accent-text); }
+.crop-cancelar:hover { text-decoration: underline; }
+
+/* Abas do perfil (Perfil | Lista de desejos) */
+.perfil-abas { display: flex; gap: 6px; padding: 18px 40px 0; border-bottom: 1px solid var(--border); margin-top: 8px; }
+.perfil-aba { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -1px; transition: .2s; }
+.perfil-aba:hover { color: var(--accent-text); }
+.perfil-aba.ativa { color: var(--accent-text); border-bottom-color: var(--accent); }
+.perfil-aba-n { background: var(--accent-soft); color: var(--accent-text); font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.perfil-card.is-desejos .perfil-form,
+.perfil-card.is-desejos .perfil-btn-editar { display: none; }
+.perfil-card.is-desejos { padding-bottom: 0; }
+
+/* Lista de desejos (no perfil) */
+.desejos { margin-top: 28px; }
+.desejo-lista { display: flex; flex-direction: column; gap: 10px; }
+.desejo-item { display: flex; align-items: center; gap: 16px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.desejo-capa { flex: none; width: 72px; aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+.desejo-capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.desejo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.desejo-nome { font-weight: 700; color: var(--text-color); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.desejo-nome:hover { color: var(--accent-text); }
+.desejo-preco { font-size: 13px; color: var(--text-muted); }
+.desejo-item form { margin: 0; flex: none; }
+.desejo-remover { width: auto; cursor: pointer; font: inherit; font-weight: 600; font-size: 13px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); transition: .2s; }
+.desejo-remover:hover { color: var(--accent-text); border-color: var(--accent); background: var(--accent-soft); }
+
+/* Botão de lista de desejos (página do jogo) */
+.jogo-titulo-linha { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; }
+.desejo-form { margin: 0; }
+.jogo-titulo-linha .desejo-form,
+.jogo-titulo-linha > .btn-desejo { margin-left: auto; }
+.btn-desejo { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: inherit; font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: 999px; text-decoration: none; background: var(--surface-2); color: var(--text-color); border: 1px solid var(--border); transition: .2s; }
+.btn-desejo:hover { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+.btn-desejo.ativo { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-desejo.ativo:hover { background: var(--accent-hover); color: #fff; }
+
+@media (max-width: 600px) { .perfil-abas { padding: 14px 12px 0; overflow-x: auto; } }
+
+/* Edição do perfil em blocos (Informações públicas / pessoais / Alterar senha) */
+.perfil-form { padding: 24px 40px 40px; gap: 20px; }
+.perfil-bloco { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; display: grid; gap: 18px; }
+.perfil-bloco h2 { margin: 0; font-size: 20px; color: var(--text-color); }
+.perfil-bloco-sub { margin: -12px 0 0; color: var(--text-muted); font-size: 14px; }
+.perfil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.perfil-bloco .perfil-campo input[type=text], .perfil-bloco .perfil-campo input[type=email], .perfil-bloco .perfil-campo input[type=password],
+.perfil-bloco .perfil-campo input[type=tel], .perfil-bloco .perfil-campo input[type=date], .perfil-bloco .perfil-campo select {
+  width: 100%; box-sizing: border-box; height: 48px; padding: 0 16px; font: inherit; font-size: 16px;
+  background: var(--surface); color: var(--text-color); border: 1px solid var(--border); border-radius: 10px;
+}
+.perfil-bloco .perfil-campo select:focus, .perfil-bloco .perfil-campo input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.perfil-bloco .perfil-arroba { background: var(--surface); }
+
+/* Alterar senha: só aparece no modo edição, abaixo do formulário */
+.perfil-senha-card { display: none; margin-top: 20px; }
+.perfil-card.is-editing ~ .perfil-senha-card { display: block; }
+.perfil-senha-card .perfil-bloco { background: var(--surface); }
+.perfil-btn-senha { justify-self: start; cursor: pointer; font: inherit; font-weight: 600; padding: 10px 20px; border-radius: 10px; background: var(--surface-2); color: var(--text-color); border: 1px solid var(--border); transition: .2s; }
+.perfil-btn-senha:hover { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+.perfil-senha-campos { display: grid; gap: 18px; }
+.perfil-senha-campos[hidden] { display: none; }
+
+@media (max-width: 600px) {
+  .perfil-form { padding: 16px 12px 24px; }
+  .perfil-bloco { padding: 18px 16px; }
+  .perfil-grid { grid-template-columns: 1fr; }
+}

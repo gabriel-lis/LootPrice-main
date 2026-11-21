@@ -265,12 +265,6 @@ body.light-mode .btn-cta{
 body.light-mode .btn-login, body.light-mode .btn-logout, body.light-mode .action-save{
   color: var(--btn-text);
 }
-body.light-mode .user-greet::before{
-  /* ajusta o círculo da inicial para cores claras */
-  background: linear-gradient(135deg, #ffd166, #ff9a66);
-  color: #111;
-}
-
 /* Força cores das imagens/cards no modo claro para manter contraste */
 body.light-mode .catalogo img{ box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
 
@@ -584,24 +578,9 @@ body.light-mode .btn-logout {
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
-.user-greet::before {
-  content: attr(data-initial);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-weight: 800;
-  color: #fff;
-  background: linear-gradient(135deg, #6a00f4, #b13eff);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
 /* Pequeno ajuste responsivo: reduzir paddings em telas pequenas */
 @media (max-width: 600px) {
   .user-greet { padding: 4px 8px; font-size: 14px; }
-  .user-greet::before { width: 26px; height: 26px; font-size: 13px; }
   .btn-logout { padding: 6px 10px; font-size: 13px; }
 }
 
