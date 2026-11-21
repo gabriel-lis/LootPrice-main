@@ -66,10 +66,10 @@ if ($metodoPost && ($_POST['acao'] ?? '') === 'senha_codigo') {
     else $erroSenha = $msg;
 } elseif ($metodoPost && ($_POST['acao'] ?? '') === 'senha') {
     // ---- Alterar senha (a senha é guardada só como hash) ----
-    $atual = $_POST['senha_atual'] ?? '';
-    $nova  = $_POST['nova_senha'] ?? '';
-    $conf  = $_POST['confirma_senha'] ?? '';
-    $codigoSenha = trim($_POST['codigo_senha'] ?? '');
+    $atual = lp_senha('senha_atual');
+    $nova  = lp_senha('nova_senha');
+    $conf  = lp_senha('confirma_senha');
+    $codigoSenha = lp_post('codigo_senha', 10);
     if ($atual === '' || $nova === '' || $conf === '') {
         $erroSenha = 'Preencha a senha atual, a nova senha e a confirmação.';
     } elseif (!password_verify($atual, $u['senha'])) {
@@ -96,11 +96,11 @@ if ($metodoPost && ($_POST['acao'] ?? '') === 'senha_codigo') {
     }
 } elseif ($metodoPost) {
     // ---- Editar perfil ----
-    $nome = trim($_POST['nome'] ?? '');
-    $username = trim($_POST['username'] ?? '');
-    $sexo = $_POST['sexo'] ?? 'nao_informado';
-    $nascForm = trim($_POST['data_nascimento'] ?? '');
-    $telForm = trim($_POST['telefone'] ?? '');
+    $nome = lp_post('nome', 200);
+    $username = lp_post('username', 60);
+    $sexo = lp_post('sexo', 20) ?: 'nao_informado';
+    $nascForm = lp_post('data_nascimento', 10);
+    $telForm = lp_post('telefone', 40);
 
     if ($nome === '' || mb_strlen($nome) > 100) {
         $erro = 'Informe seu nome (até 100 caracteres).';
@@ -137,14 +137,14 @@ if ($metodoPost && ($_POST['acao'] ?? '') === 'senha_codigo') {
     }
 
     // E-mail: se mudou, exige a senha atual (e confere formato e duplicidade)
-    $emailForm = trim($_POST['email'] ?? '');
+    $emailForm = lp_post('email', 200);
     $emailNovo = $u['email'];
     if (!$erro && strcasecmp($emailForm, $u['email']) !== 0) {
         if (!filter_var($emailForm, FILTER_VALIDATE_EMAIL) || mb_strlen($emailForm) > 100) {
             $erro = 'Formato de e-mail inválido.';
-        } elseif (($_POST['senha_atual'] ?? '') === '') {
+        } elseif (lp_senha('senha_atual') === '') {
             $erro = 'Para trocar o e-mail, informe sua senha atual.';
-        } elseif (!password_verify($_POST['senha_atual'], $u['senha'])) {
+        } elseif (!password_verify(lp_senha('senha_atual'), $u['senha'])) {
             $erro = 'Senha atual incorreta. O e-mail não foi alterado.';
         } else {
             $dupE = $pdo->prepare("SELECT 1 FROM usuarios WHERE email = :e AND id_usuario <> :id LIMIT 1");
@@ -205,6 +205,7 @@ $aba = ($_GET['aba'] ?? '') === 'desejos' ? 'desejos' : 'perfil';
 $desejos = getWishlistGames($id);
 $pageTitle = 'Meu perfil - LootPrice';
 $basePath = '';
+$cssPerfil = true;
 require_once __DIR__ . '/includes/header.php';
 
 $fundoOk = $u['foto_fundo'] && is_file(__DIR__ . '/' . $u['foto_fundo']);
@@ -382,6 +383,7 @@ $fundoUrl = $fundoOk ? sanitize($u['foto_fundo']) . '?v=' . filemtime(__DIR__ . 
               <span class="desejo-preco"><?= isset($j['menor_preco']) ? ((float)$j['menor_preco'] <= 0 ? 'Gratuito' : 'A partir de ' . formatPrice($j['menor_preco'])) : '' ?></span>
             </div>
             <form method="POST" action="desejos.php">
+              <?= csrfField() ?>
               <input type="hidden" name="id_jogo" value="<?= $jid ?>">
               <input type="hidden" name="acao" value="remover">
               <input type="hidden" name="voltar" value="perfil">
@@ -442,7 +444,7 @@ document.getElementById('btnEditar').addEventListener('click', function () {
     perfil: { titulo: 'Ajustar foto de perfil', ratio: 1,   saida: [512, 512],   tipo: 'image/png',  nome: 'perfil.png', redondo: true },
     fundo:  { titulo: 'Ajustar imagem de fundo', ratio: 3.5, saida: [1400, 400], tipo: 'image/webp', nome: 'fundo.webp', redondo: false }
   };
-  let cfg, input, url, nw, nh, fw, fh, smin, zoom, x, y, arrastando;
+  let cfg, input, url, nw, nh, fw, fh, smin, zoom, x, y, arrastando, focoAntes;
 
   function limitar() {                       // a imagem nunca deixa o quadro vazio
     const s = smin * zoom;
@@ -467,7 +469,9 @@ document.getElementById('btnEditar').addEventListener('click', function () {
     titulo.textContent = cfg.titulo;
     stage.className = 'crop-stage ' + (cfg.redondo ? 'crop-redondo' : 'crop-faixa');
     stage.style.aspectRatio = String(cfg.ratio);
+    focoAntes = document.activeElement;
     modal.hidden = false; document.body.style.overflow = 'hidden';
+    document.getElementById('cropCancelar').focus();
     url = URL.createObjectURL(f);
     img.onload = function () {
       nw = img.naturalWidth; nh = img.naturalHeight;
@@ -481,6 +485,7 @@ document.getElementById('btnEditar').addEventListener('click', function () {
   function fechar(limparInput) {
     modal.hidden = true; document.body.style.overflow = '';
     if (limparInput) input.value = '';
+    if (focoAntes && focoAntes.focus) focoAntes.focus();   // devolve o foco a quem abriu o editor
     if (url) { URL.revokeObjectURL(url); url = null; }
   }
 
@@ -492,7 +497,16 @@ document.getElementById('btnEditar').addEventListener('click', function () {
   stage.addEventListener('wheel', e => { e.preventDefault(); const r = stage.getBoundingClientRect(); aplicarZoom(zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   zoomIn.addEventListener('input', () => aplicarZoom(parseFloat(zoomIn.value), fw / 2, fh / 2));
   document.getElementById('cropCancelar').addEventListener('click', () => fechar(true));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) fechar(true); });
+  document.addEventListener('keydown', e => {
+    if (modal.hidden) return;
+    if (e.key === 'Escape') { fechar(true); return; }
+    if (e.key !== 'Tab') return;               // prende o foco dentro do diálogo
+    const itens = Array.from(modal.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])')).filter(el => !el.disabled && el.offsetParent !== null);
+    if (!itens.length) return;
+    const primeiro = itens[0], ultimo = itens[itens.length - 1];
+    if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
+  });
 
   // Confirmar: gera a imagem já recortada e coloca no campo do formulário
   document.getElementById('cropOk').addEventListener('click', function () {

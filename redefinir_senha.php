@@ -11,7 +11,7 @@ if (isLoggedIn()) {
 
 $erro = null;
 $info = null;
-$email = trim($_POST['email'] ?? ($_SESSION['reset_email'] ?? ''));
+$email = (lp_post('email', 200) ?: lp_str($_SESSION['reset_email'] ?? '', 200));
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $pdo = getDB();
@@ -21,19 +21,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $erro = 'Erro de conexão com o banco de dados. Verifique se o MySQL no XAMPP está ativo.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $erro = 'Informe o e-mail da sua conta.';
-    } elseif (($_POST['acao'] ?? '') === 'reenviar') {
+    } elseif (lp_post('acao', 12) === 'reenviar') {
         iniciarRecuperacaoSenha($pdo, $email);
         $_SESSION['reset_email'] = $email;
         $info = 'Se esse e-mail estiver cadastrado, enviamos um novo código (o intervalo mínimo entre envios é de ' . LP_COD_REENVIO_SEG . ' segundos).';
     } else {
-        $nova = $_POST['nova_senha'] ?? '';
-        $conf = $_POST['confirma_senha'] ?? '';
-        if (trim($_POST['codigo'] ?? '') === '' || $nova === '') {
+        $nova = lp_senha('nova_senha');
+        $conf = lp_senha('confirma_senha');
+        if (lp_post('codigo', 20) === '' || $nova === '') {
             $erro = 'Preencha o código e a nova senha.';
         } elseif ($nova !== $conf) {
             $erro = 'A confirmação não é igual à nova senha.';
         } else {
-            [$ok, $msg] = redefinirSenhaComCodigo($pdo, $email, (string)$_POST['codigo'], $nova);
+            [$ok, $msg] = redefinirSenhaComCodigo($pdo, $email, lp_post('codigo', 20), $nova);
             if ($ok) {
                 unset($_SESSION['reset_email']);
                 setFlash('success', 'Senha redefinida! Entre com a nova senha.');

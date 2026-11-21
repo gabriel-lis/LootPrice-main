@@ -1,15 +1,13 @@
 
 :root {
   /* Escuro */
-  --title-color: var(--accent-text);
-  --title-glow: rgba(142, 45, 226, 0.7);
+  --title-glow: var(--accent-glow);
   --box-bg: #1b1b1b;
   --panel-bg: var(--surface);
   --panel-border: var(--border);
   --old-price: rgba(224, 224, 224, 0.7);
   --logo-dark-display: inline-block;
   --logo-light-display: none;
-  --highlight: #f2b35b;
   --shadow: rgba(142, 45, 226, 0.7);
   --footer-color: #fff;
   /* Imagens Escuro */
@@ -20,10 +18,8 @@
 
 /* Claro */
 body.light-mode {
-  --title-color: var(--accent-text);
   --title-glow: transparent;
   --box-bg: #eae4ff;
-  --highlight: #6d28d9;
   --old-price: #7a7399;
   --logo-dark-display: none;
   --logo-light-display: inline-block;

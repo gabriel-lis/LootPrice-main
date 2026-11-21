@@ -8,7 +8,9 @@ require_once __DIR__ . '/includes/functions.php';
 
 // Links antigos com busca/filtros (index.php?q=...) seguem para o catálogo
 if (isset($_GET['q']) || isset($_GET['categoria']) || isset($_GET['plataforma']) || isset($_GET['preco'])) {
-    header('Location: catalogo.php?' . http_build_query($_GET));
+    // Só repassa valores simples (ignora ?q[]=x e parecidos)
+    $repassar = array_filter($_GET, 'is_string');
+    header('Location: catalogo.php?' . http_build_query($repassar));
     exit;
 }
 

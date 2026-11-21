@@ -4,238 +4,221 @@
  * LootPrice (RN10, RN11, RF04, RF07, RN12)
  */
 require_once __DIR__ . '/../includes/functions.php';
-requireAdmin('../login.php');
+require_once __DIR__ . '/../includes/admin.php';
 
-$pdo = getDB();
-$idJogo = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$idJogo = (int)lp_get('id', 12);
 $isEdicao = ($idJogo > 0);
+$pdo = adminIniciar('jogo_form.php' . ($isEdicao ? "?id=$idJogo" : ''));
 
 $erro = null;
-$jogo = [
-    'nome' => '',
-    'descricao' => '',
-    'data_lancamento' => '',
-    'nota_metacritic' => '',
-    'imagem_capa' => 'fotos/jogos/'
-];
+$jogo = ['nome' => '', 'descricao' => '', 'data_lancamento' => '', 'nota_metacritic' => '', 'imagem_capa' => null];
 $jogoCategorias = [];
 $jogoPlataformas = [];
 $jogoAssinaturas = [];
+
+$ids = function (string $sql, int $id) use ($pdo): array {
+    $st = $pdo->prepare($sql);
+    $st->execute(['id' => $id]);
+    return array_map('intval', $st->fetchAll(PDO::FETCH_COLUMN));
+};
 
 if ($isEdicao) {
     $stmt = $pdo->prepare("SELECT * FROM jogos WHERE id_jogo = :id LIMIT 1");
     $stmt->execute(['id' => $idJogo]);
     $res = $stmt->fetch();
-    if ($res) {
-        $jogo = $res;
-        // Categorias vinculadas
-        $st = $pdo->prepare("SELECT id_categoria FROM jogo_categoria WHERE id_jogo = :id");
-        $st->execute(['id' => $idJogo]);
-        $jogoCategorias = $st->fetchAll(PDO::FETCH_COLUMN);
-
-        // Plataformas vinculadas
-        $st = $pdo->prepare("SELECT id_plataforma FROM jogo_plataforma WHERE id_jogo = :id");
-        $st->execute(['id' => $idJogo]);
-        $jogoPlataformas = $st->fetchAll(PDO::FETCH_COLUMN);
-
-        // Assinaturas vinculadas
-        $st = $pdo->prepare("SELECT id_servico FROM jogo_assinatura WHERE id_jogo = :id");
-        $st->execute(['id' => $idJogo]);
-        $jogoAssinaturas = $st->fetchAll(PDO::FETCH_COLUMN);
-    } else {
+    if (!$res) {
         setFlash('error', 'Jogo não encontrado.');
         header('Location: jogos.php');
         exit;
     }
-}
-
-// Processa salvamento
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    $nome = trim($_POST['nome'] ?? '');
-    $descricao = trim($_POST['descricao'] ?? '');
-    $dataLancamento = !empty($_POST['data_lancamento']) ? $_POST['data_lancamento'] : null;
-    $notaMetacritic = !empty($_POST['nota_metacritic']) ? (float)$_POST['nota_metacritic'] : null;
-    $imagemCapa = trim($_POST['imagem_capa'] ?? '');
-    $selCategorias = $_POST['categorias'] ?? [];
-    $selPlataformas = $_POST['plataformas'] ?? [];
-    $selAssinaturas = $_POST['assinaturas'] ?? [];
-
-    if (empty($nome)) {
-        $erro = 'O título do jogo é obrigatório.';
-    } else {
-        try {
-            $pdo->beginTransaction();
-
-            if ($isEdicao) {
-                $sql = "UPDATE jogos SET nome = :nome, descricao = :desc, data_lancamento = :dt, nota_metacritic = :nota, imagem_capa = :capa WHERE id_jogo = :id";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    'nome' => $nome,
-                    'desc' => $descricao,
-                    'dt' => $dataLancamento,
-                    'nota' => $notaMetacritic,
-                    'capa' => $imagemCapa,
-                    'id' => $idJogo
-                ]);
-            } else {
-                $sql = "INSERT INTO jogos (nome, descricao, data_lancamento, nota_metacritic, imagem_capa) VALUES (:nome, :desc, :dt, :nota, :capa)";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    'nome' => $nome,
-                    'desc' => $descricao,
-                    'dt' => $dataLancamento,
-                    'nota' => $notaMetacritic,
-                    'capa' => $imagemCapa
-                ]);
-                $idJogo = (int)$pdo->lastInsertId();
-            }
-
-            // Atualiza Categorias
-            $pdo->prepare("DELETE FROM jogo_categoria WHERE id_jogo = :id")->execute(['id' => $idJogo]);
-            if (!empty($selCategorias)) {
-                $insCat = $pdo->prepare("INSERT INTO jogo_categoria (id_jogo, id_categoria) VALUES (:id, :id_cat)");
-                foreach ($selCategorias as $cId) {
-                    $insCat->execute(['id' => $idJogo, 'id_cat' => (int)$cId]);
-                }
-            }
-
-            // Atualiza Plataformas
-            $pdo->prepare("DELETE FROM jogo_plataforma WHERE id_jogo = :id")->execute(['id' => $idJogo]);
-            if (!empty($selPlataformas)) {
-                $insPlat = $pdo->prepare("INSERT INTO jogo_plataforma (id_jogo, id_plataforma) VALUES (:id, :id_plat)");
-                foreach ($selPlataformas as $pId) {
-                    $insPlat->execute(['id' => $idJogo, 'id_plat' => (int)$pId]);
-                }
-            }
-
-            // Atualiza Assinaturas (Game Pass, etc.)
-            $pdo->prepare("DELETE FROM jogo_assinatura WHERE id_jogo = :id")->execute(['id' => $idJogo]);
-            if (!empty($selAssinaturas)) {
-                $insAss = $pdo->prepare("INSERT INTO jogo_assinatura (id_jogo, id_servico) VALUES (:id, :id_serv)");
-                foreach ($selAssinaturas as $sId) {
-                    $insAss->execute(['id' => $idJogo, 'id_serv' => (int)$sId]);
-                }
-            }
-
-            $pdo->commit();
-            setFlash('success', 'Jogo salvo com sucesso!');
-            header('Location: jogos.php');
-            exit;
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            $erro = 'Erro ao salvar jogo: ' . $e->getMessage();
-        }
-    }
+    $jogo = $res;
+    $jogoCategorias  = $ids("SELECT id_categoria FROM jogo_categoria WHERE id_jogo = :id", $idJogo);
+    $jogoPlataformas = $ids("SELECT id_plataforma FROM jogo_plataforma WHERE id_jogo = :id", $idJogo);
+    $jogoAssinaturas = $ids("SELECT id_servico FROM jogo_assinatura WHERE id_jogo = :id", $idJogo);
 }
 
 $todasCategorias = getAllCategories();
 $todasPlataformas = getAllPlatforms();
 $todasAssinaturas = getAllSubscriptions();
 
+/** Só aceita ids que existem na lista (descarta lixo vindo do formulário). */
+$filtrarIds = function ($enviados, array $lista, string $chave): array {
+    if (!is_array($enviados)) return [];
+    $validos = array_map('intval', array_column($lista, $chave));
+    return array_values(array_unique(array_intersect(array_map('intval', $enviados), $validos)));
+};
+
+// Processa salvamento
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    $nome = lp_post('nome', 300);
+    $descricao = lp_post('descricao', 5000);
+    $dataTxt = lp_post('data_lancamento', 10);
+    $notaTxt = lp_post('nota_metacritic', 10);
+    $selCategorias  = $filtrarIds($_POST['categorias'] ?? [], $todasCategorias, 'id_categoria');
+    $selPlataformas = $filtrarIds($_POST['plataformas'] ?? [], $todasPlataformas, 'id_plataforma');
+    $selAssinaturas = $filtrarIds($_POST['assinaturas'] ?? [], $todasAssinaturas, 'id_servico');
+
+    // Mantém o que foi digitado caso haja erro
+    $jogo['nome'] = $nome; $jogo['descricao'] = $descricao; $jogo['data_lancamento'] = $dataTxt; $jogo['nota_metacritic'] = $notaTxt;
+    $jogoCategorias = $selCategorias; $jogoPlataformas = $selPlataformas; $jogoAssinaturas = $selAssinaturas;
+
+    $dataLancamento = null;
+    $notaMetacritic = null;
+    if ($nome === '') {
+        $erro = 'O título do jogo é obrigatório.';
+    } elseif (mb_strlen($nome) > 100) {
+        $erro = 'O título pode ter no máximo 100 caracteres.';
+    } else {
+        if ($dataTxt !== '') {
+            $d = DateTime::createFromFormat('!Y-m-d', $dataTxt);
+            if (!$d || $d->format('Y-m-d') !== $dataTxt) $erro = 'Data de lançamento inválida.';
+            else $dataLancamento = $dataTxt;
+        }
+        // Nota 0 é uma nota válida (só campo vazio vira "sem nota")
+        if (!$erro && $notaTxt !== '') {
+            if (!is_numeric($notaTxt) || (float)$notaTxt < 0 || (float)$notaTxt > 100) $erro = 'A nota Metacritic deve ser um número de 0 a 100.';
+            else $notaMetacritic = (float)$notaTxt;
+        }
+    }
+
+    // Upload da capa (opcional)
+    $novaCapa = null;
+    if (!$erro) {
+        [$novaCapa, $erro] = adminSalvarImagem($_FILES['capa'] ?? [], 'fotos/jogos', 'capa', 3);
+    }
+
+    if (!$erro) {
+        $capaAntiga = $isEdicao ? ($jogo['imagem_capa'] ?? null) : null;
+        // Em edição, o $jogo['imagem_capa'] acima ainda é o do banco (só nome/descrição/data/nota foram sobrescritos)
+        $capaFinal = $novaCapa ?? $capaAntiga;
+        if (!empty($_POST['remover_capa']) && !$novaCapa) $capaFinal = null;
+
+        try {
+            $pdo->beginTransaction();
+            if ($isEdicao) {
+                $pdo->prepare("UPDATE jogos SET nome = :nome, descricao = :desc, data_lancamento = :dt, nota_metacritic = :nota, imagem_capa = :capa WHERE id_jogo = :id")
+                    ->execute(['nome' => $nome, 'desc' => $descricao, 'dt' => $dataLancamento, 'nota' => $notaMetacritic, 'capa' => $capaFinal, 'id' => $idJogo]);
+            } else {
+                $pdo->prepare("INSERT INTO jogos (nome, descricao, data_lancamento, nota_metacritic, imagem_capa) VALUES (:nome, :desc, :dt, :nota, :capa)")
+                    ->execute(['nome' => $nome, 'desc' => $descricao, 'dt' => $dataLancamento, 'nota' => $notaMetacritic, 'capa' => $capaFinal]);
+                $idJogo = (int)$pdo->lastInsertId();
+            }
+
+            $vincular = function (string $tabela, string $colunaOutra, array $valores) use ($pdo, $idJogo) {
+                $pdo->prepare("DELETE FROM $tabela WHERE id_jogo = :id")->execute(['id' => $idJogo]);
+                $ins = $pdo->prepare("INSERT INTO $tabela (id_jogo, $colunaOutra) VALUES (:id, :v)");
+                foreach ($valores as $v) $ins->execute(['id' => $idJogo, 'v' => $v]);
+            };
+            $vincular('jogo_categoria', 'id_categoria', $selCategorias);
+            $vincular('jogo_plataforma', 'id_plataforma', $selPlataformas);
+            $vincular('jogo_assinatura', 'id_servico', $selAssinaturas);
+
+            $pdo->commit();
+
+            // Capa substituída ou removida: o arquivo antigo sai do disco (se ninguém mais o usa)
+            if ($capaAntiga && $capaAntiga !== $capaFinal) {
+                $uso = $pdo->prepare("SELECT COUNT(*) FROM jogos WHERE imagem_capa = :c");
+                $uso->execute(['c' => $capaAntiga]);
+                if ((int)$uso->fetchColumn() === 0) adminApagarArquivo($capaAntiga, ['fotos/jogos/']);
+            }
+            setFlash('success', 'Jogo salvo com sucesso!');
+            header('Location: jogos.php');
+            exit;
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            adminApagarArquivo($novaCapa, ['fotos/jogos/']); // não deixa upload órfão se o banco falhou
+            $erro = adminErro('salvar jogo', $e);
+        }
+    } elseif ($novaCapa) {
+        adminApagarArquivo($novaCapa, ['fotos/jogos/']);
+    }
+}
+
 $pageTitle = ($isEdicao ? 'Editar' : 'Novo') . ' Jogo - Admin LootPrice';
 $basePath = '../';
+$cssAdmin = true;
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div style="max-width: 800px; margin: 30px auto; padding: 0 20px;">
-  
+<div class="adm-wrap adm-estreito">
+
   <div style="margin-bottom: 25px;">
-    <a href="jogos.php" style="color: var(--search-placeholder); text-decoration: none; font-size: 13px;">← Voltar à lista de jogos</a>
-    <h1 style="text-align: left; margin: 5px 0 0 0; font-size: 24px;">
-      <?= $isEdicao ? '✏️ Editar Jogo' : '➕ Cadastrar Novo Jogo' ?>
-    </h1>
+    <a href="jogos.php" class="adm-voltar">← Voltar à lista de jogos</a>
+    <h1 class="adm-title"><?= $isEdicao ? '✏️ Editar Jogo' : '➕ Cadastrar Novo Jogo' ?></h1>
   </div>
 
-  <?php if ($erro): ?>
-    <div style="background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #ff6b6b; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
-      <?= sanitize($erro) ?>
-    </div>
-  <?php endif; ?>
+  <?php if ($erro): ?><div class="adm-aviso erro" role="alert"><?= sanitize($erro) ?></div><?php endif; ?>
 
-  <form method="POST" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 25px;">
-    
-    <div style="margin-bottom: 18px;">
-      <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 14px;">Título do Jogo *</label>
-      <input type="text" name="nome" required value="<?= sanitize($jogo['nome']) ?>" placeholder="Ex: Elden Ring"
-             style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); box-sizing: border-box;">
+  <form method="POST" enctype="multipart/form-data" class="adm-card" action="jogo_form.php<?= $isEdicao ? '?id=' . $idJogo : '' ?>">
+    <?= csrfField() ?>
+
+    <div class="adm-campo">
+      <label for="j-nome">Título do Jogo *</label>
+      <input type="text" id="j-nome" name="nome" required maxlength="100" value="<?= sanitize($jogo['nome']) ?>" placeholder="Ex: Elden Ring">
     </div>
 
-    <div style="margin-bottom: 18px;">
-      <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 14px;">Sinopse / Descrição</label>
-      <textarea name="descricao" rows="4" placeholder="Descrição do jogo..."
-                style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); box-sizing: border-box; font-family: inherit;"><?= sanitize($jogo['descricao']) ?></textarea>
+    <div class="adm-campo">
+      <label for="j-desc">Sinopse / Descrição</label>
+      <textarea id="j-desc" name="descricao" rows="4" placeholder="Descrição do jogo..."><?= sanitize($jogo['descricao']) ?></textarea>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 18px;">
+    <div class="adm-linha3 adm-campo">
       <div>
-        <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 14px;">Data de Lançamento</label>
-        <input type="date" name="data_lancamento" value="<?= sanitize($jogo['data_lancamento']) ?>"
-               style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); box-sizing: border-box;">
+        <label for="j-data">Data de Lançamento</label>
+        <input type="date" id="j-data" name="data_lancamento" value="<?= sanitize($jogo['data_lancamento']) ?>">
       </div>
-
       <div>
-        <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 14px;">Nota Metacritic (0 a 100)</label>
-        <input type="number" step="0.1" min="0" max="100" name="nota_metacritic" value="<?= sanitize($jogo['nota_metacritic']) ?>" placeholder="Ex: 94.0"
-               style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); box-sizing: border-box;">
+        <label for="j-nota">Nota Metacritic (0 a 100)</label>
+        <input type="number" id="j-nota" step="0.1" min="0" max="100" name="nota_metacritic" value="<?= sanitize((string)$jogo['nota_metacritic']) ?>" placeholder="Ex: 94.0">
       </div>
-
       <div>
-        <label style="display: block; font-weight: 700; margin-bottom: 6px; font-size: 14px;">Caminho da Imagem de Capa</label>
-        <input type="text" name="imagem_capa" value="<?= sanitize($jogo['imagem_capa']) ?>" placeholder="fotos/jogos/exemplo.jpg"
-               style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); box-sizing: border-box;">
+        <label for="j-capa">Imagem de Capa</label>
+        <input type="file" id="j-capa" name="capa" accept="image/jpeg,image/png,image/webp,image/gif">
+        <div class="adm-dica">JPG, PNG, WEBP ou GIF, até 3 MB.</div>
       </div>
     </div>
+
+    <?php if ($isEdicao): ?>
+      <div class="adm-capa-atual">
+        <img src="../<?= sanitize(capaJogo($jogo['imagem_capa'] ?? null)) ?>" alt="Capa atual">
+        <label class="adm-check"><input type="checkbox" name="remover_capa" value="1"> Remover a capa atual (volta para a capa padrão)</label>
+      </div>
+    <?php endif; ?>
 
     <!-- Categorias -->
-    <div style="margin-bottom: 20px;">
-      <label style="display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px;">Categorias / Gêneros:</label>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+    <div class="adm-campo">
+      <span class="adm-rotulo">Categorias / Gêneros:</span>
+      <div class="adm-checks">
         <?php foreach ($todasCategorias as $cat): ?>
-          <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-            <input type="checkbox" name="categorias[]" value="<?= $cat['id_categoria'] ?>"
-                   <?= in_array($cat['id_categoria'], $jogoCategorias) ? 'checked' : '' ?>>
-            <?= sanitize($cat['nome']) ?>
-          </label>
+          <label class="adm-check"><input type="checkbox" name="categorias[]" value="<?= (int)$cat['id_categoria'] ?>" <?= in_array((int)$cat['id_categoria'], $jogoCategorias, true) ? 'checked' : '' ?>> <?= sanitize($cat['nome']) ?></label>
         <?php endforeach; ?>
       </div>
     </div>
 
     <!-- Plataformas -->
-    <div style="margin-bottom: 20px;">
-      <label style="display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px;">Plataformas Disponíveis (RF04):</label>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+    <div class="adm-campo">
+      <span class="adm-rotulo">Plataformas Disponíveis (RF04):</span>
+      <div class="adm-checks">
         <?php foreach ($todasPlataformas as $plat): ?>
-          <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-            <input type="checkbox" name="plataformas[]" value="<?= $plat['id_plataforma'] ?>"
-                   <?= in_array($plat['id_plataforma'], $jogoPlataformas) ? 'checked' : '' ?>>
-            🎮 <?= sanitize($plat['nome']) ?>
-          </label>
+          <label class="adm-check"><input type="checkbox" name="plataformas[]" value="<?= (int)$plat['id_plataforma'] ?>" <?= in_array((int)$plat['id_plataforma'], $jogoPlataformas, true) ? 'checked' : '' ?>> 🎮 <?= sanitize($plat['nome']) ?></label>
         <?php endforeach; ?>
       </div>
     </div>
 
     <!-- Serviços de Assinatura -->
-    <div style="margin-bottom: 25px;">
-      <label style="display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px;">Disponibilidade em Assinaturas (RF07):</label>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+    <div class="adm-campo" style="margin-bottom: 25px;">
+      <span class="adm-rotulo">Disponibilidade em Assinaturas (RF07):</span>
+      <div class="adm-checks">
         <?php foreach ($todasAssinaturas as $ass): ?>
-          <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; background: rgba(16, 124, 65, 0.15); border: 1px solid rgba(16, 124, 65, 0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; color: #2ecc71;">
-            <input type="checkbox" name="assinaturas[]" value="<?= $ass['id_servico'] ?>"
-                   <?= in_array($ass['id_servico'], $jogoAssinaturas) ? 'checked' : '' ?>>
-            <?= sanitize($ass['nome']) ?>
-          </label>
+          <label class="adm-check assin"><input type="checkbox" name="assinaturas[]" value="<?= (int)$ass['id_servico'] ?>" <?= in_array((int)$ass['id_servico'], $jogoAssinaturas, true) ? 'checked' : '' ?>> <?= sanitize($ass['nome']) ?></label>
         <?php endforeach; ?>
       </div>
     </div>
 
-    <div style="display: flex; justify-content: flex-end; gap: 12px;">
-      <a href="jogos.php" class="btn-login" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-color); text-decoration: none;">
-        Cancelar
-      </a>
-      <button type="submit" class="btn-login" style="border: none; cursor: pointer; background: linear-gradient(90deg, #4a00e0, #8e2de2);">
-        Salvar Jogo
-      </button>
+    <div class="adm-rodape-form">
+      <a href="jogos.php" class="btn-adm sec">Cancelar</a>
+      <button type="submit" class="btn-adm">Salvar Jogo</button>
     </div>
 
   </form>

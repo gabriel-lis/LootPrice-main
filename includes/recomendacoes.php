@@ -20,9 +20,8 @@ function assetUrl(string $path): string {
  * então não é preciso reimportar o schema.sql num banco que já existe.
  */
 function ensureAcessosTable(PDO $pdo): bool {
-    static $ok = null;
-    if ($ok !== null) return $ok;
-    try {
+    // Roda só uma vez por instalação (marca em logs/schema_acessos.ok)
+    return lp_schema_uma_vez('acessos', function () use ($pdo) {
         $pdo->exec("CREATE TABLE IF NOT EXISTS `acessos_jogos` (
             `id_acesso` BIGINT AUTO_INCREMENT PRIMARY KEY,
             `id_usuario` INT NULL,
@@ -34,11 +33,7 @@ function ensureAcessosTable(PDO $pdo): bool {
             CONSTRAINT `fk_acesso_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
             CONSTRAINT `fk_acesso_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-        $ok = true;
-    } catch (Exception $e) {
-        $ok = false;
-    }
-    return $ok;
+    });
 }
 
 /**
@@ -62,7 +57,7 @@ function logGameAccess(int $idJogo, string $tipo = 'visita'): void {
             'j' => $idJogo,
             't' => $tipo === 'busca' ? 'busca' : 'visita',
         ]);
-    } catch (Exception $e) {}
+    } catch (Throwable $e) { lp_log_erro('logGameAccess', $e); }
 }
 
 /**
@@ -109,10 +104,11 @@ function getUserInterestWeights(): array {
  * 'valor_original' e 'desconto' (% de desconto dessa oferta).
  */
 function attachBestOffer(array $games): array {
+    static $offers = null; // a home chama várias vezes: consulta só uma
     $pdo = getDB();
-    $offers = [];
-    if ($pdo) {
-        try {
+    if ($offers === null) {
+        $offers = [];
+        if ($pdo) try {
             $rows = $pdo->query("SELECT pr.id_jogo, pr.valor, pr.valor_original, pr.porcentagem_desconto
                                  FROM precos pr
                                  WHERE pr.valor = (SELECT MIN(p2.valor) FROM precos p2 WHERE p2.id_jogo = pr.id_jogo)
@@ -120,7 +116,7 @@ function attachBestOffer(array $games): array {
             foreach ($rows as $r) {
                 $offers[(int)$r['id_jogo']] ??= $r; // empate de preço: fica o de maior desconto
             }
-        } catch (Exception $e) {}
+        } catch (Throwable $e) { lp_log_erro('attachBestOffer', $e); }
     }
     foreach ($games as &$g) {
         $o = $offers[(int)$g['id_jogo']] ?? null;
@@ -185,8 +181,9 @@ function getRecommendedGames(int $limit = 6): array {
             }
             if ($bestName) $selo = 'Parecido com ' . $bestName;
         }
-        // Tag só quando informa algo: "Parecido com X" ou "Em alta agora". Sem isso, nenhuma tag.
-        if (!$selo && ($pop[$id] ?? 0) > 0) $selo = 'Em alta agora';
+        // Tag só quando informa algo: "Parecido com X" ou "Em alta agora".
+        // "Em alta" exige volume real: pelo menos 3 acessos e 40% do campeão de acessos (antes bastava 1).
+        if (!$selo && ($pop[$id] ?? 0) >= max(3, (int)ceil($maxPop * 0.4))) $selo = 'Em alta agora';
 
         $g['selo'] = $selo;
         $scored[] = ['score' => $score, 'g' => $g];

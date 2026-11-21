@@ -6,9 +6,8 @@
 
 /** Garante a tabela (criada sob demanda, como acessos_jogos). */
 function ensureDesejosTable(PDO $pdo): bool {
-    static $ok = null;
-    if ($ok !== null) return $ok;
-    try {
+    // Roda só uma vez por instalação (marca em logs/schema_desejos.ok)
+    return lp_schema_uma_vez('desejos', function () use ($pdo) {
         $pdo->exec("CREATE TABLE IF NOT EXISTS `lista_desejos` (
             `id_usuario` INT NOT NULL,
             `id_jogo` INT NOT NULL,
@@ -17,11 +16,7 @@ function ensureDesejosTable(PDO $pdo): bool {
             CONSTRAINT `fk_desejo_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
             CONSTRAINT `fk_desejo_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-        $ok = true;
-    } catch (Exception $e) {
-        $ok = false;
-    }
-    return $ok;
+    });
 }
 
 function isInWishlist(int $idUsuario, int $idJogo): bool {

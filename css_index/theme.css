@@ -61,6 +61,21 @@
   --menu-btn-color: #ffffff;
   --lootprice: url('../fotos/extras/logoltdark.png');
 
+  /* Formulários e títulos (antes viviam em cadastro.css / jogos.css) */
+  --highlight: #f2b35b;
+  --on-accent: #ffffff;            /* texto sobre fundo roxo */
+  --scrim: rgba(0, 0, 0, 0.6);     /* camadas escuras sobre imagens/modais */
+
+  /* Avisos (erro, sucesso, atenção, informação) */
+  --danger-soft: rgba(231, 76, 60, 0.20);
+  --danger-border: #e74c3c;
+  --success-border: #2ecc71;
+  --warning: #ffc857;
+  --warning-soft: rgba(255, 200, 87, 0.16);
+  --info: #5dade2;
+  --info-soft: rgba(52, 152, 219, 0.20);
+  --info-border: #3498db;
+
   --radius: 14px;
   --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
@@ -109,4 +124,35 @@ body.light-mode {
   --menu-hover-bg: #ede6ff;
   --menu-btn-color: #1c1433;
   --lootprice: url('../fotos/extras/logoltlight.png');
+  --highlight: #6d28d9;
+  --scrim: rgba(28, 20, 51, 0.55);
+
+  --danger-soft: rgba(220, 38, 38, 0.10);
+  --danger-border: #dc2626;
+  --success-border: #15803d;
+  --warning: #b45309;
+  --warning-soft: rgba(180, 83, 9, 0.12);
+  --info: #1d4ed8;
+  --info-soft: rgba(29, 78, 216, 0.10);
+  --info-border: #1d4ed8;
+
+}
+
+/* Apelidos que dependem das cores acima: declarados nos dois temas para acompanhar o modo claro */
+:root, body.light-mode {
+  --input-bg: var(--surface-2);
+  --input-border: var(--border);
+  --input-focus-border: var(--accent);
+  --input-text: var(--text-color);
+  --label-color: var(--text-muted);
+  --title-color: var(--accent-text);
+  --error-bg: var(--danger-soft);
+  --error-border: var(--danger-border);
+  --error-text: var(--danger);
+  --success-bg: var(--success-soft);
+  --success-text: var(--success);
+  --link-color: var(--accent-text);
+  --btn-hover-shadow: var(--accent-glow);
+  --container-bg: var(--surface);
+  --container-shadow: var(--accent-glow);
 }

@@ -1,11 +1,5 @@
 /* Perfil do usuário. Cores só via variáveis de theme.css */
 
-/* Avatar (usado no header e no perfil) */
-.avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--accent); color: #fff; font-weight: 800; line-height: 1; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatar-sm { width: 34px; height: 34px; font-size: 15px; }
-.avatar-xl { width: 160px; height: 160px; font-size: 68px; border: 4px solid var(--surface); box-sizing: border-box; }
-
 .perfil-wrap { width: 100%; box-sizing: border-box; max-width: 1040px; margin: 0 auto; padding: 32px 24px 64px; }
 .perfil-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
 
@@ -15,10 +9,10 @@
 }
 .perfil-edit {
   display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
-  background: rgba(0, 0, 0, .55); color: #fff; font-size: 13px; font-weight: 600;
+  background: var(--scrim); color: var(--on-accent); font-size: 13px; font-weight: 600;
   padding: 8px 12px; border-radius: 999px; transition: background .2s;
 }
-.perfil-edit:hover { background: rgba(0, 0, 0, .75); }
+.perfil-edit:hover { background: var(--scrim); }
 .perfil-edit-banner { position: absolute; right: 14px; bottom: 14px; }
 
 .perfil-head { display: flex; align-items: flex-end; gap: 24px; padding: 0 40px; margin-top: -80px; position: relative; }
@@ -59,7 +53,7 @@
 .perfil-dica { margin: 0; font-size: 13px; color: var(--text-muted); }
 
 .perfil-acoes { display: flex; align-items: center; gap: 16px; }
-.perfil-salvar { border: none; cursor: pointer; font: inherit; font-weight: 700; padding: 12px 26px; border-radius: 10px; background: var(--accent); color: #fff; transition: background .2s; }
+.perfil-salvar { border: none; cursor: pointer; font: inherit; font-weight: 700; padding: 12px 26px; border-radius: 10px; background: var(--accent); color: var(--on-accent); transition: background .2s; }
 .perfil-salvar:hover { background: var(--accent-hover); }
 .perfil-cancelar { color: var(--accent-text); text-decoration: none; font-weight: 600; }
 .perfil-cancelar:hover { text-decoration: underline; }
@@ -83,7 +77,7 @@
 .perfil-banner { height: auto; aspect-ratio: 7 / 2; min-height: 120px; }
 
 /* Editor de recorte */
-.crop-modal { position: fixed; inset: 0; z-index: 5000; background: rgba(0, 0, 0, .72); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.crop-modal { position: fixed; inset: 0; z-index: 5000; background: var(--scrim); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .crop-modal[hidden] { display: none; }
 .crop-box { width: 100%; max-width: 720px; max-height: 100%; overflow-y: auto; background: var(--surface); color: var(--text-color); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px 24px; box-sizing: border-box; }
 .crop-titulo { margin: 0 0 4px; font-size: 20px; }
@@ -94,8 +88,8 @@
 .crop-mascara { position: absolute; inset: 0; pointer-events: none; }
 /* Foto de perfil: quadro quadrado de no máximo 360px, com recorte redondo (o que fica fora do círculo não aparece) */
 .crop-redondo { max-width: 360px; border-radius: 0; }
-.crop-redondo .crop-mascara { border-radius: 50%; box-shadow: 0 0 0 999px rgba(0, 0, 0, .6); border: 2px solid #fff; box-sizing: border-box; }
-.crop-faixa .crop-mascara { border: 2px solid #fff; box-sizing: border-box; }
+.crop-redondo .crop-mascara { border-radius: 50%; box-shadow: 0 0 0 999px var(--scrim); border: 2px solid var(--on-accent); box-sizing: border-box; }
+.crop-faixa .crop-mascara { border: 2px solid var(--on-accent); box-sizing: border-box; }
 .crop-zoom { display: flex; align-items: center; gap: 10px; margin: 16px auto 0; max-width: 360px; color: var(--text-muted); }
 .crop-zoom input { flex: 1; accent-color: var(--accent); }
 .crop-acoes { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
@@ -133,8 +127,8 @@
 .jogo-titulo-linha > .btn-desejo { margin-left: auto; }
 .btn-desejo { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: inherit; font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: 999px; text-decoration: none; background: var(--surface-2); color: var(--text-color); border: 1px solid var(--border); transition: .2s; }
 .btn-desejo:hover { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
-.btn-desejo.ativo { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-desejo.ativo:hover { background: var(--accent-hover); color: #fff; }
+.btn-desejo.ativo { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn-desejo.ativo:hover { background: var(--accent-hover); color: var(--on-accent); }
 
 @media (max-width: 600px) { .perfil-abas { padding: 14px 12px 0; overflow-x: auto; } }
 

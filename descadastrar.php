@@ -8,8 +8,8 @@
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/avisos.php';
 
-$idUsuario = (int)($_REQUEST['u'] ?? 0);
-$token = (string)($_REQUEST['t'] ?? '');
+$idUsuario = (int)lp_str($_REQUEST['u'] ?? '', 12);
+$token = lp_str($_REQUEST['t'] ?? '', 100);
 $valido = $idUsuario > 0 && $token !== '' && hash_equals(lp_token_descadastro($idUsuario), $token);
 
 $feito = false;

@@ -19,9 +19,8 @@ require_once __DIR__ . '/desejos.php';
 const LP_AVISOS_MAX_EMAILS_POR_EXECUCAO = 100;   // protege a cota diária do Gmail
 
 function ensureAvisosSchema(PDO $pdo): bool {
-    static $ok = null;
-    if ($ok !== null) return $ok;
-    try {
+    // Roda só uma vez por instalação (marca em logs/schema_avisos.ok)
+    return lp_schema_uma_vez('avisos', function () use ($pdo) {
         if (!$pdo->query("SHOW COLUMNS FROM usuarios LIKE 'alertas_email'")->fetch()) {
             $pdo->exec("ALTER TABLE usuarios ADD COLUMN alertas_email TINYINT(1) NOT NULL DEFAULT 1");
         }
@@ -34,11 +33,7 @@ function ensureAvisosSchema(PDO $pdo): bool {
             CONSTRAINT `fk_aviso_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
             CONSTRAINT `fk_aviso_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-        $ok = true;
-    } catch (Exception $e) {
-        $ok = false;
-    }
-    return $ok;
+    });
 }
 
 /* ---------- Link para parar de receber os avisos ---------- */

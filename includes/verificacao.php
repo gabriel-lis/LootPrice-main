@@ -13,9 +13,8 @@ const LP_COD_MAX_TENTATIVAS = 5;
 const LP_COD_REENVIO_SEG    = 60;
 
 function ensureVerificacaoSchema(PDO $pdo): bool {
-    static $ok = null;
-    if ($ok !== null) return $ok;
-    try {
+    // Roda só uma vez por instalação (marca em logs/schema_verificacao.ok)
+    return lp_schema_uma_vez('verificacao', function () use ($pdo) {
         if (!$pdo->query("SHOW COLUMNS FROM usuarios LIKE 'email_verificado'")->fetch()) {
             $pdo->exec("ALTER TABLE usuarios ADD COLUMN email_verificado TINYINT(1) NOT NULL DEFAULT 0 AFTER email");
             $pdo->exec("UPDATE usuarios SET email_verificado = 1"); // contas anteriores ficam confirmadas
@@ -30,11 +29,7 @@ function ensureVerificacaoSchema(PDO $pdo): bool {
             PRIMARY KEY (`id_usuario`, `tipo`),
             CONSTRAINT `fk_verif_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-        $ok = true;
-    } catch (Exception $e) {
-        $ok = false;
-    }
-    return $ok;
+    });
 }
 
 /** "gabriel@gmail.com" -> "ga*****@gmail.com" */

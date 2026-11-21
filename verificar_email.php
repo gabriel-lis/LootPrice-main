@@ -46,12 +46,12 @@ $info = null;
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!csrfValido()) {
         $erro = 'Sessão expirada. Atualize a página e tente de novo.';
-    } elseif (($_POST['acao'] ?? '') === 'reenviar') {
+    } elseif (lp_post('acao', 12) === 'reenviar') {
         [$ok, $msg] = enviarCodigoVerificacao($pdo, $id);
         if ($ok) $info = 'Enviamos um novo código para ' . mascararEmail($u['email']) . '.';
         else $erro = $msg;
     } else {
-        [$ok, $msg] = confirmarCodigoVerificacao($pdo, $id, (string)($_POST['codigo'] ?? ''));
+        [$ok, $msg] = confirmarCodigoVerificacao($pdo, $id, lp_post('codigo', 20));
         if ($ok) {
             $_SESSION['usuario']['email_verificado'] = 1;
             setFlash('success', 'E-mail confirmado! Obrigado.');

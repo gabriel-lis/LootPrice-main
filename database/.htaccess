@@ -1,0 +1,2 @@
+# Interno: nunca acessivel pelo navegador (scripts de linha de comando, SQL, testes e configuracao)
+Require all denied

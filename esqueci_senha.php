@@ -14,7 +14,7 @@ $erro = null;
 $emailDigitado = '';
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    $emailDigitado = trim($_POST['email'] ?? '');
+    $emailDigitado = lp_post('email', 200);
     $pdo = getDB();
     if (!csrfValido()) {
         $erro = 'Sessão expirada. Atualize a página e tente de novo.';

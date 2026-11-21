@@ -54,8 +54,3 @@ document.addEventListener('keydown', (e) => {
     closeSidebar();
   }
 });
-
-// Fecha o sidebar quando a pesquisa é submetida (evento disparado por pesquisa.js)
-document.addEventListener('sidebar:submit', () => {
-  if(sidebar && sidebar.classList.contains('active')) closeSidebar();
-});

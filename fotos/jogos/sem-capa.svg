@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" role="img" aria-label="Sem capa">
+  <rect width="300" height="400" fill="#1f1b3a"/>
+  <g fill="none" stroke="#7c3aed" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+    <rect x="70" y="150" width="160" height="96" rx="38"/>
+    <path d="M110 180v32M94 196h32"/>
+    <circle cx="190" cy="190" r="6" fill="#7c3aed"/><circle cx="208" cy="206" r="6" fill="#7c3aed"/>
+  </g>
+  <text x="150" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#9a96b5">Sem capa</text>
+</svg>

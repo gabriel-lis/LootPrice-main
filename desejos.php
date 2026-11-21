@@ -4,14 +4,15 @@
  */
 require_once __DIR__ . '/includes/functions.php';
 
-$idJogo = (int)($_POST['id_jogo'] ?? 0);
-$voltar = ($_POST['voltar'] ?? '') === 'perfil' ? 'perfil.php?aba=desejos' : 'jogo.php?id=' . $idJogo;
+$idJogo = (int)lp_post('id_jogo', 12);
+$voltar = lp_post('voltar', 12) === 'perfil' ? 'perfil.php?aba=desejos' : 'jogo.php?id=' . $idJogo;
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || $idJogo <= 0) {
     header('Location: index.php');
     exit;
 }
 requireLogin('login.php');
+exigirPostCsrf($voltar);
 
 // A lista de desejos (e os avisos de preço) só funcionam com o e-mail confirmado
 if (!isEmailVerified()) {
@@ -26,7 +27,7 @@ if (!getGameById($idJogo)) {
     exit;
 }
 
-$adicionar = ($_POST['acao'] ?? '') === 'adicionar';
+$adicionar = lp_post('acao', 12) === 'adicionar';
 if (setWishlist((int)currentUser()['id_usuario'], $idJogo, $adicionar)) {
     setFlash('success', $adicionar ? 'Jogo adicionado à sua lista de desejos.' : 'Jogo removido da sua lista de desejos.');
 } else {

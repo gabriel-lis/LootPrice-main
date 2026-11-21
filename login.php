@@ -12,8 +12,11 @@ if (isLoggedIn()) {
 }
 
 // Volta para o jogo que o visitante estava vendo (só aceita jogo.php?id=N)
-if (isset($_GET['voltar']) && preg_match('/^jogo\.php\?id=\d+$/', $_GET['voltar'])) {
+if (is_string($_GET['voltar'] ?? null) && preg_match('/^jogo\.php\?id=\d+$/', $_GET['voltar'])) {
     $_SESSION['voltar_para'] = $_GET['voltar'];
+} elseif (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+    // Abriu o login sem vir de um jogo: esquece um destino antigo (quem desistiu do login antes)
+    unset($_SESSION['voltar_para']);
 }
 function destinoPosLogin(string $padrao): string {
     $d = $_SESSION['voltar_para'] ?? null;
@@ -30,9 +33,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $aba = $acao;
     if ($pdoInicial = getDB()) ensureVerificacaoSchema($pdoInicial); // coluna email_verificado
 
-    if ($acao === 'login') {
-        $login = trim($_POST['login'] ?? '');
-        $senha = $_POST['senha'] ?? '';
+    if (!csrfValido()) {
+        $erro = 'A página expirou. Tente de novo.';
+    } elseif ($acao === 'login') {
+        $login = lp_post('login', 100);
+        $senha = is_string($_POST['senha'] ?? null) ? $_POST['senha'] : '';
 
         if ($login === '' || $senha === '') {
             $erro = 'Por favor, preencha todos os campos.';
@@ -40,27 +45,31 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             $pdo = getDB();
             if (!$pdo) {
                 $erro = 'Erro de conexão com o banco de dados. Verifique se o MySQL no XAMPP está ativo.';
+            } elseif ($espera = loginBloqueadoSegundos($pdo, $login)) {
+                $erro = 'Muitas tentativas erradas. Tente de novo em ' . max(1, (int)ceil($espera / 60)) . ' minuto(s).';
             } else {
                 $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = :login OR username = :login2 LIMIT 1");
                 $stmt->execute(['login' => $login, 'login2' => $login]);
                 $usuario = $stmt->fetch();
 
                 if ($usuario && password_verify($senha, $usuario['senha'])) {
+                    loginLimparFalhas($pdo, $login);
                     loginUser($usuario);
                     setFlash('success', 'Bem-vindo(a) de volta, ' . $usuario['nome'] . '!');
                     header('Location: ' . destinoPosLogin($usuario['tipo_usuario'] === 'administrador' ? 'admin/index.php' : 'index.php'));
                     exit;
                 }
+                loginRegistrarFalha($pdo, $login);
                 $erro = 'E-mail/usuário ou senha incorretos.';
             }
         }
     } else {
-        $nome = trim($_POST['nome'] ?? '');
-        $username = trim($_POST['username'] ?? '');
-        $sexo = $_POST['sexo'] ?? '';
-        $email = trim($_POST['email'] ?? '');
-        $senha = $_POST['senha'] ?? '';
-        $confirmaSenha = $_POST['confirma_senha'] ?? '';
+        $nome = lp_post('nome', 100);
+        $username = lp_post('username', 30);
+        $sexo = lp_post('sexo', 20);
+        $email = lp_post('email', 100);
+        $senha = is_string($_POST['senha'] ?? null) ? $_POST['senha'] : '';
+        $confirmaSenha = is_string($_POST['confirma_senha'] ?? null) ? $_POST['confirma_senha'] : '';
 
         if ($nome === '' || $username === '' || $sexo === '' || $email === '' || $senha === '') {
             $erro = 'Todos os campos obrigatórios devem ser preenchidos.';
@@ -150,9 +159,9 @@ $v = fn(string $k) => isset($_POST[$k]) ? sanitize($_POST[$k]) : '';
   .auth-tab {
     border: none; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px;
     padding: 11px 24px; border-radius: 999px; transition: .2s;
-    background: rgba(142, 45, 226, .15); color: var(--label-color);
+    background: var(--accent-soft); color: var(--label-color);
   }
-  .auth-tab:hover { background: rgba(142, 45, 226, .3); }
+  .auth-tab:hover { background: var(--accent-glow); }
   .auth-tab[aria-selected="true"] { background: var(--btn-bg); color: var(--btn-text); box-shadow: 0 4px 14px var(--btn-hover-shadow); }
 
   .auth-panel[hidden] { display: none; }
@@ -169,9 +178,9 @@ $v = fn(string $k) => isset($_POST[$k]) ? sanitize($_POST[$k]) : '';
   .senha-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 6px; color: var(--label-color); display: flex; }
   .senha-toggle svg { width: 20px; height: 20px; }
 
-  .auth-erro { background: rgba(231,76,60,.2); border: 1px solid #e74c3c; color: #ff6b6b; padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; text-align: left; }
+  .auth-erro { background: var(--error-bg); border: 1px solid var(--error-border); color: var(--danger); padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; text-align: left; }
   .auth-troca { text-align: center; font-size: 14px; margin-top: 14px; color: var(--text-color); }
-  .auth-troca button { background: none; border: none; cursor: pointer; font: inherit; font-weight: 600; color: #a78bfa; text-decoration: underline; }
+  .auth-troca button { background: none; border: none; cursor: pointer; font: inherit; font-weight: 600; color: var(--accent-text); text-decoration: underline; }
 </style>
 
 <main class="auth-main">
@@ -194,6 +203,7 @@ $v = fn(string $k) => isset($_POST[$k]) ? sanitize($_POST[$k]) : '';
       <p class="auth-sub">Entre com seu <strong>e-mail ou username</strong> e sua senha.</p>
 
       <form method="POST" action="login.php">
+        <?= csrfField() ?>
         <input type="hidden" name="acao" value="login">
 
         <div class="campo">
@@ -225,6 +235,7 @@ $v = fn(string $k) => isset($_POST[$k]) ? sanitize($_POST[$k]) : '';
       <p class="auth-sub">Leva menos de um minuto.</p>
 
       <form method="POST" action="login.php?aba=cadastro">
+        <?= csrfField() ?>
         <input type="hidden" name="acao" value="cadastro">
 
         <div class="campo">

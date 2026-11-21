@@ -24,12 +24,25 @@ logGameAccess($idJogo, 'visita');
 
 $pageTitle = $jogo['nome'] . ' - Comparador de Preços LootPrice';
 $basePath = '';
+$cssPerfil = true; // estilo do botão de lista de desejos
 
 // Dados complementares do banco de dados
 $precos = getGamePrices($idJogo);
 $categorias = getGameCategories($idJogo);
 $plataformas = getGamePlatforms($idJogo);
 $assinaturas = getGameSubscriptions($idJogo);
+$historico = getPriceHistory($idJogo);
+$resumoAval = getReviewSummary($idJogo);
+$avaliacoes = getGameReviews($idJogo);
+$minhaAval = isLoggedIn() ? getUserReview((int)currentUser()['id_usuario'], $idJogo) : null;
+$pageDescription = 'Compare o preço de ' . $jogo['nome'] . ' nas principais lojas e veja onde está mais barato.';
+
+// Data da coleta mais antiga/recente (para avisar quando o preço está velho)
+$ultimaAtualizacao = null;
+foreach ($precos as $p) {
+    if (!empty($p['data_atualizacao']) && ($ultimaAtualizacao === null || $p['data_atualizacao'] > $ultimaAtualizacao)) $ultimaAtualizacao = $p['data_atualizacao'];
+}
+$idadeGeral = idadeDoPreco($ultimaAtualizacao);
 
 // Identifica a loja com o menor preço (RN01, RF06)
 $menorPrecoValor = null;
@@ -77,14 +90,14 @@ require_once __DIR__ . '/includes/header.php';
     top: -11px;
     right: 14px;
     background: var(--success);
-    color: #fff;
+    color: var(--on-accent);
     font-weight: 800;
     font-size: 11px;
     padding: 2px 10px;
     border-radius: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    box-shadow: 0 2px 6px var(--card-shadow);
   }
   .subscription-banner {
     display: flex;
@@ -109,7 +122,7 @@ require_once __DIR__ . '/includes/header.php';
   }
   .category-pill:hover {
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
   }
   .platform-badge {
     background: var(--surface-2);
@@ -125,7 +138,7 @@ require_once __DIR__ . '/includes/header.php';
   }
   .btn-buy-direct {
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     padding: 8px 16px;
     border-radius: 8px;
     text-decoration: none;
@@ -140,6 +153,24 @@ require_once __DIR__ . '/includes/header.php';
     filter: brightness(1.15);
     transform: translateY(-2px);
   }
+  .bloco-pagina { margin-top: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .bloco-titulo { margin: 0 0 8px; font-size: 18px; color: var(--title-color); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .bloco-sub { margin: 0 0 12px; font-size: 14px; color: var(--text-muted); }
+  .hist-grafico { width: 100%; height: auto; max-height: 150px; display: block; background: var(--surface-2); border-radius: 8px; }
+  .hist-eixo { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+  .aval-media { font-size: 13px; font-weight: 600; color: var(--warning); }
+  .aval-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; align-items: flex-start; }
+  .aval-form label { font-size: 14px; font-weight: 600; }
+  .aval-form select, .aval-form textarea { background: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; font: inherit; }
+  .aval-form textarea { width: 100%; box-sizing: border-box; resize: vertical; }
+  .aval-lista { display: flex; flex-direction: column; gap: 12px; }
+  .aval-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px; background: var(--surface-2); border-radius: 10px; }
+  .aval-corpo { flex: 1; min-width: 0; }
+  .aval-cab { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; font-size: 14px; }
+  .aval-cab time { font-size: 12px; color: var(--text-muted); }
+  .aval-estrelas { color: var(--warning); letter-spacing: 1px; }
+  .aval-corpo p { margin: 6px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+  .aval-excluir { background: transparent; border: none; color: var(--danger); cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; }
   .precos-visitante { position: relative; }
   .precos-borrados { filter: blur(7px); pointer-events: none; user-select: none; }
   .precos-overlay {
@@ -150,7 +181,7 @@ require_once __DIR__ . '/includes/header.php';
   .precos-overlay span { font-size: 13px; color: var(--text-muted); }
   .precos-overlay span a { color: var(--accent); font-weight: 700; }
   .btn-entrar-precos {
-    background: var(--accent); color: #fff; padding: 10px 32px; border-radius: 8px;
+    background: var(--accent); color: var(--on-accent); padding: 10px 32px; border-radius: 8px;
     font-weight: 700; text-decoration: none;
   }
   .btn-entrar-precos:hover { filter: brightness(1.15); }
@@ -174,6 +205,7 @@ require_once __DIR__ . '/includes/header.php';
         <a href="verificar_email.php" class="btn-desejo" title="Confirme seu e-mail para usar a lista de desejos"><?= $iconeCoracao ?> Confirmar e-mail para usar a lista de desejos</a>
       <?php elseif ($logado): ?>
         <form method="POST" action="desejos.php" class="desejo-form">
+          <?= csrfField() ?>
           <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
           <input type="hidden" name="acao" value="<?= $naLista ? 'remover' : 'adicionar' ?>">
           <button type="submit" class="btn-desejo<?= $naLista ? ' ativo' : '' ?>" aria-pressed="<?= $naLista ? 'true' : 'false' ?>">
@@ -188,7 +220,7 @@ require_once __DIR__ . '/includes/header.php';
     <!-- Categorias do Jogo -->
     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
       <?php foreach ($categorias as $c): ?>
-        <a href="index.php?categoria=<?= $c['id_categoria'] ?>" class="category-pill">
+        <a href="catalogo.php?categoria=<?= (int)$c['id_categoria'] ?>" class="category-pill">
           <?= sanitize($c['nome']) ?>
         </a>
       <?php endforeach; ?>
@@ -200,7 +232,7 @@ require_once __DIR__ . '/includes/header.php';
     
     <!-- Mídia e Data -->
     <div class="game-media">
-      <img src="<?= sanitize($jogo['imagem_capa']) ?>" 
+      <img src="<?= sanitize(capaJogo($jogo['imagem_capa'])) ?>" 
            alt="Capa de <?= sanitize($jogo['nome']) ?>" 
            class="game-main-img" 
            style="margin-left: 0; width: 220px; height: 300px; object-fit: cover;">
@@ -216,7 +248,7 @@ require_once __DIR__ . '/includes/header.php';
         <div style="display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px; border-radius: 10px; margin-top: 6px; width: 100%; box-sizing: border-box; justify-content: center;">
           <img src="fotos/extras/metacritic-icon.png" alt="Metacritic" style="height: 26px; width: 26px;">
           <span style="font-size: 13px; font-weight: 600;">Metascore:</span>
-          <span style="background: <?= getMetacriticColor($jogo['nota_metacritic']) ?>; color: #fff; font-weight: 800; font-size: 14px; padding: 2px 8px; border-radius: 6px;">
+          <span style="background: <?= getMetacriticColor((float)$jogo['nota_metacritic']) ?>; color: var(--on-accent); font-weight: 800; font-size: 14px; padding: 2px 8px; border-radius: 6px;">
             <?= (int)$jogo['nota_metacritic'] ?>
           </span>
         </div>
@@ -264,7 +296,9 @@ require_once __DIR__ . '/includes/header.php';
       <div style="margin-top: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h3 style="margin: 0; color: var(--title-color); font-size: 18px;">Comparador de Preços por Loja</h3>
-          <span style="font-size: 12px; color: var(--text-muted);">Atualizado automaticamente</span>
+          <span style="font-size: 12px; color: <?= $idadeGeral['velho'] ? 'var(--warning)' : 'var(--text-muted)' ?>;" title="Os preços são coletados uma vez por dia pelo robô do LootPrice">
+            <?= $ultimaAtualizacao ? 'Última coleta: ' . sanitize($idadeGeral['texto']) : '' ?>
+          </span>
         </div>
 
         <?php if (empty($precos)): ?>
@@ -301,6 +335,11 @@ require_once __DIR__ . '/includes/header.php';
                   <div>
                     <div class="platform-name" style="font-size: 16px;"><?= sanitize($p['loja_nome']) ?></div>
                     <div style="font-size: 12px; color: var(--text-muted);">Plataforma: <?= sanitize($p['plataforma_nome']) ?></div>
+                    <?php if ($logado): $idade = idadeDoPreco($p['data_atualizacao'] ?? null); ?>
+                      <div style="font-size: 11px; color: <?= $idade['velho'] ? 'var(--warning)' : 'var(--text-muted)' ?>;">
+                        <?= $idade['velho'] ? '⚠ Preço pode estar desatualizado · ' : '' ?>coletado em <?= sanitize($idade['texto']) ?>
+                      </div>
+                    <?php endif; ?>
                   </div>
                 </div>
 
@@ -311,7 +350,7 @@ require_once __DIR__ . '/includes/header.php';
                       <div class="platform-price" style="margin: 0;">
                         <span class="old-price">R$ <?= number_format($p['valor_original'], 2, ',', '.') ?></span>
                         <span class="new-price"><?= formatPrice($p['valor']) ?></span>
-                        <span class="discount" style="background:#ff4757; color:#fff; font-size:11px; padding:2px 6px; border-radius:4px;">-<?= $porcentagem ?>%</span>
+                        <span class="discount" style="background: var(--danger-border); color: var(--on-accent); font-size:11px; padding:2px 6px; border-radius:4px;">-<?= $porcentagem ?>%</span>
                       </div>
                     <?php else: ?>
                       <div class="platform-price" style="margin: 0;">
@@ -342,6 +381,101 @@ require_once __DIR__ . '/includes/header.php';
           <?php endif; ?>
         <?php endif; ?>
 
+      </div>
+
+      <!-- Histórico de preços: menor preço já registrado e evolução do menor preço por dia -->
+      <?php if ($logado && !empty($historico['menor'])):
+        $serie = $historico['serie'];
+        $menorH = $historico['menor'];
+      ?>
+        <div class="bloco-pagina" id="historico">
+          <h3 class="bloco-titulo">Histórico de preços</h3>
+          <p class="bloco-sub">
+            Menor preço já registrado: <strong style="color: var(--success);"><?= formatPrice($menorH['valor']) ?></strong>
+            na <?= sanitize($menorH['loja']) ?> (<?= date('d/m/Y', strtotime($menorH['registrado_em'])) ?>).
+          </p>
+          <?php if (count($serie) >= 2):
+            $valores = array_map(fn($r) => (float)$r['valor'], $serie);
+            $vmin = min($valores); $vmax = max($valores); $faixa = max(0.01, $vmax - $vmin);
+            $W = 600; $H = 110; $n = count($serie); $pts = [];
+            foreach ($serie as $i => $r) {
+                $x = $n > 1 ? round($i * ($W - 20) / ($n - 1) + 10, 1) : $W / 2;
+                $y = round(10 + ($vmax - (float)$r['valor']) / $faixa * ($H - 20), 1);
+                $pts[] = "$x,$y";
+            }
+          ?>
+            <svg class="hist-grafico" viewBox="0 0 <?= $W ?> <?= $H ?>" role="img" aria-label="Evolução do menor preço de <?= sanitize($jogo['nome']) ?> entre <?= date('d/m/Y', strtotime($serie[0]['dia'])) ?> e <?= date('d/m/Y', strtotime($serie[$n - 1]['dia'])) ?>">
+              <polyline points="<?= implode(' ', $pts) ?>" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <?php foreach ($pts as $pt): [$cx, $cy] = explode(',', $pt); ?><circle cx="<?= $cx ?>" cy="<?= $cy ?>" r="3.5" fill="var(--accent)"/><?php endforeach; ?>
+            </svg>
+            <div class="hist-eixo"><span><?= date('d/m/Y', strtotime($serie[0]['dia'])) ?> · <?= formatPrice($serie[0]['valor']) ?></span><span><?= date('d/m/Y', strtotime($serie[$n - 1]['dia'])) ?> · <?= formatPrice($serie[$n - 1]['valor']) ?></span></div>
+          <?php else: ?>
+            <p class="bloco-sub">O gráfico aparece quando houver pelo menos dois dias de coleta.</p>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
+
+      <!-- Avaliações e comentários -->
+      <div class="bloco-pagina" id="avaliacoes">
+        <h3 class="bloco-titulo">
+          Avaliações dos jogadores
+          <?php if ($resumoAval['total']): ?>
+            <span class="aval-media" title="Média das notas"><?= estrelasTexto($resumoAval['media']) ?> <?= number_format($resumoAval['media'], 1, ',', '') ?> · <?= $resumoAval['total'] ?> <?= $resumoAval['total'] === 1 ? 'avaliação' : 'avaliações' ?></span>
+          <?php endif; ?>
+        </h3>
+
+        <?php if ($logado && isEmailVerified()): ?>
+          <form method="POST" action="avaliar.php" class="aval-form">
+            <?= csrfField() ?>
+            <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
+            <label for="aval-nota"><?= $minhaAval ? 'Sua avaliação (você pode alterar):' : 'Deixe sua avaliação:' ?></label>
+            <div class="aval-linha">
+              <select name="nota" id="aval-nota" required>
+                <option value="" disabled <?= $minhaAval ? '' : 'selected' ?>>Nota</option>
+                <?php for ($n = 5; $n >= 1; $n--): ?>
+                  <option value="<?= $n ?>" <?= ($minhaAval && (int)$minhaAval['nota'] === $n) ? 'selected' : '' ?>><?= str_repeat('★', $n) . str_repeat('☆', 5 - $n) ?> (<?= $n ?>)</option>
+                <?php endfor; ?>
+              </select>
+            </div>
+            <textarea name="comentario" rows="3" maxlength="<?= LP_AVALIACAO_MAX_COMENTARIO ?>" placeholder="Comente sobre o jogo (opcional)"><?= sanitize($minhaAval['comentario'] ?? '') ?></textarea>
+            <button type="submit" class="btn-buy-direct" style="border: none; cursor: pointer;"><?= $minhaAval ? 'Atualizar avaliação' : 'Publicar avaliação' ?></button>
+          </form>
+        <?php elseif ($logado): ?>
+          <p class="bloco-sub"><a href="verificar_email.php" style="color: var(--accent-text); font-weight: 700;">Confirme seu e-mail</a> para avaliar jogos.</p>
+        <?php else: ?>
+          <p class="bloco-sub"><a href="login.php?voltar=<?= urlencode('jogo.php?id=' . $idJogo) ?>" style="color: var(--accent-text); font-weight: 700;">Entre na sua conta</a> para avaliar este jogo.</p>
+        <?php endif; ?>
+
+        <?php if (empty($avaliacoes)): ?>
+          <p class="bloco-sub">Ainda não há avaliações. Seja a primeira pessoa a avaliar!</p>
+        <?php else: ?>
+          <div class="aval-lista">
+            <?php foreach ($avaliacoes as $av):
+              $meu = $logado && (int)$av['id_usuario'] === (int)currentUser()['id_usuario'];
+            ?>
+              <article class="aval-item">
+                <?= avatarHtml(['nome' => $av['nome'], 'foto_perfil' => $av['foto_perfil']], 'avatar-sm', '') ?>
+                <div class="aval-corpo">
+                  <div class="aval-cab">
+                    <strong><?= sanitize($av['username'] ?: explode(' ', $av['nome'])[0]) ?></strong>
+                    <span class="aval-estrelas" aria-label="Nota <?= (int)$av['nota'] ?> de 5"><?= estrelasTexto((float)$av['nota']) ?></span>
+                    <time datetime="<?= sanitize($av['criado_em']) ?>"><?= date('d/m/Y', strtotime($av['criado_em'])) ?></time>
+                  </div>
+                  <?php if (!empty($av['comentario'])): ?><p><?= nl2br(sanitize($av['comentario'])) ?></p><?php endif; ?>
+                </div>
+                <?php if ($meu || isAdmin()): ?>
+                  <form method="POST" action="avaliar.php" onsubmit="return confirm('Excluir esta avaliação?');">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
+                    <input type="hidden" name="id_avaliacao" value="<?= (int)$av['id_avaliacao'] ?>">
+                    <input type="hidden" name="acao" value="excluir">
+                    <button type="submit" class="aval-excluir"><?= $meu ? 'Excluir' : 'Excluir (admin)' ?></button>
+                  </form>
+                <?php endif; ?>
+              </article>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
       </div>
 
     </section>

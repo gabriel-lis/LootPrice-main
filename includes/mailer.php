@@ -70,8 +70,8 @@ function lp_enviar_email(string $para, string $nomeDestino, string $assunto, str
         $m->Timeout    = 20;
 
         // XAMPP no Windows costuma não ter o certificado raiz configurado no PHP
-        $cafile = 'C:\xampp\apache\bin\curl-ca-bundle.crt';
-        if (!ini_get('openssl.cafile') && is_file($cafile)) {
+        $cafile = lp_cafile('openssl.cafile');
+        if ($cafile) {
             $m->SMTPOptions = ['ssl' => ['cafile' => $cafile, 'verify_peer' => true, 'verify_peer_name' => true]];
         }
 

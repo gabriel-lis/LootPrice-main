@@ -12,8 +12,12 @@ $basePath = $basePath ?? '';
 $pageTitle = $pageTitle ?? 'LootPrice - O melhor preço de jogos em um só lugar';
 $flash = getFlash();
 $user = currentUser();
-$categories = getAllCategories();
-$platforms = getAllPlatforms();
+// Categorias e plataformas só são consultadas por quem usa (catalogo.php define $precisaFiltros = true)
+if (!empty($precisaFiltros)) {
+    $categories = getAllCategories();
+    $platforms = getAllPlatforms();
+}
+$pageDescription = $pageDescription ?? "Compare preços de jogos em Steam, Epic Games, Xbox, GOG e Nuuvem e ache a oferta mais barata.";
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -21,13 +25,19 @@ $platforms = getAllPlatforms();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= sanitize($pageTitle) ?></title>
+  <meta name="description" content="<?= sanitize($pageDescription) ?>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="<?= $basePath ?>css_index/theme.css?v=<?= @filemtime(__DIR__ . '/../css_index/theme.css') ?>">
   <link rel="stylesheet" href="<?= $basePath ?>css_index/lootprice.css?v=<?= @filemtime(__DIR__ . '/../css_index/lootprice.css') ?>">
   <link rel="stylesheet" href="<?= $basePath ?>css_index/responsive.css?v=<?= @filemtime(__DIR__ . '/../css_index/responsive.css') ?>">
+  <?php if (!empty($cssAdmin)): ?>
+  <link rel="stylesheet" href="<?= $basePath ?>css_index/admin.css?v=<?= @filemtime(__DIR__ . '/../css_index/admin.css') ?>">
+  <?php endif; ?>
+  <?php if (!empty($cssPerfil)): ?>
   <link rel="stylesheet" href="<?= $basePath ?>css_index/perfil.css?v=<?= @filemtime(__DIR__ . '/../css_index/perfil.css') ?>">
+  <?php endif; ?>
   <link rel="shortcut icon" href="<?= $basePath ?>fotos/extras/logoltdark.png" type="image/png">
   <style>
     /* Estilos aprimorados para filtros, flash messages e badges */
@@ -55,7 +65,7 @@ $platforms = getAllPlatforms();
       text-align: center;
       overflow: hidden;
       backdrop-filter: blur(10px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 8px 24px var(--card-shadow);
       animation: toastEntra 0.3s ease;
       transition: opacity 0.3s ease, transform 0.3s ease;
     }
@@ -71,13 +81,13 @@ $platforms = getAllPlatforms();
     }
     @keyframes toastEntra { from { opacity: 0; transform: translateX(-50%) translateY(-12px); } to { opacity: 1; transform: translateX(-50%); } }
     @keyframes toastTempo { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-    .flash-success { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }
-    .flash-error { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #ff6b6b; }
-    .flash-info { background: rgba(52, 152, 219, 0.2); border: 1px solid #3498db; color: #5dade2; }
+    .flash-success { background: var(--success-soft); border: 1px solid var(--success-border); color: var(--success); }
+    .flash-error { background: var(--danger-soft); border: 1px solid var(--danger-border); color: var(--danger); }
+    .flash-info { background: var(--info-soft); border: 1px solid var(--info-border); color: var(--info); }
     
     .badge-admin {
-      background: linear-gradient(90deg, #ffc857, #ff7b54);
-      color: #111;
+      background: var(--warning);
+      color: var(--bg-color);
       padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
@@ -103,8 +113,9 @@ $platforms = getAllPlatforms();
     @media (max-width: 600px) { .user-greet-nome { display: none; } }
     .btn-logout {
       background: transparent;
-      border: 1px solid rgba(255, 71, 87, 0.4);
-      color: #ff6b6b;
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+      font-family: inherit;
       padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
@@ -114,11 +125,11 @@ $platforms = getAllPlatforms();
       transition: all 0.2s ease;
     }
     .btn-logout:hover {
-      background: #ff4757;
-      color: #fff;
+      background: var(--danger-border);
+      color: var(--on-accent);
     }
     /* Header: menu + logo | busca centralizada | entrar */
-    .navbar { width: 100%; box-sizing: border-box; padding: 0 20px; gap: 16px; box-shadow: 0 2px 16px rgba(0,0,0,.25); }
+    .navbar { width: 100%; box-sizing: border-box; padding: 0 20px; gap: 16px; box-shadow: 0 2px 16px var(--card-shadow); }
     .navbar .left-section { flex: 0 0 auto; gap: 14px; }
     .navbar .menu-btn {
       display: inline-flex; align-items: center; justify-content: center;
@@ -134,7 +145,7 @@ $platforms = getAllPlatforms();
       border: 1px solid var(--search-border); border-radius: 999px; box-shadow: none;
       color: var(--text-color); background: var(--search-bg);
     }
-    .search-pill .search-input:focus { border-color: var(--search-focus-border); box-shadow: 0 0 0 3px rgba(255,255,255,.18); }
+    .search-pill .search-input:focus { border-color: var(--search-focus-border); box-shadow: 0 0 0 3px var(--accent-soft); }
     .navbar .auth-buttons { flex: 0 0 auto; align-items: center; gap: 12px; }
     .navbar .btn-theme { border-radius: 10px; width: 40px; height: 40px; padding: 0; background: var(--header-control-bg); border: none; }
     .navbar .btn-theme:hover { background: var(--header-control-hover); }
@@ -150,7 +161,7 @@ $platforms = getAllPlatforms();
     .sidebar { border-right: 1px solid var(--border); }
     .sidebar a { margin: 2px 12px; padding: 13px 16px; border-radius: 10px; font-size: 15px; font-weight: 600; }
     .sidebar a:hover { background: var(--accent-soft); color: var(--accent-text); }
-    .sidebar a.is-current { background: var(--accent); color: #fff; }
+    .sidebar a.is-current { background: var(--accent); color: var(--on-accent); }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-6px); }
@@ -179,7 +190,7 @@ $platforms = getAllPlatforms();
         <svg class="search-pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input type="text" id="searchBar" name="q" class="search-input"
                placeholder="Buscar jogo ou palavra-chave"
-               value="<?= isset($_GET['q']) ? sanitize($_GET['q']) : '' ?>"
+               value="<?= sanitize(lp_get('q', 100)) ?>"
                aria-label="Pesquisar jogos">
       </form>
     </div>
@@ -201,7 +212,10 @@ $platforms = getAllPlatforms();
           <a href="<?= $basePath ?>admin/index.php" class="badge-admin">Admin</a>
         <?php endif; ?>
 
-        <a href="<?= $basePath ?>logout.php" class="btn-logout">Sair</a>
+        <form method="POST" action="<?= $basePath ?>logout.php" style="display:inline;margin:0;">
+          <?= csrfField() ?>
+          <button type="submit" class="btn-logout">Sair</button>
+        </form>
       <?php else: ?>
         <a href="<?= $basePath ?>login.php" class="btn-login btn-entrar">Entrar</a>
       <?php endif; ?>
@@ -220,7 +234,7 @@ $platforms = getAllPlatforms();
     <?php endif; ?>
 
     <?php if (isAdmin()): ?>
-      <a href="<?= $basePath ?>admin/index.php" style="color: #ffc857; font-weight: bold;">⚙️ Painel Admin</a>
+      <a href="<?= $basePath ?>admin/index.php" style="color: var(--warning); font-weight: bold;">⚙️ Painel Admin</a>
     <?php endif; ?>
   </nav>
 
