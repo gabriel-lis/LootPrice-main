@@ -27,6 +27,7 @@ $platforms = getAllPlatforms();
   <link rel="stylesheet" href="<?= $basePath ?>css_index/theme.css?v=<?= @filemtime(__DIR__ . '/../css_index/theme.css') ?>">
   <link rel="stylesheet" href="<?= $basePath ?>css_index/lootprice.css?v=<?= @filemtime(__DIR__ . '/../css_index/lootprice.css') ?>">
   <link rel="stylesheet" href="<?= $basePath ?>css_index/responsive.css?v=<?= @filemtime(__DIR__ . '/../css_index/responsive.css') ?>">
+  <link rel="stylesheet" href="<?= $basePath ?>css_index/perfil.css?v=<?= @filemtime(__DIR__ . '/../css_index/perfil.css') ?>">
   <link rel="shortcut icon" href="<?= $basePath ?>fotos/extras/logoltdark.png" type="image/png">
   <style>
     /* Estilos aprimorados para filtros, flash messages e badges */
@@ -41,6 +42,35 @@ $platforms = getAllPlatforms();
       justify-content: space-between;
       animation: fadeIn 0.3s ease;
     }
+    .flash-toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      min-width: 260px;
+      padding: 14px 22px 17px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      animation: toastEntra 0.3s ease;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .flash-toast.saindo { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+    .flash-toast-bar {
+      position: absolute;
+      left: 0; bottom: 0;
+      height: 3px;
+      width: 100%;
+      background: currentColor;
+      transform-origin: left;
+      animation: toastTempo 1.5s linear forwards;
+    }
+    @keyframes toastEntra { from { opacity: 0; transform: translateX(-50%) translateY(-12px); } to { opacity: 1; transform: translateX(-50%); } }
+    @keyframes toastTempo { from { transform: scaleX(1); } to { transform: scaleX(0); } }
     .flash-success { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #2ecc71; }
     .flash-error { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #ff6b6b; }
     .flash-info { background: rgba(52, 152, 219, 0.2); border: 1px solid #3498db; color: #5dade2; }
@@ -68,19 +98,9 @@ $platforms = getAllPlatforms();
       color: var(--header-fg);
       font-size: 14px;
     }
-    .user-greet::before {
-      content: attr(data-initial);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--btn-bg);
-      color: #fff;
-      font-weight: bold;
-      font-size: 12px;
-    }
+    .user-greet-link { text-decoration: none; gap: 10px; }
+    .user-greet-link:hover .user-greet-nome { text-decoration: underline; }
+    @media (max-width: 600px) { .user-greet-nome { display: none; } }
     .btn-logout {
       background: transparent;
       border: 1px solid rgba(255, 71, 87, 0.4);
@@ -172,9 +192,10 @@ $platforms = getAllPlatforms();
       </button>
 
       <?php if ($user): ?>
-        <span class="user-greet" data-initial="<?= strtoupper(substr($user['nome'], 0, 1)) ?>" aria-label="Usuário <?= sanitize($user['nome']) ?>">
-          Olá, <?= sanitize(explode(' ', $user['nome'])[0]) ?>
-        </span>
+        <a href="<?= $basePath ?>perfil.php" class="user-greet user-greet-link" title="Meu perfil" aria-label="Meu perfil de <?= sanitize($user['nome']) ?>">
+          <?= avatarHtml($user, 'avatar-sm', $basePath) ?>
+          <span class="user-greet-nome">Olá, <?= sanitize(explode(' ', $user['nome'])[0]) ?></span>
+        </a>
 
         <?php if (isAdmin()): ?>
           <a href="<?= $basePath ?>admin/index.php" class="badge-admin">Admin</a>
@@ -194,6 +215,10 @@ $platforms = getAllPlatforms();
     <a href="<?= $basePath ?>descontos.php" <?= $paginaAtual === 'descontos.php' ? 'class="is-current" aria-current="page"' : '' ?>>Descontos</a>
     <a href="<?= $basePath ?>sobre.php" <?= $paginaAtual === 'sobre.php' ? 'class="is-current" aria-current="page"' : '' ?>>Sobre LootPrice</a>
 
+    <?php if ($user): ?>
+      <a href="<?= $basePath ?>perfil.php" <?= $paginaAtual === 'perfil.php' ? 'class="is-current" aria-current="page"' : '' ?>>Meu perfil</a>
+    <?php endif; ?>
+
     <?php if (isAdmin()): ?>
       <a href="<?= $basePath ?>admin/index.php" style="color: #ffc857; font-weight: bold;">⚙️ Painel Admin</a>
     <?php endif; ?>
@@ -203,8 +228,18 @@ $platforms = getAllPlatforms();
 
   <!-- Exibição de Alertas do Sistema (Flash Messages) -->
   <?php if ($flash): ?>
-    <div class="flash-alert flash-<?= sanitize($flash['type']) ?>" role="alert">
+    <div class="flash-toast flash-<?= sanitize($flash['type']) ?>" role="alert">
       <span><?= sanitize($flash['message']) ?></span>
-      <button onclick="this.parentElement.remove()" style="background:transparent; border:none; color:inherit; font-size:18px; cursor:pointer;">&times;</button>
+      <i class="flash-toast-bar"></i>
     </div>
+    <script>
+      (function () {
+        var t = document.querySelector('.flash-toast');
+        if (!t) return;
+        setTimeout(function () {
+          t.classList.add('saindo');
+          setTimeout(function () { t.remove(); }, 300);
+        }, 1500);
+      })();
+    </script>
   <?php endif; ?>

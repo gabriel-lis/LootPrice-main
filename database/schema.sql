@@ -10,6 +10,7 @@ USE `lootprice`;
 -- Desativa checagem de chaves estrangeiras temporariamente para recriação limpa
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `lista_desejos`;
 DROP TABLE IF EXISTS `acessos_jogos`;
 DROP TABLE IF EXISTS `jogo_loja_ref`;
 DROP TABLE IF EXISTS `precos`;
@@ -33,6 +34,10 @@ CREATE TABLE `usuarios` (
   `nome` VARCHAR(100) NOT NULL,
   `username` VARCHAR(30) NULL UNIQUE,
   `sexo` ENUM('masculino', 'feminino', 'nao_informado') NOT NULL DEFAULT 'nao_informado',
+  `data_nascimento` DATE NULL,
+  `telefone` VARCHAR(20) NULL,
+  `foto_perfil` VARCHAR(255) NULL,
+  `foto_fundo` VARCHAR(255) NULL,
   `email` VARCHAR(100) NOT NULL UNIQUE,
   `senha` VARCHAR(255) NOT NULL,
   `tipo_usuario` ENUM('visitante', 'usuario', 'administrador') NOT NULL DEFAULT 'usuario',
@@ -149,6 +154,18 @@ CREATE TABLE `acessos_jogos` (
   INDEX `idx_acesso_jogo` (`id_jogo`, `criado_em`),
   CONSTRAINT `fk_acesso_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
   CONSTRAINT `fk_acesso_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 9.1 Tabela: lista_desejos (jogos que cada usuário quer acompanhar)
+-- ---------------------------------------------------------------------
+CREATE TABLE `lista_desejos` (
+  `id_usuario` INT NOT NULL,
+  `id_jogo` INT NOT NULL,
+  `criado_em` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_usuario`, `id_jogo`),
+  CONSTRAINT `fk_desejo_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
+  CONSTRAINT `fk_desejo_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------

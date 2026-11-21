@@ -140,6 +140,20 @@ require_once __DIR__ . '/includes/header.php';
     filter: brightness(1.15);
     transform: translateY(-2px);
   }
+  .precos-visitante { position: relative; }
+  .precos-borrados { filter: blur(7px); pointer-events: none; user-select: none; }
+  .precos-overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 16px;
+  }
+  .precos-overlay p { margin: 0; font-weight: 600; color: var(--heading); }
+  .precos-overlay span { font-size: 13px; color: var(--text-muted); }
+  .precos-overlay span a { color: var(--accent); font-weight: 700; }
+  .btn-entrar-precos {
+    background: var(--accent); color: #fff; padding: 10px 32px; border-radius: 8px;
+    font-weight: 700; text-decoration: none;
+  }
+  .btn-entrar-precos:hover { filter: brightness(1.15); }
 </style>
 
 <div class="game-details-wrapper">
@@ -149,7 +163,25 @@ require_once __DIR__ . '/includes/header.php';
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
       Voltar ao catálogo
     </a>
-    <h1 style="text-align: left; margin: 0; font-size: 32px;"><?= sanitize($jogo['nome']) ?></h1>
+    <div class="jogo-titulo-linha">
+      <h1 style="text-align: left; margin: 0; font-size: 32px;"><?= sanitize($jogo['nome']) ?></h1>
+      <?php
+        $logado = isLoggedIn();
+        $naLista = $logado && isInWishlist((int)currentUser()['id_usuario'], $idJogo);
+        $iconeCoracao = '<svg viewBox="0 0 24 24" width="18" height="18" fill="' . ($naLista ? 'currentColor' : 'none') . '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
+      ?>
+      <?php if ($logado): ?>
+        <form method="POST" action="desejos.php" class="desejo-form">
+          <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
+          <input type="hidden" name="acao" value="<?= $naLista ? 'remover' : 'adicionar' ?>">
+          <button type="submit" class="btn-desejo<?= $naLista ? ' ativo' : '' ?>" aria-pressed="<?= $naLista ? 'true' : 'false' ?>">
+            <?= $iconeCoracao ?> <?= $naLista ? 'Na lista de desejos' : 'Adicionar à lista de desejos' ?>
+          </button>
+        </form>
+      <?php else: ?>
+        <a href="login.php" class="btn-desejo" title="Entre na sua conta para usar a lista de desejos"><?= $iconeCoracao ?> Entrar para adicionar à lista de desejos</a>
+      <?php endif; ?>
+    </div>
 
     <!-- Categorias do Jogo -->
     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
@@ -238,8 +270,14 @@ require_once __DIR__ . '/includes/header.php';
             Nenhum preço cadastrado para este jogo no momento.
           </div>
         <?php else: ?>
+          <?php if (!$logado): ?>
+            <div class="precos-visitante">
+              <div class="precos-borrados" aria-hidden="true">
+          <?php endif; ?>
           <div style="display: flex; flex-direction: column; gap: 12px;">
             <?php foreach ($precos as $idx => $p): 
+              // Visitante: valores falsos (os reais nunca saem do servidor)
+              if (!$logado) { $p['valor'] = 99.99; $p['valor_original'] = null; $p['porcentagem_desconto'] = null; $p['link_compra'] = null; $p['id_preco'] = 0; }
               $isBestDeal = ($p['id_preco'] === $menorPrecoId);
               $temDesconto = (!empty($p['valor_original']) && $p['valor_original'] > $p['valor'] && $p['valor'] > 0);
               $porcentagem = $p['porcentagem_desconto'] ?: ($temDesconto ? round((1 - ($p['valor'] / $p['valor_original'])) * 100) : 0);
@@ -291,6 +329,15 @@ require_once __DIR__ . '/includes/header.php';
               </div>
             <?php endforeach; ?>
           </div>
+          <?php if (!$logado): ?>
+              </div>
+              <div class="precos-overlay">
+                <p>Entre na sua conta para ver os preços e os links das lojas.</p>
+                <a href="login.php?voltar=<?= urlencode('jogo.php?id=' . $idJogo) ?>" class="btn-entrar-precos">Entrar</a>
+                <span>Não tem conta? <a href="login.php?aba=cadastro&amp;voltar=<?= urlencode('jogo.php?id=' . $idJogo) ?>">Criar conta</a></span>
+              </div>
+            </div>
+          <?php endif; ?>
         <?php endif; ?>
 
       </div>

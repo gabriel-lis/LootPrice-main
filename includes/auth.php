@@ -70,6 +70,21 @@ function loginUser(array $user): void {
 }
 
 /**
+ * Avatar do usuário: foto de perfil ou, se não houver, círculo com a inicial do nome.
+ * $classe: classe CSS de tamanho (ex.: 'avatar-sm', 'avatar-xl').
+ */
+function avatarHtml(array $u, string $classe = 'avatar-sm', string $basePath = ''): string {
+    $nome = trim((string)($u['nome'] ?? ''));
+    $inicial = htmlspecialchars(mb_strtoupper(mb_substr($nome, 0, 1, 'UTF-8'), 'UTF-8') ?: '?', ENT_QUOTES, 'UTF-8');
+    $foto = $u['foto_perfil'] ?? null;
+    if ($foto && is_file(__DIR__ . '/../' . $foto)) {
+        $src = htmlspecialchars($basePath . $foto, ENT_QUOTES, 'UTF-8') . '?v=' . filemtime(__DIR__ . '/../' . $foto);
+        return '<span class="avatar ' . $classe . '"><img src="' . $src . '" alt=""></span>';
+    }
+    return '<span class="avatar avatar-letra ' . $classe . '" aria-hidden="true">' . $inicial . '</span>';
+}
+
+/**
  * Encerra a sessão do usuário
  */
 function logoutUser(): void {
