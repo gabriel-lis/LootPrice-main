@@ -2,7 +2,7 @@
 
 Site de comparação de preços de jogos (PHP + MySQL), pensado para rodar no XAMPP.
 Mostra o menor preço de cada jogo em Steam, Epic Games, Xbox, GOG e Nuuvem, com histórico de preços,
-lista de desejos com aviso de promoção por e-mail e avaliações dos jogadores.
+lista de desejos com aviso de promoção por e-mail.
 
 ## Como rodar (XAMPP)
 

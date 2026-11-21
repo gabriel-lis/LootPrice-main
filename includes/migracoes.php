@@ -6,7 +6,6 @@
  *
  *  - precos: um preço por jogo+loja (UNIQUE), sem duplicados
  *  - historico_precos: cada mudança de preço fica registrada (menor preço histórico)
- *  - avaliacoes: nota (1 a 5) e comentário de cada usuário em cada jogo
  *  - tentativas_login: limite de tentativas de login por e-mail/username e por IP
  *  - usuarios.tipo_usuario: sem o valor "visitante" (ninguém usava)
  */
@@ -35,21 +34,6 @@ function lp_migrar_extra(PDO $pdo): void {
             $pdo->exec("INSERT INTO historico_precos (id_jogo, id_loja, valor, valor_original, registrado_em)
                         SELECT id_jogo, id_loja, valor, valor_original, COALESCE(data_atualizacao, NOW()) FROM precos");
         }
-
-        // 3) Avaliações e comentários
-        $pdo->exec("CREATE TABLE IF NOT EXISTS `avaliacoes` (
-            `id_avaliacao` INT AUTO_INCREMENT PRIMARY KEY,
-            `id_usuario` INT NOT NULL,
-            `id_jogo` INT NOT NULL,
-            `nota` TINYINT NOT NULL,
-            `comentario` VARCHAR(1000) DEFAULT NULL,
-            `criado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            `atualizado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY `uq_avaliacao` (`id_usuario`, `id_jogo`),
-            INDEX `idx_avaliacao_jogo` (`id_jogo`, `criado_em`),
-            CONSTRAINT `fk_aval_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
-            CONSTRAINT `fk_aval_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         // 4) Limite de tentativas de login (anti força bruta)
         $pdo->exec("CREATE TABLE IF NOT EXISTS `tentativas_login` (

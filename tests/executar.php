@@ -75,7 +75,7 @@ if ($pdo) {
     testa('"Até R$ 100" inclui "Até R$ 50"', count(getGamesCatalog(null, null, null, 'under100')) >= count(getGamesCatalog(null, null, null, 'under50')));
     testa('"Até R$ 50" inclui os grátis', count(getGamesCatalog(null, null, null, 'under50')) >= count(getGamesCatalog(null, null, null, 'free')));
     testa('UNIQUE(id_jogo,id_loja) em precos', (bool)$pdo->query("SHOW INDEX FROM precos WHERE Key_name = 'uq_preco_jogo_loja'")->fetch());
-    foreach (['historico_precos', 'avaliacoes', 'tentativas_login'] as $t) {
+    foreach (['historico_precos', 'tentativas_login'] as $t) {
         testa("tabela $t existe", (bool)$pdo->query("SHOW TABLES LIKE '$t'")->fetch());
     }
     testa('existe pelo menos 1 administrador', (int)$pdo->query("SELECT COUNT(*) FROM usuarios WHERE tipo_usuario='administrador'")->fetchColumn() >= 1);

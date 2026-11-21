@@ -7,7 +7,6 @@
 USE `lootprice`;
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `tentativas_login`;
-DROP TABLE IF EXISTS `avaliacoes`;
 DROP TABLE IF EXISTS `historico_precos`;
 DROP TABLE IF EXISTS `avisos_preco`;
 DROP TABLE IF EXISTS `verificacoes_email`;

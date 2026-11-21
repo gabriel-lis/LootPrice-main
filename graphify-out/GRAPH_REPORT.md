@@ -1,17 +1,17 @@
 # Graph Report - LootPrice-main  (2026-11-21)
 
 ## Corpus Check
-- 57 files · ~65,504 words
+- 54 files · ~63,922 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 20 file(s) not represented in the graph (top: .css 11, (none) 9)
 
 ## Summary
-- 523 nodes · 1039 edges · 56 communities (13 shown, 43 thin omitted)
-- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 189 edges (avg confidence: 0.87)
+- 515 nodes · 1026 edges · 55 communities (13 shown, 42 thin omitted)
+- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 182 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cbaf7a10`
+- Built from commit: `1ed2403f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -42,9 +42,9 @@
 3. `Estrutura do projeto` - 31 edges
 4. `LootPrice project` - 24 edges
 5. `Exception` - 22 edges
-6. `getDB()` - 22 edges
-7. `lp_consulta()` - 16 edges
-8. `lp_enviar_email()` - 14 edges
+6. `getDB()` - 20 edges
+7. `lp_enviar_email()` - 14 edges
+8. `lp_consulta()` - 13 edges
 9. `lp_descobrir_populares()` - 12 edges
 10. `lp_log_erro()` - 12 edges
 
@@ -53,12 +53,12 @@
   CLAUDE.md → includes/functions.php
 - `Crítico / alto` --references--> `refreshSessionUser()`  [INFERRED]
   documentacao/Relatorio-Correcoes-2026-11-21.md → includes/auth.php
-- `Estrutura do projeto` --references--> `lp_enviar_avisos_promocao()`  [INFERRED]
-  CLAUDE.md → includes/avisos.php
-- `Estrutura do projeto` --references--> `lp_executar()`  [INFERRED]
-  CLAUDE.md → includes/coletor.php
 - `Estrutura do projeto` --references--> `capaJogo()`  [INFERRED]
   CLAUDE.md → includes/functions.php
+- `Estrutura do projeto` --references--> `precoBorrado()`  [INFERRED]
+  CLAUDE.md → includes/functions.php
+- `Estrutura do projeto` --references--> `lp_enviar_avisos_promocao()`  [INFERRED]
+  CLAUDE.md → includes/avisos.php
 
 ## Import Cycles
 - None detected.
@@ -71,19 +71,19 @@
 - **Price comparison flow** — documentacao_lootprice2_rf04, documentacao_lootprice2_rf05, documentacao_lootprice2_rf06, documentacao_lootprice2_rf09 [INFERRED 0.85]
 - **Game cover gallery** — fotos_jogos_apex, fotos_jogos_dbd, fotos_jogos_ds, fotos_jogos_ds3, fotos_jogos_er, fotos_jogos_r6, fotos_jogos_ror2, fotos_jogos_sot, fotos_jogos_warframe, fotos_jogos_witcher [INFERRED 0.85]
 
-## Communities (56 total, 43 thin omitted)
+## Communities (55 total, 42 thin omitted)
 
 ### Community 0 - "LootPrice project"
 Cohesion: 0.06
 Nodes (41): Epic Games store, Steam store, Xbox store, Actor: savings-seeking consumer, Actor: content creators and streamers, Actor: Game Pass-checking consumer, Class diagram, DER (entity-relationship diagram) (+33 more)
 
 ### Community 1 - "admin.php"
-Cohesion: 0.14
-Nodes (5): {closure#3}(), lerCampos(), adminErro(), lp_conta_admins(), lp_link_valido()
+Cohesion: 0.13
+Nodes (6): {closure#3}(), lerCampos(), adminErro(), adminNotaMeta(), lp_conta_admins(), lp_link_valido()
 
 ### Community 2 - "functions.php"
-Cohesion: 0.08
-Nodes (31): adminNotaMeta(), deleteReview(), getGameReviews(), getReviewSummary(), getUserReview(), saveReview(), renderGameRowCard(), renderPosterCard() (+23 more)
+Cohesion: 0.10
+Nodes (25): renderGameRowCard(), renderPosterCard(), capaJogo(), countGamesCatalog(), formatPrice(), getAllCategories(), getAllPlatforms(), getAllStores() (+17 more)
 
 ### Community 4 - "Ator: Administrador"
 Cohesion: 0.16
@@ -131,14 +131,14 @@ Nodes (10): Arquivos novos, Baixo / limpeza, Como foi verificado (e o que não f
 
 ## Knowledge Gaps
 - **39 isolated node(s):** `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer`, `GOG store`, `Metacritic rating` (+34 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 166 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 164 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `PHPMailer` connect `RF05 real-time price comparison` to `LootPrice Home`, `.mailSend`, `Exception`, `.preSend`, `.normalizeBreaks`, `.addOrEnqueueAnAddress`, `lp_enviar_email`, `.createBody`?**
-  _High betweenness centrality (0.305) - this node is a cross-community bridge._
+  _High betweenness centrality (0.307) - this node is a cross-community bridge._
 - **Are the 30 inferred relationships involving `Estrutura do projeto` (e.g. with `getDB()` and `lp_cafile()`) actually correct?**
   _`Estrutura do projeto` has 30 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer` to the rest of the system?**
@@ -146,7 +146,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `LootPrice project` be split into smaller, more focused modules?**
   _Cohesion score 0.05731707317073171 - nodes in this community are weakly interconnected._
 - **Why does `lp_enviar_email()` connect `lp_enviar_email` to `LootPrice Home`, `.addOrEnqueueAnAddress`, `RF05 real-time price comparison`, `Estrutura do projeto`?**
-  _High betweenness centrality (0.274) - this node is a cross-community bridge._
+  _High betweenness centrality (0.273) - this node is a cross-community bridge._
 - **Are the 18 inferred relationships involving `Exception` (e.g. with `.addAnAddress()` and `.addAttachment()`) actually correct?**
   _`Exception` has 18 INFERRED edges - model-reasoned connections that need verification._
 

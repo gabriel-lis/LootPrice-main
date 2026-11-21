@@ -215,23 +215,6 @@ CREATE TABLE IF NOT EXISTS `historico_precos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
--- 14. Tabela: avaliacoes (nota 1 a 5 e comentário de cada usuário em cada jogo)
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `avaliacoes` (
-  `id_avaliacao` INT AUTO_INCREMENT PRIMARY KEY,
-  `id_usuario` INT NOT NULL,
-  `id_jogo` INT NOT NULL,
-  `nota` TINYINT NOT NULL,
-  `comentario` VARCHAR(1000) DEFAULT NULL,
-  `criado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `atualizado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `uq_avaliacao` (`id_usuario`, `id_jogo`),
-  INDEX `idx_avaliacao_jogo` (`id_jogo`, `criado_em`),
-  CONSTRAINT `fk_aval_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
-  CONSTRAINT `fk_aval_jogo` FOREIGN KEY (`id_jogo`) REFERENCES `jogos` (`id_jogo`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ---------------------------------------------------------------------
 -- 15. Tabela: tentativas_login (limite de tentativas: anti força bruta)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tentativas_login` (

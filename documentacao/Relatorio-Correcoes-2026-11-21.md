@@ -26,7 +26,7 @@ Nada foi commitado: as mudanças estão no disco, na branch, para você revisar 
 | # | Problema | O que foi feito | Arquivos |
 |---|---|---|---|
 | 1 | Robô parado (MySQL desligado na hora) | Pela linha de comando o robô **espera o MySQL subir** (até 20 min). Agendador tenta de novo 3× (a cada 10 min). Script para instalar o MySQL como serviço. `jogo.php` agora mostra "Última coleta: data" por loja e **avisa quando o preço tem mais de 3 dias** (substitui "Atualizado automaticamente"). Dashboard do admin alerta coleta falha/velha. O horário de 20h em vez de 14h é o `StartWhenAvailable` (PC ligado tarde): continua, mas agora a coleta funciona quando roda. | `includes/coletor.php`, `robo/agendar_14h.ps1`, `robo/mysql_como_servico.ps1`, `jogo.php`, `admin/index.php` |
-| 2 | Sem CSRF; cookie; fixação de sessão; sem limite de login | CSRF em **todos** os formulários (login, cadastro, desejos, avaliações, admin inteiro) e **logout só por POST**. Cookie `HttpOnly`+`SameSite` e `session_regenerate_id` já existiam; mantidos. **Limite de tentativas**: 5 erros por conta e 30 por IP em 15 min bloqueiam por 15 min (tabela `tentativas_login`). | `includes/auth.php`, `login.php`, `logout.php`, `desejos.php`, `avaliar.php`, `includes/admin.php`, `includes/header.php`, `perfil.php` |
+| 2 | Sem CSRF; cookie; fixação de sessão; sem limite de login | CSRF em **todos** os formulários (login, cadastro, desejos, admin inteiro) e **logout só por POST**. Cookie `HttpOnly`+`SameSite` e `session_regenerate_id` já existiam; mantidos. **Limite de tentativas**: 5 erros por conta e 30 por IP em 15 min bloqueiam por 15 min (tabela `tentativas_login`). | `includes/auth.php`, `login.php`, `logout.php`, `desejos.php`, `includes/admin.php`, `includes/header.php`, `perfil.php` |
 | 3 | Papel de admin "congelado"; admin se rebaixa | `refreshSessionUser()`: a cada requisição o papel, nome, fotos e e-mail confirmado vêm do banco; conta excluída ou **senha trocada em outro lugar derruba a sessão** (resolve também "trocar a senha não derruba outras sessões"). O servidor impede o admin de se rebaixar/excluir e de **ficar sem nenhum administrador**. | `includes/auth.php`, `admin/usuarios.php` |
 | 4 | Credenciais e banco inseguros | `schema.sql` **sem DROP** (reimportar é seguro), sem usuários com senha conhecida; `database/reset_dev.sql` para recomeçar do zero (só dev); `robo/criar_admin.php` cria o admin. Credenciais do banco vêm de `config/db.local.php` (fora do git). Pastas `config/`, `robo/`, `database/`, `tests/` bloqueadas por `.htaccess` (antes `robo/logs/*.json` e `schema.sql` abriam no navegador). | `database/schema.sql`, `database/reset_dev.sql`, `robo/criar_admin.php`, `config/db.php`, `config/db.local.example.php`, `*/.htaccess` |
 | 5 | Dados falsos como se fossem reais | **Todo mock removido** (jogos, preços, categorias, plataformas, lojas, assinaturas). Se a consulta falhar, a página mostra vazio e o erro vai para `logs/erros.log` (nenhum `catch` engole erro em silêncio). | `includes/functions.php`, `includes/recomendacoes.php`, `config/db.php` |
@@ -74,18 +74,18 @@ Nada foi commitado: as mudanças estão no disco, na branch, para você revisar 
 | Recuperar senha e confirmação de e-mail | Já feito antes (commit anterior). |
 | Alerta de promoção da lista de desejos | Já feito antes. |
 | **Histórico de preços** | **Feito.** Tabela `historico_precos` (carga inicial com os preços de hoje); grava a cada mudança (robô e admin); `jogo.php` mostra o **menor preço já registrado** e um gráfico (para quem está logado; aparece com ≥2 dias de dados). |
-| **Comentários e avaliações** | **Feito.** Nota 1–5 + comentário na página do jogo; uma por usuário (pode editar/excluir); admin modera em `admin/avaliacoes.php`. |
+| Comentários e avaliações | Implementei e **removi a seu pedido** (não faz parte do site). |
 | **CRUD de lojas, categorias e assinaturas; upload de capa** | **Feito** (`admin/cadastros.php` inclui plataformas; upload no formulário do jogo). |
 | **Paginação do catálogo** | **Feito** (24 por página, mantém os filtros). |
 | RF05 "tempo real" na documentação | Site corrigido (mostra a data da coleta); o PDF fica com você. |
 
 ## Arquivos novos
 
-`includes/admin.php`, `includes/migracoes.php`, `includes/avaliacoes.php`, `avaliar.php`, `admin/cadastros.php`, `admin/avaliacoes.php`, `css_index/admin.css`, `config/db.local.example.php`, `database/reset_dev.sql`, `robo/criar_admin.php`, `robo/mysql_como_servico.ps1`, `tests/executar.php`, `fotos/jogos/sem-capa.svg`, `fotos/extras/{playstation,switch,eaplay,psplus}.svg`, `.htaccess` em `config/ robo/ database/ tests/`.
+`includes/admin.php`, `includes/migracoes.php`, `admin/cadastros.php`, `css_index/admin.css`, `config/db.local.example.php`, `database/reset_dev.sql`, `robo/criar_admin.php`, `robo/mysql_como_servico.ps1`, `tests/executar.php`, `fotos/jogos/sem-capa.svg`, `fotos/extras/{playstation,switch,eaplay,psplus}.svg`, `.htaccess` em `config/ robo/ database/ tests/`.
 
 ## Mudanças no banco local (aplicadas automaticamente na primeira abertura do site)
 
-`precos` ganhou `UNIQUE(id_jogo,id_loja)` (nenhum duplicado existia); criadas `historico_precos` (63 linhas de carga inicial), `avaliacoes` e `tentativas_login`; enum `tipo_usuario` sem `visitante`; usernames `admin`/`gamer`; ícones de plataformas/assinaturas.
+`precos` ganhou `UNIQUE(id_jogo,id_loja)` (nenhum duplicado existia); criadas `historico_precos` (63 linhas de carga inicial) e `tentativas_login`; enum `tipo_usuario` sem `visitante`; usernames `admin`/`gamer`; ícones de plataformas/assinaturas.
 
 ## Documentação segundo as suas regras
 

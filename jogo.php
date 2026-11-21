@@ -32,9 +32,6 @@ $categorias = getGameCategories($idJogo);
 $plataformas = getGamePlatforms($idJogo);
 $assinaturas = getGameSubscriptions($idJogo);
 $historico = getPriceHistory($idJogo);
-$resumoAval = getReviewSummary($idJogo);
-$avaliacoes = getGameReviews($idJogo);
-$minhaAval = isLoggedIn() ? getUserReview((int)currentUser()['id_usuario'], $idJogo) : null;
 $pageDescription = 'Compare o preço de ' . $jogo['nome'] . ' nas principais lojas e veja onde está mais barato.';
 
 // Data da coleta mais antiga/recente (para avisar quando o preço está velho)
@@ -158,19 +155,6 @@ require_once __DIR__ . '/includes/header.php';
   .bloco-sub { margin: 0 0 12px; font-size: 14px; color: var(--text-muted); }
   .hist-grafico { width: 100%; height: auto; max-height: 150px; display: block; background: var(--surface-2); border-radius: 8px; }
   .hist-eixo { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
-  .aval-media { font-size: 13px; font-weight: 600; color: var(--warning); }
-  .aval-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; align-items: flex-start; }
-  .aval-form label { font-size: 14px; font-weight: 600; }
-  .aval-form select, .aval-form textarea { background: var(--input-bg); color: var(--input-text); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; font: inherit; }
-  .aval-form textarea { width: 100%; box-sizing: border-box; resize: vertical; }
-  .aval-lista { display: flex; flex-direction: column; gap: 12px; }
-  .aval-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px; background: var(--surface-2); border-radius: 10px; }
-  .aval-corpo { flex: 1; min-width: 0; }
-  .aval-cab { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; font-size: 14px; }
-  .aval-cab time { font-size: 12px; color: var(--text-muted); }
-  .aval-estrelas { color: var(--warning); letter-spacing: 1px; }
-  .aval-corpo p { margin: 6px 0 0; font-size: 14px; overflow-wrap: anywhere; }
-  .aval-excluir { background: transparent; border: none; color: var(--danger); cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; }
   .precos-visitante { position: relative; }
   .precos-borrados { filter: blur(7px); pointer-events: none; user-select: none; }
   .precos-overlay {
@@ -414,69 +398,6 @@ require_once __DIR__ . '/includes/header.php';
           <?php endif; ?>
         </div>
       <?php endif; ?>
-
-      <!-- Avaliações e comentários -->
-      <div class="bloco-pagina" id="avaliacoes">
-        <h3 class="bloco-titulo">
-          Avaliações dos jogadores
-          <?php if ($resumoAval['total']): ?>
-            <span class="aval-media" title="Média das notas"><?= estrelasTexto($resumoAval['media']) ?> <?= number_format($resumoAval['media'], 1, ',', '') ?> · <?= $resumoAval['total'] ?> <?= $resumoAval['total'] === 1 ? 'avaliação' : 'avaliações' ?></span>
-          <?php endif; ?>
-        </h3>
-
-        <?php if ($logado && isEmailVerified()): ?>
-          <form method="POST" action="avaliar.php" class="aval-form">
-            <?= csrfField() ?>
-            <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
-            <label for="aval-nota"><?= $minhaAval ? 'Sua avaliação (você pode alterar):' : 'Deixe sua avaliação:' ?></label>
-            <div class="aval-linha">
-              <select name="nota" id="aval-nota" required>
-                <option value="" disabled <?= $minhaAval ? '' : 'selected' ?>>Nota</option>
-                <?php for ($n = 5; $n >= 1; $n--): ?>
-                  <option value="<?= $n ?>" <?= ($minhaAval && (int)$minhaAval['nota'] === $n) ? 'selected' : '' ?>><?= str_repeat('★', $n) . str_repeat('☆', 5 - $n) ?> (<?= $n ?>)</option>
-                <?php endfor; ?>
-              </select>
-            </div>
-            <textarea name="comentario" rows="3" maxlength="<?= LP_AVALIACAO_MAX_COMENTARIO ?>" placeholder="Comente sobre o jogo (opcional)"><?= sanitize($minhaAval['comentario'] ?? '') ?></textarea>
-            <button type="submit" class="btn-buy-direct" style="border: none; cursor: pointer;"><?= $minhaAval ? 'Atualizar avaliação' : 'Publicar avaliação' ?></button>
-          </form>
-        <?php elseif ($logado): ?>
-          <p class="bloco-sub"><a href="verificar_email.php" style="color: var(--accent-text); font-weight: 700;">Confirme seu e-mail</a> para avaliar jogos.</p>
-        <?php else: ?>
-          <p class="bloco-sub"><a href="login.php?voltar=<?= urlencode('jogo.php?id=' . $idJogo) ?>" style="color: var(--accent-text); font-weight: 700;">Entre na sua conta</a> para avaliar este jogo.</p>
-        <?php endif; ?>
-
-        <?php if (empty($avaliacoes)): ?>
-          <p class="bloco-sub">Ainda não há avaliações. Seja a primeira pessoa a avaliar!</p>
-        <?php else: ?>
-          <div class="aval-lista">
-            <?php foreach ($avaliacoes as $av):
-              $meu = $logado && (int)$av['id_usuario'] === (int)currentUser()['id_usuario'];
-            ?>
-              <article class="aval-item">
-                <?= avatarHtml(['nome' => $av['nome'], 'foto_perfil' => $av['foto_perfil']], 'avatar-sm', '') ?>
-                <div class="aval-corpo">
-                  <div class="aval-cab">
-                    <strong><?= sanitize($av['username'] ?: explode(' ', $av['nome'])[0]) ?></strong>
-                    <span class="aval-estrelas" aria-label="Nota <?= (int)$av['nota'] ?> de 5"><?= estrelasTexto((float)$av['nota']) ?></span>
-                    <time datetime="<?= sanitize($av['criado_em']) ?>"><?= date('d/m/Y', strtotime($av['criado_em'])) ?></time>
-                  </div>
-                  <?php if (!empty($av['comentario'])): ?><p><?= nl2br(sanitize($av['comentario'])) ?></p><?php endif; ?>
-                </div>
-                <?php if ($meu || isAdmin()): ?>
-                  <form method="POST" action="avaliar.php" onsubmit="return confirm('Excluir esta avaliação?');">
-                    <?= csrfField() ?>
-                    <input type="hidden" name="id_jogo" value="<?= $idJogo ?>">
-                    <input type="hidden" name="id_avaliacao" value="<?= (int)$av['id_avaliacao'] ?>">
-                    <input type="hidden" name="acao" value="excluir">
-                    <button type="submit" class="aval-excluir"><?= $meu ? 'Excluir' : 'Excluir (admin)' ?></button>
-                  </form>
-                <?php endif; ?>
-              </article>
-            <?php endforeach; ?>
-          </div>
-        <?php endif; ?>
-      </div>
 
     </section>
 

@@ -11,7 +11,6 @@ $totalJogos = (int)$pdo->query("SELECT COUNT(*) FROM jogos")->fetchColumn();
 $totalPrecos = (int)$pdo->query("SELECT COUNT(*) FROM precos")->fetchColumn();
 $totalUsuarios = (int)$pdo->query("SELECT COUNT(*) FROM usuarios")->fetchColumn();
 $totalLojas = (int)$pdo->query("SELECT COUNT(*) FROM lojas")->fetchColumn();
-$totalAvaliacoes = (int)$pdo->query("SELECT COUNT(*) FROM avaliacoes")->fetchColumn();
 $ultimosJogos = $pdo->query("SELECT * FROM jogos ORDER BY id_jogo DESC LIMIT 5")->fetchAll();
 
 // Saúde da coleta: data do preço mais recente e último resultado do robô
@@ -126,7 +125,6 @@ require_once __DIR__ . '/../includes/header.php';
         <a href="precos.php"><span>💰 Preços e Ofertas</span><span>→</span></a>
         <a href="cadastros.php"><span>🏷️ Lojas, Categorias e Assinaturas</span><span>→</span></a>
         <a href="usuarios.php"><span>👥 Usuários</span><span>→</span></a>
-        <a href="avaliacoes.php"><span>⭐ Avaliações (<?= $totalAvaliacoes ?>)</span><span>→</span></a>
         <a href="../index.php"><span>🌐 Visualizar Site Público</span><span>→</span></a>
       </div>
     </div>

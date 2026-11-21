@@ -6,9 +6,9 @@
     "semantic_hash": ""
   },
   "admin/index.php": {
-    "mtime": 1795236429.0086212,
-    "seen": 1795236522.0328214,
-    "ast_hash": "c10ef78dfa9334fa613892c294e9698a",
+    "mtime": 1795238413.2371657,
+    "seen": 1795238424.032362,
+    "ast_hash": "28ec6449b0d6decf697b341b6554caf3",
     "semantic_hash": ""
   },
   "admin/jogo_form.php": {
@@ -60,9 +60,9 @@
     "semantic_hash": ""
   },
   "includes/functions.php": {
-    "mtime": 1795235933.2162647,
-    "seen": 1795236522.033792,
-    "ast_hash": "0660dccfd99287954fb2aec60abafe35",
+    "mtime": 1795238413.2366595,
+    "seen": 1795238424.0349574,
+    "ast_hash": "cf9a9e52c55fed606fed1eab8c7dc127",
     "semantic_hash": ""
   },
   "includes/header.php": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "jogo.php": {
-    "mtime": 1795235998.5899806,
-    "seen": 1795236522.034194,
-    "ast_hash": "dad289472c2f47564998ddcc23925de2",
+    "mtime": 1795238413.2351255,
+    "seen": 1795238424.0358043,
+    "ast_hash": "66b82891779fba54ee186a2ab86fa1b2",
     "semantic_hash": ""
   },
   "js_index/darkmode.js": {
@@ -114,15 +114,15 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1795236626.0970118,
-    "seen": 1795236629.977661,
-    "ast_hash": "7220591e5bf547e4be9b43cbf27ae4c9",
+    "mtime": 1795238420.314027,
+    "seen": 1795238424.03815,
+    "ast_hash": "02424c394e9d9880ce520dd36f63220c",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1795236406.8670402,
-    "seen": 1795236522.0351887,
-    "ast_hash": "e92e311884e5e951a08ed244637651cd",
+    "mtime": 1795238413.240182,
+    "seen": 1795238424.0381532,
+    "ast_hash": "c6401e2c62c6c9bcb142cb7ede2df9a0",
     "semantic_hash": ""
   },
   "documentacao/LootPrice2.pdf": {
@@ -551,22 +551,10 @@
     "ast_hash": "247cd5d860744ce07d7eb77fd004add2",
     "semantic_hash": ""
   },
-  "admin/avaliacoes.php": {
-    "mtime": 1795236265.2729692,
-    "seen": 1795236522.032814,
-    "ast_hash": "e5cb169aa7bed67da79db0e0a8e84486",
-    "semantic_hash": ""
-  },
   "admin/cadastros.php": {
     "mtime": 1795236264.4183297,
     "seen": 1795236522.0328178,
     "ast_hash": "083be197705673c88e1ca1698d7c1107",
-    "semantic_hash": ""
-  },
-  "avaliar.php": {
-    "mtime": 1795235932.91786,
-    "seen": 1795236522.032833,
-    "ast_hash": "d361587bb49e3af5356e2aef13723bd2",
     "semantic_hash": ""
   },
   "config/db.local.example.php": {
@@ -581,16 +569,10 @@
     "ast_hash": "1784aea9c36d45a0df1ded9b3819cc89",
     "semantic_hash": ""
   },
-  "includes/avaliacoes.php": {
-    "mtime": 1795235932.8190813,
-    "seen": 1795236522.0337741,
-    "ast_hash": "bcdc373991dd46c25b3ca71147ab0664",
-    "semantic_hash": ""
-  },
   "includes/migracoes.php": {
-    "mtime": 1795235627.1256895,
-    "seen": 1795236522.0337996,
-    "ast_hash": "6ca1f7d8a68afb8cdc7d6fb01a023928",
+    "mtime": 1795238413.2426958,
+    "seen": 1795238424.0352237,
+    "ast_hash": "49ad6b7beea3d0cb18d8ce8954a8fb25",
     "semantic_hash": ""
   },
   "robo/criar_admin.php": {
@@ -606,9 +588,9 @@
     "semantic_hash": ""
   },
   "tests/executar.php": {
-    "mtime": 1795236508.1105175,
-    "seen": 1795236522.035015,
-    "ast_hash": "cd97d2e300cb55b7d29d9daf287569a1",
+    "mtime": 1795238413.2391765,
+    "seen": 1795238424.038002,
+    "ast_hash": "428d82585c98ad92a085debe75efb11d",
     "semantic_hash": ""
   },
   "fotos/extras/eaplay.svg": {
@@ -642,9 +624,9 @@
     "semantic_hash": ""
   },
   "documentacao/Relatorio-Correcoes-2026-11-21.md": {
-    "mtime": 1795236621.3884559,
-    "seen": 1795236629.9778132,
-    "ast_hash": "20de765706051631dd4b49d132d54a8b",
+    "mtime": 1795238420.31302,
+    "seen": 1795238424.0381558,
+    "ast_hash": "1fccba686d504bb0c4ba73306ca6a363",
     "semantic_hash": ""
   }
 }
