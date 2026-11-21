@@ -46,7 +46,7 @@ Não pular esses passos mesmo em mudanças pequenas.
 | `css_index/` | Estilos. **`theme.css` é a única fonte de cores/fonte** (modo escuro `:root`, claro `body.light-mode`; inclui `--input-*`, `--label-color`, `--title-color`, `--highlight`, `--warning`, `--info`, `--on-accent`, `--scrim`; os apelidos que dependem de outras variáveis ficam no bloco `:root, body.light-mode` no fim); `cards.css` (catálogo, paginação, preço borrado), `home.css` (home/descontos/poster), `lootprice.css` (base/navbar/sidebar/avatar), `admin.css` (painel admin), `perfil.css` |
 | `fotos/` | Imagens (logos de lojas, capas de jogos, ícones de tema) |
 | `ideias/` | Diagrama de casos de uso e rascunhos (`.docx`) |
-| `documentacao/LootPrice2.pdf`, `documentacao/Lootprice2-1.pdf` | Documentação do projeto. `LootPrice2.pdf` = versão 1 (RF01–RF09, RNF01–RNF05); `Lootprice2-1.pdf` = versão 2.1 do módulo de modelagem de dados (introdução, objetivos, RN01–RN25, RF01–RF21, casos de uso, classes, MER/DER/modelo lógico, telas); `Relatorio-Correcoes-2026-11-21.md` = relatório da revisão geral (o que foi corrigido, como foi testado e o que depende do dono); `Lootprice2-2.pdf` = versão 2.2 (RN01–RN35, RF01–RF28, com perfil, lista de desejos e preços borrados para visitante) |
+| `documentacao/LootPrice2.pdf`, `documentacao/Lootprice2-1.pdf` | Documentação do projeto. `LootPrice2.pdf` = versão 1 (RF01–RF09, RNF01–RNF05); `Lootprice2-1.pdf` = versão 2.1 do módulo de modelagem de dados, **refeita em 2026-11-21** (22 páginas: introdução, objetivos, RN01–RN35, RF01–RF26, casos de uso com 4 atores, classes, MER, DER, modelo lógico das 17 tabelas, 15 telas); `Relatorio-Correcoes-2026-11-21.md` = relatório da revisão geral (o que foi corrigido, como foi testado e o que depende do dono); `Lootprice2-2.pdf` = versão 2.2 (RN01–RN35, RF01–RF28, com perfil, lista de desejos e preços borrados para visitante) |
 | `graphify-out/` | Grafo de conhecimento (`graph.html`, `graph.json`, `GRAPH_REPORT.md`). O `cache/` não vai para o git |
 | `tests/executar.php` | 37 testes automáticos simples (funções puras + consultas de leitura): `C:\xampp\php\php.exe tests\executar.php` |
 | `robo/criar_admin.php`, `robo/mysql_como_servico.ps1`, `README.md`, `logs/` | `criar_admin.php` cria/promove administrador (substitui admin123/gamer123); `mysql_como_servico.ps1` instala o MySQL do XAMPP como serviço (rodar como administrador); `README.md` = como instalar; `logs/` = `erros.log` (consultas/sessão/banco), `email.log`, marcadores `schema_*.ok` |
@@ -61,6 +61,8 @@ Nós mais centrais no grafo: `getDB()`, `LootPrice Home`, `Catalogo de jogos`.
 - Verificação de login/admin via funções de `includes/auth.php` (`requireLogin()`, `requireAdmin()`).
 
 ## Registro de alterações
+
+- 2026-11-21: refeita a documentação `documentacao/Lootprice2-1.pdf` (versão 2.1, texto em primeira pessoa de estudante, modelagem de dados): cobre confirmação de e-mail, recuperar senha, aviso de promoção, histórico de preços, robô e painel admin novos; 15 prints novos tirados com conta de teste (apagada depois). Gerada fora do projeto (script em pasta temporária). Arquivo: `documentacao/Lootprice2-1.pdf`.
 
 - 2026-11-21: removida a função de avaliações/comentários de usuários (adicionada por engano na revisão geral; o site não terá avaliação de usuário). Apagados `avaliar.php`, `includes/avaliacoes.php`, `admin/avaliacoes.php`, o bloco em `jogo.php` e a tabela `avaliacoes` (schema.sql, migrações e banco local; estava vazia).
 

@@ -1,27 +1,26 @@
 # Graph Report - LootPrice-main  (2026-11-21)
 
 ## Corpus Check
-- 54 files · ~63,922 words
+- 54 files · ~63,990 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 20 file(s) not represented in the graph (top: .css 11, (none) 9)
 
 ## Summary
-- 515 nodes · 1026 edges · 55 communities (13 shown, 42 thin omitted)
+- 515 nodes · 1026 edges · 53 communities (12 shown, 41 thin omitted)
 - Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 182 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1ed2403f`
+- Built from commit: `64620564`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - LootPrice project
-- admin.php
 - functions.php
-- LootPrice Home
+- SMTP
 - Ator: Administrador
-- RF05 real-time price comparison
+- PHPMailer
 - Game cover art
 - menulateral.js
 - LootPrice brand
@@ -30,7 +29,7 @@
 - Light theme
 - LootPrice-main README
 - coletor.php
-- Exception
+- .lang
 - perfil.php
 - Estrutura do projeto
 - lp_enviar_email
@@ -45,20 +44,20 @@
 6. `getDB()` - 20 edges
 7. `lp_enviar_email()` - 14 edges
 8. `lp_consulta()` - 13 edges
-9. `lp_descobrir_populares()` - 12 edges
-10. `lp_log_erro()` - 12 edges
+9. `lp_log_erro()` - 12 edges
+10. `lp_descobrir_populares()` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Estrutura do projeto` --references--> `idadeDoPreco()`  [INFERRED]
-  CLAUDE.md → includes/functions.php
 - `Crítico / alto` --references--> `refreshSessionUser()`  [INFERRED]
   documentacao/Relatorio-Correcoes-2026-11-21.md → includes/auth.php
-- `Estrutura do projeto` --references--> `capaJogo()`  [INFERRED]
-  CLAUDE.md → includes/functions.php
-- `Estrutura do projeto` --references--> `precoBorrado()`  [INFERRED]
+- `Estrutura do projeto` --references--> `idadeDoPreco()`  [INFERRED]
   CLAUDE.md → includes/functions.php
 - `Estrutura do projeto` --references--> `lp_enviar_avisos_promocao()`  [INFERRED]
   CLAUDE.md → includes/avisos.php
+- `Registro de alterações` --references--> `lp_melhor()`  [INFERRED]
+  CLAUDE.md → includes/coletor.php
+- `Estrutura do projeto` --references--> `lp_executar()`  [INFERRED]
+  CLAUDE.md → includes/coletor.php
 
 ## Import Cycles
 - None detected.
@@ -71,19 +70,15 @@
 - **Price comparison flow** — documentacao_lootprice2_rf04, documentacao_lootprice2_rf05, documentacao_lootprice2_rf06, documentacao_lootprice2_rf09 [INFERRED 0.85]
 - **Game cover gallery** — fotos_jogos_apex, fotos_jogos_dbd, fotos_jogos_ds, fotos_jogos_ds3, fotos_jogos_er, fotos_jogos_r6, fotos_jogos_ror2, fotos_jogos_sot, fotos_jogos_warframe, fotos_jogos_witcher [INFERRED 0.85]
 
-## Communities (55 total, 42 thin omitted)
+## Communities (53 total, 41 thin omitted)
 
 ### Community 0 - "LootPrice project"
 Cohesion: 0.06
 Nodes (41): Epic Games store, Steam store, Xbox store, Actor: savings-seeking consumer, Actor: content creators and streamers, Actor: Game Pass-checking consumer, Class diagram, DER (entity-relationship diagram) (+33 more)
 
-### Community 1 - "admin.php"
-Cohesion: 0.13
-Nodes (6): {closure#3}(), lerCampos(), adminErro(), adminNotaMeta(), lp_conta_admins(), lp_link_valido()
-
 ### Community 2 - "functions.php"
-Cohesion: 0.10
-Nodes (25): renderGameRowCard(), renderPosterCard(), capaJogo(), countGamesCatalog(), formatPrice(), getAllCategories(), getAllPlatforms(), getAllStores() (+17 more)
+Cohesion: 0.06
+Nodes (32): {closure#3}(), lerCampos(), adminErro(), adminNotaMeta(), lp_conta_admins(), lp_link_valido(), renderGameRowCard(), renderPosterCard() (+24 more)
 
 ### Community 4 - "Ator: Administrador"
 Cohesion: 0.16
@@ -115,10 +110,10 @@ Nodes (4): abrir(), aplicarZoom(), desenhar(), limitar()
 
 ### Community 46 - "Estrutura do projeto"
 Cohesion: 0.06
-Nodes (54): linkPagina(), 1. Antes de responder ou alterar: consultar o Graphify, 2. Depois de qualquer alteração no código: atualizar Graphify e este arquivo, Convenções, Estrutura do projeto, LootPrice, Registro de alterações, Regras de trabalho (obrigatórias) (+46 more)
+Nodes (53): linkPagina(), 1. Antes de responder ou alterar: consultar o Graphify, 2. Depois de qualquer alteração no código: atualizar Graphify e este arquivo, Convenções, Estrutura do projeto, LootPrice, Registro de alterações, Regras de trabalho (obrigatórias) (+45 more)
 
 ### Community 50 - "lp_enviar_email"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (20): {closure#3}(), ensureAvisosSchema(), lp_dinheiro(), lp_email_promocao(), lp_enviar_avisos_promocao(), lp_promocoes_atuais(), lp_token_descadastro(), lp_url_descadastro() (+12 more)
 
 ### Community 55 - "LootPrice — Relatório de correções"
@@ -132,12 +127,12 @@ Nodes (10): Arquivos novos, Baixo / limpeza, Como foi verificado (e o que não f
 ## Knowledge Gaps
 - **39 isolated node(s):** `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer`, `GOG store`, `Metacritic rating` (+34 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 164 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PHPMailer` connect `RF05 real-time price comparison` to `LootPrice Home`, `.mailSend`, `Exception`, `.preSend`, `.normalizeBreaks`, `.addOrEnqueueAnAddress`, `lp_enviar_email`, `.createBody`?**
+- **Why does `PHPMailer` connect `PHPMailer` to `SMTP`, `.mailSend`, `.lang`, `.preSend`, `.normalizeBreaks`, `.addOrEnqueueAnAddress`, `lp_enviar_email`, `.createBody`?**
   _High betweenness centrality (0.307) - this node is a cross-community bridge._
 - **Are the 30 inferred relationships involving `Estrutura do projeto` (e.g. with `getDB()` and `lp_cafile()`) actually correct?**
   _`Estrutura do projeto` has 30 INFERRED edges - model-reasoned connections that need verification._
@@ -145,7 +140,7 @@ _Questions this graph is uniquely positioned to answer:_
   _39 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `LootPrice project` be split into smaller, more focused modules?**
   _Cohesion score 0.05731707317073171 - nodes in this community are weakly interconnected._
-- **Why does `lp_enviar_email()` connect `lp_enviar_email` to `LootPrice Home`, `.addOrEnqueueAnAddress`, `RF05 real-time price comparison`, `Estrutura do projeto`?**
+- **Why does `lp_enviar_email()` connect `lp_enviar_email` to `SMTP`, `.mailSend`, `PHPMailer`, `.addOrEnqueueAnAddress`, `Estrutura do projeto`?**
   _High betweenness centrality (0.273) - this node is a cross-community bridge._
 - **Are the 18 inferred relationships involving `Exception` (e.g. with `.addAnAddress()` and `.addAttachment()`) actually correct?**
   _`Exception` has 18 INFERRED edges - model-reasoned connections that need verification._
