@@ -8,11 +8,6 @@ img, picture, video, svg {
 }
 
 /* Ajustes no logo e barra superior */
-#lootprice-logo {
-  width: 100%;
-  max-width: 170px; /* valor padrão para desktop */
-  height: auto;
-}
 
 /* Card size defaults (overridden por lootprice.css :root if present) */
 :root {
@@ -60,7 +55,6 @@ footer {
 
 /* Quebras de layout mais finas */
 @media (max-width: 900px) {
-  #lootprice-logo { max-width: 140px; }
   /* Esconder a barra de pesquisa do topo em telas menores para evitar sobreposição com o overlay */
   .search-container { display: none !important; }
   :root { --card-w: 120px; --card-h: 160px; }
@@ -70,7 +64,6 @@ footer {
 @media (max-width: 600px) {
   /* Esconder ou reduzir elementos que ocupam espaço */
   .search-container { display: none; }
-  #lootprice-logo { max-width: 120px; }
   .auth-buttons { gap: 6px; }
   .btn-login { padding: 6px 8px; font-size: 13px; }
   .catalogo { justify-content: center; gap: 10px; }
@@ -80,7 +73,6 @@ footer {
 }
 
 @media (max-width: 420px) {
-  #lootprice-logo { max-width: 100px; }
   .btn-theme { padding: 6px 8px; font-size: 16px; }
   .btn-login { padding: 6px 8px; font-size: 12px; }
   .container { padding: 18px; }

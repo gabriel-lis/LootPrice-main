@@ -109,11 +109,25 @@ body.no-scroll {
 /* ✅ Logo fixada com tamanho consistente */
 #lootprice-logo {
   content: var(--lootprice);
-  width: 170px;
-  height: auto;
-  transition: filter 0.3s ease, opacity 0.25s ease;
-  will-change: opacity;
+  width: 44px;
+  height: 44px;
+  flex: none;
 }
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-word {
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text-color);
+}
+.logo-word b { color: var(--loot-gold); font-weight: 800; }
+@media (max-width: 420px) { .logo-word { font-size: 1.25rem; } #lootprice-logo { width: 36px; height: 36px; } }
 
 /* Botões de login/cadastro */
 .auth-buttons {

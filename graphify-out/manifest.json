@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "includes/header.php": {
-    "mtime": 1795238446.8702972,
-    "seen": 1795242858.971136,
-    "ast_hash": "b668931cc29ba9548da350deb9400c57",
+    "mtime": 1795714799.772892,
+    "seen": 1795714815.0817382,
+    "ast_hash": "967ef1ddecba5467ca65c51c80d0d547",
     "semantic_hash": ""
   },
   "index.php": {
@@ -78,15 +78,15 @@
     "semantic_hash": ""
   },
   "jogo.php": {
-    "mtime": 1795238446.8950024,
-    "seen": 1795242858.9711478,
-    "ast_hash": "66b82891779fba54ee186a2ab86fa1b2",
+    "mtime": 1795713639.6106143,
+    "seen": 1795713831.156419,
+    "ast_hash": "f90fff99dea1113bf78312d415652b22",
     "semantic_hash": ""
   },
   "js_index/darkmode.js": {
-    "mtime": 1794496029.632563,
-    "seen": 1794798930.0490026,
-    "ast_hash": "1ee4c235f97ea4e8ba572c04a07d9d45",
+    "mtime": 1795714807.108001,
+    "seen": 1795714815.0824635,
+    "ast_hash": "24978af615e4008bd3d1b5a723e3a4de",
     "semantic_hash": ""
   },
   "js_index/menulateral.js": {
@@ -108,15 +108,15 @@
     "semantic_hash": ""
   },
   "sobre.php": {
-    "mtime": 1794588640.4161508,
-    "seen": 1794798930.0490136,
-    "ast_hash": "5dddfdc50d973c4e6e155735adfafc6f",
+    "mtime": 1795713891.3312764,
+    "seen": 1795713893.9782286,
+    "ast_hash": "2a4630dd433364803d528944ee40083c",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1795304293.6352508,
-    "seen": 1795304296.868539,
-    "ast_hash": "557588640de7579a09cad1725b268f47",
+    "mtime": 1795714813.0066469,
+    "seen": 1795714815.0835938,
+    "ast_hash": "c003476b98750f9167dd4809135199a1",
     "semantic_hash": ""
   },
   "README.md": {
@@ -681,6 +681,60 @@
     "mtime": 1795304193.5110867,
     "seen": 1795304296.8732648,
     "ast_hash": "3d4ab514a5f80d2e1bd43468f824d7df",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_1091500.jpg": {
+    "mtime": 1795304374.7280688,
+    "seen": 1795713831.1607854,
+    "ast_hash": "00f2e80041d29e455dfe276a2127e25e",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_4000.jpg": {
+    "mtime": 1795304371.9752593,
+    "seen": 1795713831.1618748,
+    "ast_hash": "24dfbcdab93b6ad509abe1816730d04a",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_4115450.jpg": {
+    "mtime": 1795304382.259822,
+    "seen": 1795713831.1618762,
+    "ast_hash": "a46180efdc001318a1a09e9039d9c41a",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_413150.jpg": {
+    "mtime": 1795304376.0616684,
+    "seen": 1795713831.1618774,
+    "ast_hash": "304527736fbb0236b322e74c79c9ed37",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_550.jpg": {
+    "mtime": 1795304373.3450258,
+    "seen": 1795713831.1620317,
+    "ast_hash": "c109f2e845b751c88c95bb47e73bbf94",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_892970.jpg": {
+    "mtime": 1795304378.750599,
+    "seen": 1795713831.1623368,
+    "ast_hash": "3f92a0fc5638d04ce88cde99a066e6a2",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_899770.jpg": {
+    "mtime": 1795304380.1318474,
+    "seen": 1795713831.1623385,
+    "ast_hash": "1fc66226709b679d44df63b709959a6a",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_945360.jpg": {
+    "mtime": 1795304377.4348085,
+    "seen": 1795713831.16234,
+    "ast_hash": "7cce7a4d6bbed9e76a78ffda75ae89d7",
+    "semantic_hash": ""
+  },
+  "fotos/extras/logo-bau.svg": {
+    "mtime": 1795714788.11085,
+    "seen": 1795714815.0849204,
+    "ast_hash": "b1263ae6378312f4912158e2699b3a46",
     "semantic_hash": ""
   }
 }
