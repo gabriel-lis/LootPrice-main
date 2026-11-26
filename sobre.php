@@ -5,51 +5,57 @@
 require_once __DIR__ . '/includes/functions.php';
 
 $pageTitle = 'Sobre o Projeto - LootPrice';
+$pageDescription = 'LootPrice compara preços de jogos digitais nas principais lojas.';
 $basePath = '';
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<link rel="stylesheet" href="css_index/sobre.css">
+<link rel="stylesheet" href="css_index/sobre.css?v=<?= filemtime(__DIR__ . '/css_index/sobre.css') ?>">
 
-<div class="about-main-wrapper" style="max-width: 1000px; margin: 40px auto; padding: 0 20px;">
-  
-  <h1 class="hero-title" style="text-align: center; margin-bottom: 10px;">LootPrice</h1>
-  <p class="hero-subtitle" style="text-align: center; margin-bottom: 40px;">Conectando jogadores às melhores ofertas de jogos digitais.</p>
+<main class="sobre">
 
-  <div class="content-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-    
-    <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px;">
-      <h3 style="color: var(--title-color); margin-top: 0;">🎯 Objetivo do Projeto</h3>
-      <p style="color: var(--text-color); line-height: 1.6; font-size: 14px;">
-        Desenvolver uma plataforma web centralizada que simplifique a tomada de decisão do jogador, permitindo navegar por um acervo de jogos digitais, comparar preços em tempo real nas principais lojas (Steam, Epic, Xbox, Nuuvem e GOG) e verificar a disponibilidade em catálogos de assinatura como o Xbox Game Pass.
-      </p>
-    </div>
+  <header class="sobre-hero">
+    <h1>LootPrice</h1>
+    <p>O seu site para <strong>lootear</strong> os melhores preços dos jogos.</p>
+  </header>
 
-    <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px;">
-      <h3 style="color: var(--title-color); margin-top: 0;">🛠️ Tecnologias Utilizadas</h3>
-      <p style="color: var(--text-color); line-height: 1.6; font-size: 14px;">
-        Backend em <strong>PHP 8</strong> estruturado com <strong>PDO</strong>, banco de dados relacional <strong>MySQL / MariaDB</strong> modelado conforme o MER/DER oficial, criptografia de senhas (BCrypt), sessões autenticadas e frontend responsivo em HTML5, CSS3 moderno e JavaScript.
-      </p>
-    </div>
+  <section class="sobre-loot">
+    <h2>Lootear (v.)</h2>
+    <p>
+      Verbo de gamer: abrir o baú, vasculhar o mapa e sair com o melhor item.
+      No LootPrice, o baú é o catálogo e o item raro é o <em>menor preço</em>.
+    </p>
+    <ul class="loot-lista">
+      <li><span class="loot-raridade comum">Comum</span> Preço cheio. Passa reto.</li>
+      <li><span class="loot-raridade raro">Raro</span> Promoção boa. Vale o clique.</li>
+      <li><span class="loot-raridade epico">Épico</span> Menor preço histórico. Lootou, chefe.</li>
+    </ul>
+  </section>
 
-    <div class="glass-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px;">
-      <h3 style="color: var(--title-color); margin-top: 0;">👥 Integrantes do Projeto</h3>
-      <ul style="color: var(--text-color); line-height: 1.8; font-size: 14px; padding-left: 20px;">
-        <li><strong>Pedro Duarte</strong></li>
-        <li><strong>Gabriel Leandro</strong></li>
-        <li><strong>Daniel Cinquine</strong></li>
+  <section class="sobre-resumo">
+    <p>
+      O LootPrice reúne em um só lugar os preços de Steam, Epic, Xbox, Nuuvem e GOG,
+      mostra o menor valor, o histórico de preços e a presença em assinaturas como o Xbox Game Pass.
+      Os preços são atualizados diariamente por um robô, e quem cria uma conta pode montar uma lista de desejos
+      e receber aviso por e-mail quando um jogo entra em promoção.
+    </p>
+  </section>
+
+  <div class="sobre-grid">
+    <section class="sobre-card">
+      <h2>A party de lootadores</h2>
+      <ul>
+        <li>Pedro Duarte</li>
+        <li>Gabriel Leandro</li>
+        <li>Daniel Cinquine</li>
       </ul>
-    </div>
-
+      <p class="sobre-nota">Nenhum baú foi ferido na criação deste site.</p>
+    </section>
   </div>
 
-  <div style="text-align: center; margin-top: 40px;">
-    <a href="index.php" class="btn-login" style="text-decoration: none; display: inline-block;">
-      Voltar para o Catálogo
-    </a>
-  </div>
+  <a href="catalogo.php" class="sobre-voltar">Abrir o baú (ver catálogo)</a>
 
-</div>
+</main>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

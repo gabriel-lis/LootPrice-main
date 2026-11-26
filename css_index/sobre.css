@@ -1,216 +1,145 @@
-/* =========================================
-   ESTILOS DA PÁGINA SOBRE (Clean & Modern)
-   ========================================= */
+/* Página Sobre: usa só as variáveis de theme.css */
 
-/* Container que centraliza o conteúdo e empurra o rodapé */
-.about-main-wrapper {
-  flex: 1; /* Ocupa o espaço restante da tela */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px 80px;
+.sobre {
+  flex: 1;
   width: 100%;
-  max-width: 1200px;
+  max-width: 880px;
   margin: 0 auto;
-  
-  /* 🚫 BLOQUEIA SELEÇÃO DE TEXTO */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  cursor: default;
+  padding: 48px 20px 80px;
 }
 
-/* Título Principal */
-.hero-title {
-  font-size: 3rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  background: var(--navbar-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.sobre-hero {
   text-align: center;
-  filter: drop-shadow(0 0 15px rgba(142, 45, 226, 0.4));
+  margin-bottom: 32px;
 }
 
-.hero-subtitle {
-  font-size: 1.1rem;
-  color: var(--text-color);
-  opacity: 0.8;
-  text-align: center;
-  margin-bottom: 60px;
+.sobre-hero h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--title-color);
 }
 
-/* Grid Layout (Esquerda: Texto / Direita: Features) */
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  width: 100%;
-  margin-bottom: 80px;
-  align-items: stretch;
+.sobre-hero p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
 }
 
-/* Card Vidro (Glassmorphism) */
-.glass-card {
-  background: var(--search-bg); /* Adapta ao tema Dark/Light */
-  border: 1px solid var(--search-border);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+.sobre-hero strong { color: var(--loot-gold, var(--accent)); }
 
-.glass-card h3 {
-  font-size: 1.8rem;
+.sobre-loot {
+  background: var(--surface);
+  border: 1px dashed var(--loot-gold, var(--accent));
+  border-radius: 12px;
+  padding: 24px 28px;
   margin-bottom: 20px;
-  color: var(--text-color);
 }
 
-.glass-card p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-color);
-  opacity: 0.9;
-  margin-bottom: 15px;
+.sobre-loot h2 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  color: var(--loot-gold, var(--accent));
 }
 
-/* Grid de Funcionalidades */
-.features-grid {
+.sobre-loot p {
+  margin: 0 0 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.loot-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.loot-raridade {
+  display: inline-block;
+  min-width: 64px;
+  margin-right: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: .8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.loot-raridade.comum { color: var(--text-muted); }
+.loot-raridade.raro  { color: var(--info, var(--accent)); }
+.loot-raridade.epico { color: var(--loot-gold, var(--accent)); }
+
+.sobre-nota {
+  margin-top: 12px !important;
+  font-size: .85rem;
+  font-style: italic;
+}
+
+.sobre-resumo {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+
+.sobre-resumo p {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.sobre-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
 
-.feature-box {
-  background: var(--bg-color); /* Fundo sólido para cobrir elementos atrás */
-  border: 1px solid var(--theme-btn-border);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s, box-shadow 0.3s;
+.sobre-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
 }
 
-.feature-box:hover {
-  transform: translateY(-5px);
-  border-color: var(--search-focus-border);
-  box-shadow: 0 8px 20px var(--card-hover-shadow);
+.sobre-card h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: var(--title-color);
 }
 
-.feature-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
+.sobre-card p,
+.sobre-card li {
+  line-height: 1.7;
+  color: var(--text-muted);
 }
 
-.feature-title {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--text-color);
-  background: transparent !important; /* Remove qualquer fundo cinza herdado */
+.sobre-card p { margin: 0; }
+
+.sobre-card ul {
+  margin: 0;
+  padding-left: 20px;
 }
 
-/* Seção da Equipe */
-.team-section {
-  width: 100%;
-  text-align: center;
-}
-
-.team-section h2 {
-  font-size: 2rem;
-  margin-bottom: 40px;
-  color: var(--text-color);
-}
-
-.team-grid {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
-}
-
-/* Card de Membro */
-.member-card {
-  background: var(--search-bg);
-  border: 1px solid var(--search-border);
-  border-radius: 20px;
-  padding: 30px 20px;
-  width: 240px;
-  transition: 0.4s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.member-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 40px var(--card-hover-shadow);
-}
-
-.member-pic {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  background: var(--navbar-gradient);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: bold;
-  color: #fff;
-  border: 4px solid var(--bg-color);
-}
-
-.member-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin: 10px 0 5px;
-  color: var(--text-color);
-}
-
-.member-role {
-  font-size: 0.85rem;
-  color: var(--theme-btn-border); /* Usa a cor roxa do tema */
-  font-weight: 600;
-  text-transform: uppercase;
-  margin-bottom: 20px;
+.sobre-voltar {
   display: block;
-}
-
-.insta-link {
-  display: inline-block;
-  padding: 8px 24px;
-  background: transparent;
-  color: var(--text-color);
-  border: 1px solid var(--theme-btn-border);
-  border-radius: 50px;
-  font-size: 0.8rem;
-  text-decoration: none;
-  transition: 0.3s;
+  width: fit-content;
+  margin: 32px auto 0;
+  padding: 10px 28px;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--on-accent);
   font-weight: 600;
+  text-decoration: none;
 }
 
-.insta-link:hover {
-  background: var(--navbar-gradient);
-  border-color: transparent;
-  color: white;
-}
+.sobre-voltar:hover { background: var(--btn-hover-bg); }
 
-/* Responsividade */
-@media (max-width: 850px) {
-  .content-grid {
-    grid-template-columns: 1fr; /* Vira uma coluna única em telas menores */
-  }
-  .hero-title {
-    font-size: 2.2rem;
-  }
+@media (max-width: 600px) {
+  .sobre-hero h1 { font-size: 2rem; }
 }
