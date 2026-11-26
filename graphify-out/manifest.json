@@ -1,8 +1,8 @@
 {
   "admin/atualizar_precos.php": {
-    "mtime": 1795238446.7241263,
-    "seen": 1795242858.9708703,
-    "ast_hash": "c82173cd9daf8674b3fb61222ba4a87f",
+    "mtime": 1795304293.5650966,
+    "seen": 1795304296.8643272,
+    "ast_hash": "95f5a59792db86c2b9ae691e8c5576a5",
     "semantic_hash": ""
   },
   "admin/index.php": {
@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1795243623.7282188,
-    "seen": 1795243628.8735535,
-    "ast_hash": "f62441c5bde52f574a52bd7afcfbba8a",
+    "mtime": 1795304293.6352508,
+    "seen": 1795304296.868539,
+    "ast_hash": "557588640de7579a09cad1725b268f47",
     "semantic_hash": ""
   },
   "README.md": {
@@ -633,6 +633,54 @@
     "mtime": 1795243627.0445032,
     "seen": 1795243628.8737154,
     "ast_hash": "fb047aa5659a8af9cd99242e48e0bc0b",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_1085660.jpg": {
+    "mtime": 1795304201.862038,
+    "seen": 1795304296.8720589,
+    "ast_hash": "a26d93a66a9a5d7e2a38acea9fdac722",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_1086940.jpg": {
+    "mtime": 1795304200.4966443,
+    "seen": 1795304296.872061,
+    "ast_hash": "e2a60dcaf56f0063894b6b642140c933",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_431960.jpg": {
+    "mtime": 1795304199.1997497,
+    "seen": 1795304296.8732586,
+    "ast_hash": "3cdae8bc03482bc545200df556a810b8",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_440.jpg": {
+    "mtime": 1795304194.8089397,
+    "seen": 1795304296.8732603,
+    "ast_hash": "a63ef977dc919e083b780e0295d715ed",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_553850.jpg": {
+    "mtime": 1795304197.8562624,
+    "seen": 1795304296.873262,
+    "ast_hash": "27852d7bcb9822f4ab5bcf7cf0c35e58",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_570.jpg": {
+    "mtime": 1795304192.2027519,
+    "seen": 1795304296.8732631,
+    "ast_hash": "050bb6d7078ba9c058d7b59c9f90cf95",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_578080.jpg": {
+    "mtime": 1795304196.2114227,
+    "seen": 1795304296.873264,
+    "ast_hash": "43b6fbb8bd25d98aad4b2fce89706640",
+    "semantic_hash": ""
+  },
+  "fotos/jogos/steam_730.jpg": {
+    "mtime": 1795304193.5110867,
+    "seen": 1795304296.8732648,
+    "ast_hash": "3d4ab514a5f80d2e1bd43468f824d7df",
     "semantic_hash": ""
   }
 }

@@ -45,7 +45,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (coletaRodando($pasta)) {
         setFlash('info', 'Já existe uma coleta em andamento.');
     } else {
-        $php = PHP_BINDIR . DIRECTORY_SEPARATOR . (stripos(PHP_OS, 'WIN') === 0 ? 'php.exe' : 'php');
+        // No Apache, PHP_BINDIR é o caminho de compilação (ex.: C:\php) e pode não existir:
+        // procura o php.exe também ao lado da pasta de extensões (C:\xampp\php\ext → C:\xampp\php).
+        $exe = stripos(PHP_OS, 'WIN') === 0 ? 'php.exe' : 'php';
+        $php = '';
+        foreach ([PHP_BINDIR, dirname((string) ini_get('extension_dir')), dirname((string) PHP_BINARY)] as $dir) {
+            if ($dir !== '' && is_file($dir . DIRECTORY_SEPARATOR . $exe)) {
+                $php = $dir . DIRECTORY_SEPARATOR . $exe;
+                break;
+            }
+        }
         $script = realpath(__DIR__ . '/../robo/coletar.php');
         $semNovos = lp_post('novos', 3) === 'sim' ? '' : ' --sem-novos';
         if (!is_file($php) || !$script) {
@@ -80,11 +89,6 @@ require_once __DIR__ . '/../includes/header.php';
   <div style="margin-bottom: 25px;">
     <a href="index.php" class="adm-voltar">← Voltar ao Dashboard</a>
     <h1 class="adm-title">Robô de preços</h1>
-    <p class="adm-sub">
-      As lojas não oferecem API pública de preços. Por isso o robô consulta Steam, GOG, Xbox, Nuuvem e Epic Games
-      <strong>todos os dias às 14:00</strong>, grava os valores no banco e cadastra jogos populares novos.
-      Se o MySQL ainda não estiver ligado quando a tarefa roda, o robô espera até 20 minutos por ele.
-    </p>
   </div>
 
   <div class="adm-card">

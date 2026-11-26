@@ -1,7 +1,7 @@
 # Graph Report - LootPrice-main  (2026-11-21)
 
 ## Corpus Check
-- 54 files · ~64,026 words
+- 54 files · ~64,078 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 20 file(s) not represented in the graph (top: .css 11, (none) 9)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c8f990bc`
+- Built from commit: `18f89806`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
