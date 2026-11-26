@@ -93,11 +93,10 @@ require_once __DIR__ . '/../includes/header.php';
 
   <div class="adm-card">
     <h3>Rodar agora</h3>
-    <p class="adm-sub" style="margin-top:0;">A coleta leva alguns minutos e roda em segundo plano: você pode sair desta página e continuar usando o site.</p>
     <form method="POST" action="atualizar_precos.php" id="formColeta">
       <?= csrfField() ?>
       <label class="adm-check" style="display:inline-flex; margin-bottom:14px;">
-        <input type="checkbox" name="novos" value="sim" checked> Também cadastrar jogos populares novos (até 8)
+        <input type="checkbox" name="novos" value="sim" checked> Cadastrar jogos novos (até 8)
       </label><br>
       <button type="submit" class="btn-adm" id="btnColeta" <?= $rodando ? 'disabled' : '' ?>><?= $rodando ? 'Coleta em andamento…' : 'Atualizar preços agora' ?></button>
     </form>
@@ -126,8 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="adm-aviso erro"><strong>Erro:</strong> <?= sanitize($resumo['erro']) ?></div>
       <?php endif; ?>
       <?php if (!empty($resumo['lojas_sem_dados'])): ?>
-        <div class="adm-aviso alerta"><strong>Atenção:</strong> <?= sanitize(implode(', ', $resumo['lojas_sem_dados'])) ?> não devolveu(ram) nenhum preço nesta coleta.
-          O site da loja pode ter mudado e o robô precisar de ajuste. A Epic Games é conhecida por bloquear o robô e não entra neste aviso.</div>
+        <div class="adm-aviso alerta"><strong>Atenção:</strong> <?= sanitize(implode(', ', $resumo['lojas_sem_dados'])) ?> não trouxe preços.</div>
       <?php endif; ?>
       <?php if (!empty($resumo['novos'])): ?>
         <p style="font-size: 13px;"><strong>Novos jogos:</strong> <?= sanitize(implode(', ', $resumo['novos'])) ?></p>

@@ -62,6 +62,8 @@ Nós mais centrais no grafo: `getDB()`, `LootPrice Home`, `Catalogo de jogos`.
 
 ## Registro de alterações
 
+- 2026-11-26: aviso de preço desatualizado saiu da página do jogo (cliente não vê mais); agora só o admin: alerta no dashboard com a contagem e nova página `admin/desatualizados.php` (lista de jogos com preço mais recente há mais de 3 dias, com última atualização). Arquivos: `jogo.php`, `admin/index.php`, `admin/desatualizados.php`.
+
 - 2026-11-26: "Sobre LootPrice" ganhou o tom do "lootear" como marca: slogan "seu site para lootear os melhores preços", bloco "Lootear (v.)" com raridades Comum/Raro/Épico (preço cheio/promoção/menor histórico), "A party de lootadores" e botão "Abrir o baú". Arquivos: `sobre.php`, `css_index/sobre.css`.
 
 - 2026-11-26: nova logo (baú aberto com moedas e cadeado, proposta B): ícone `fotos/extras/logo-bau.svg` (também é o favicon) + nome "LootPrice" em texto no header (`.logo-link`, `.logo-word`, cor `--loot-gold` em `theme.css`). Removida a troca de imagem do logo por tema em `darkmode.js`; `logoltdark.png`/`logoltlight.png` ficaram sem uso. Arquivos: `includes/header.php`, `css_index/theme.css`, `lootprice.css`, `responsive.css`, `js_index/darkmode.js`.

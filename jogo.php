@@ -134,7 +134,7 @@ require_once __DIR__ . '/includes/header.php';
     gap: 6px;
   }
   .btn-buy-direct {
-    background: var(--accent);
+    background: var(--btn-bg);
     color: var(--on-accent);
     padding: 8px 16px;
     border-radius: 8px;
@@ -165,7 +165,7 @@ require_once __DIR__ . '/includes/header.php';
   .precos-overlay span { font-size: 13px; color: var(--text-muted); }
   .precos-overlay span a { color: var(--accent); font-weight: 700; }
   .btn-entrar-precos {
-    background: var(--accent); color: var(--on-accent); padding: 10px 32px; border-radius: 8px;
+    background: var(--btn-bg); color: var(--on-accent); padding: 10px 32px; border-radius: 8px;
     font-weight: 700; text-decoration: none;
   }
   .btn-entrar-precos:hover { filter: brightness(1.15); }
@@ -280,7 +280,7 @@ require_once __DIR__ . '/includes/header.php';
       <div style="margin-top: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h3 style="margin: 0; color: var(--title-color); font-size: 18px;">Comparador de Preços por Loja</h3>
-          <span style="font-size: 12px; color: <?= $idadeGeral['velho'] ? 'var(--warning)' : 'var(--text-muted)' ?>;" title="Os preços são coletados uma vez por dia pelo robô do LootPrice">
+          <span style="font-size: 12px; color: var(--text-muted);" title="Os preços são coletados uma vez por dia pelo robô do LootPrice">
             <?= $ultimaAtualizacao ? 'Última coleta: ' . sanitize($idadeGeral['texto']) : '' ?>
           </span>
         </div>
@@ -319,11 +319,6 @@ require_once __DIR__ . '/includes/header.php';
                   <div>
                     <div class="platform-name" style="font-size: 16px;"><?= sanitize($p['loja_nome']) ?></div>
                     <div style="font-size: 12px; color: var(--text-muted);">Plataforma: <?= sanitize($p['plataforma_nome']) ?></div>
-                    <?php if ($logado): $idade = idadeDoPreco($p['data_atualizacao'] ?? null); ?>
-                      <div style="font-size: 11px; color: <?= $idade['velho'] ? 'var(--warning)' : 'var(--text-muted)' ?>;">
-                        <?= $idade['velho'] ? '⚠ Preço pode estar desatualizado · ' : '' ?>coletado em <?= sanitize($idade['texto']) ?>
-                      </div>
-                    <?php endif; ?>
                   </div>
                 </div>
 

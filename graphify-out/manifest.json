@@ -6,9 +6,9 @@
     "semantic_hash": ""
   },
   "admin/index.php": {
-    "mtime": 1795238446.7266269,
-    "seen": 1795242858.9708807,
-    "ast_hash": "0160c0f674e4307b136223b48dc1da37",
+    "mtime": 1795715420.8829136,
+    "seen": 1795715431.1911821,
+    "ast_hash": "e19ce2ee08ab0f274a645787921631d5",
     "semantic_hash": ""
   },
   "admin/jogo_form.php": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "jogo.php": {
-    "mtime": 1795713639.6106143,
-    "seen": 1795713831.156419,
-    "ast_hash": "f90fff99dea1113bf78312d415652b22",
+    "mtime": 1795715420.881914,
+    "seen": 1795715431.19349,
+    "ast_hash": "9812dc2471470e10d19c9c70f3ea6367",
     "semantic_hash": ""
   },
   "js_index/darkmode.js": {
@@ -114,9 +114,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1795715230.5229623,
-    "seen": 1795715232.6733425,
-    "ast_hash": "0826236eb08f63f21ba7cb35c30bd8b3",
+    "mtime": 1795715425.794534,
+    "seen": 1795715431.194742,
+    "ast_hash": "25c84d2280d01ba59fa553294b5041ac",
     "semantic_hash": ""
   },
   "README.md": {
@@ -735,6 +735,12 @@
     "mtime": 1795714788.11085,
     "seen": 1795714815.0849204,
     "ast_hash": "b1263ae6378312f4912158e2699b3a46",
+    "semantic_hash": ""
+  },
+  "admin/desatualizados.php": {
+    "mtime": 1795715420.909912,
+    "seen": 1795715431.1911793,
+    "ast_hash": "43134186b3e00bb5b98a6ff3733894a5",
     "semantic_hash": ""
   }
 }
