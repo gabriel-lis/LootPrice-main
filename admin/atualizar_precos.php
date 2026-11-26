@@ -125,7 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="adm-aviso erro"><strong>Erro:</strong> <?= sanitize($resumo['erro']) ?></div>
       <?php endif; ?>
       <?php if (!empty($resumo['lojas_sem_dados'])): ?>
-        <div class="adm-aviso alerta"><strong>Atenção:</strong> <?= sanitize(implode(', ', $resumo['lojas_sem_dados'])) ?> não trouxe preços.</div>
+        <div class="adm-aviso alerta"><strong>Atenção:</strong> <?= sanitize(implode(', ', $resumo['lojas_sem_dados'])) ?> não trouxe preços.<?php if (!empty($resumo['lojas_bloqueadas'])): ?> <?= sanitize(implode(', ', $resumo['lojas_bloqueadas'])) ?> bloqueou o robô (limite de acessos); os últimos preços foram mantidos, tente de novo mais tarde.<?php endif; ?></div>
       <?php endif; ?>
       <?php if (!empty($resumo['novos'])): ?>
         <p style="font-size: 13px;"><strong>Novos jogos:</strong> <?= sanitize(implode(', ', $resumo['novos'])) ?></p>

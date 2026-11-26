@@ -1,5 +1,6 @@
 # Segredos (senha do e-mail etc.)
 config/mail.php
+config/itad.php
 
 # Gerados em execução
 robo/logs/

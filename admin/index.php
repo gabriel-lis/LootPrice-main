@@ -48,7 +48,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
   <?php elseif ($ultimaColeta && !empty($ultimaColeta['lojas_sem_dados'])): ?>
     <div class="adm-aviso alerta" role="alert">
-      <strong>Atenção:</strong> a última coleta não trouxe preços de <?= sanitize(implode(', ', $ultimaColeta['lojas_sem_dados'])) ?>.
+      <strong>Atenção:</strong> a última coleta não trouxe preços de <?= sanitize(implode(', ', $ultimaColeta['lojas_sem_dados'])) ?>.<?php if (!empty($ultimaColeta['lojas_bloqueadas'])): ?> <?= sanitize(implode(', ', $ultimaColeta['lojas_bloqueadas'])) ?> bloqueou o robô (limite de acessos), tente de novo mais tarde.<?php endif; ?>
       <a href="atualizar_precos.php" style="color:inherit; font-weight:700;">Ver detalhes</a>
     </div>
   <?php elseif ($totalPrecos > 0 && $idade['velho']): ?>

@@ -18,11 +18,21 @@ lista de desejos com aviso de promoção por e-mail.
 6. Preços automáticos: `.\robo\agendar_14h.ps1` agenda a coleta diária às 14:00. Teste manual:
    `C:\xampp\php\php.exe robo\coletar.php`.
 
+7. (Opcional) Plano B para Epic e Nuuvem, que limitam/bloqueiam robôs: copie `config/itad.example.php` para
+   `config/itad.php` e cole a chave grátis da API da IsThereAnyDeal. Detalhes em
+   `documentacao/Limitacoes-Coleta-Precos.md`.
+
 Abra `http://localhost/LootPrice-main/`.
 
 ## Estrutura
 
 Veja `CLAUDE.md` (mapa de pastas e arquivos, convenções e registro de alterações).
+
+## Limitações da coleta de preços
+
+Epic Games bloqueia robôs (Cloudflare) e a Nuuvem limita acessos (HTTP 429). O robô respeita esses limites
+(espaça as buscas, obedece ao `Retry-After`, pausa a loja, mantém o último preço, avisa o admin) e não tenta
+burlá-los. Veja `documentacao/Limitacoes-Coleta-Precos.md`.
 
 ## Segurança e erros
 
