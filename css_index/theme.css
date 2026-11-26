@@ -40,8 +40,8 @@
   --entrar-text: #3b1a8f;
 
   /* Compatibilidade com o CSS antigo */
-  --btn-bg: var(--accent);
-  --btn-hover-bg: var(--accent-hover);
+  --btn-bg: #6554a8;               /* roxo suave (menos neon) */
+  --btn-hover-bg: #7664bb;
   --btn-text: #ffffff;
   --theme-btn-bg: var(--header-control-bg);
   --theme-btn-text: #ffffff;
@@ -59,7 +59,8 @@
   --menu-text: #ffffff;
   --menu-hover-bg: var(--accent);
   --menu-btn-color: #ffffff;
-  --lootprice: url('../fotos/extras/logoltdark.png');
+  --lootprice: url('../fotos/extras/logo-bau.svg');
+  --loot-gold: #f5b941;            /* "Price" no nome da marca */
 
   /* Formulários e títulos (antes viviam em cadastro.css / jogos.css) */
   --highlight: #f2b35b;
@@ -109,6 +110,8 @@ body.light-mode {
   --entrar-bg: #6d28d9;
   --entrar-text: #ffffff;
 
+  --btn-bg: #5b4a9e;
+  --btn-hover-bg: #4c3d86;
   --btn-text: #ffffff;
   --theme-btn-text: #1c1433;
   --theme-btn-border: rgba(40, 20, 90, 0.15);
@@ -123,7 +126,8 @@ body.light-mode {
   --menu-text: #1c1433;
   --menu-hover-bg: #ede6ff;
   --menu-btn-color: #1c1433;
-  --lootprice: url('../fotos/extras/logoltlight.png');
+  --lootprice: url('../fotos/extras/logo-bau.svg');
+  --loot-gold: #c77d0a;
   --highlight: #6d28d9;
   --scrim: rgba(28, 20, 51, 0.55);
 
@@ -152,7 +156,7 @@ body.light-mode {
   --success-bg: var(--success-soft);
   --success-text: var(--success);
   --link-color: var(--accent-text);
-  --btn-hover-shadow: var(--accent-glow);
+  --btn-hover-shadow: rgba(101, 84, 168, 0.22);
   --container-bg: var(--surface);
   --container-shadow: var(--accent-glow);
 }

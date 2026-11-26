@@ -79,17 +79,17 @@
   color: var(--text-color); background: var(--surface); border: 1px solid var(--border); transition: .15s;
 }
 .price-chip:hover { border-color: var(--accent); color: var(--accent-text); }
-.price-chip.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.price-chip.active { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--on-accent); }
 
 /* Botão "Catálogo completo" */
 .home-cta { text-align: center; margin-top: 8px; }
 .btn-catalogo {
   display: inline-block; padding: 15px 44px; border-radius: 12px;
   font-size: 16px; font-weight: 800; color: var(--on-accent); text-decoration: none;
-  background: var(--accent); box-shadow: 0 8px 24px var(--accent-glow);
+  background: var(--btn-bg); box-shadow: 0 8px 24px var(--btn-hover-shadow);
   transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
 }
-.btn-catalogo:hover { transform: translateY(-2px); background: var(--accent-hover); box-shadow: 0 12px 30px var(--accent-glow); }
+.btn-catalogo:hover { transform: translateY(-2px); background: var(--btn-hover-bg); box-shadow: 0 12px 30px var(--btn-hover-shadow); }
 
 .home-empty {
   text-align: center; padding: 44px 20px; border-radius: var(--radius);

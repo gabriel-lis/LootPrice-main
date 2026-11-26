@@ -10,6 +10,7 @@
  * em admin/atualizar_precos.php.
  */
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/itad.php';
 
 const LP_UA = 'LootPriceBot/1.0 (projeto academico)';
 const LP_MAX_NOVOS_POR_EXECUCAO = 8;     // jogos novos cadastrados por execução
@@ -18,21 +19,34 @@ const LP_LIMIAR_NOME = 0.88;             // semelhança mínima entre nomes para
 const LP_RETENTAR_NAO_ENCONTRADO_DIAS = 7;
 const LP_ESPERA_BANCO_TENTATIVAS = 40;   // tarefa agendada: espera o MySQL subir (40 x 30 s = 20 min)
 const LP_ESPERA_BANCO_SEGUNDOS = 30;
+// Intervalo mínimo (segundos) entre pedidos ao mesmo site. Lojas que limitam acessos (429) ganham mais calma.
+const LP_ESPERA_HOST = ['www.nuuvem.com' => 3.0, 'api.isthereanydeal.com' => 1.0];
+const LP_ESPERA_PADRAO = 0.35;
+const LP_RETRY_AFTER_MAX = 30;           // não espera mais que isso (s) quando a loja manda Retry-After
 
 /* ====================================================================
  * Utilidades: HTTP, JSON e comparação de nomes
  * ==================================================================== */
 
-/** GET/POST educado: identifica o robô, espera entre chamadas e tenta de novo uma vez. */
+/**
+ * GET/POST educado: identifica o robô, espera entre chamadas (por site) e tenta de novo uma vez.
+ * Se o site responder 429 (muitos acessos), respeita o Retry-After; se continuar barrando, o site
+ * fica "em pausa" até o fim da execução (nada de insistir e piorar o bloqueio).
+ */
 function lp_http(string $url, ?string $postJson = null, array $headers = []): ?string
 {
-    static $ultima = 0.0;
+    static $ultima = [];      // host => instante do último pedido
+    static $pausados = [];    // hosts que barraram o robô nesta execução
     $cafile = lp_cafile();
+    $host = (string)parse_url($url, PHP_URL_HOST);
+    if (isset($pausados[$host])) return null;
+    $minimo = LP_ESPERA_HOST[$host] ?? LP_ESPERA_PADRAO;
 
     for ($tentativa = 1; $tentativa <= 2; $tentativa++) {
-        $espera = 0.35 - (microtime(true) - $ultima);
+        $espera = $minimo - (microtime(true) - ($ultima[$host] ?? 0.0));
         if ($espera > 0) usleep((int)($espera * 1e6));
 
+        $retryAfter = 0;
         $ch = curl_init($url);
         $opts = [
             CURLOPT_RETURNTRANSFER => true,
@@ -43,6 +57,10 @@ function lp_http(string $url, ?string $postJson = null, array $headers = []): ?s
             CURLOPT_USERAGENT      => LP_UA,
             CURLOPT_ENCODING       => '',
             CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_HEADERFUNCTION => function ($c, string $linha) use (&$retryAfter) {
+                if (stripos($linha, 'retry-after:') === 0) $retryAfter = (int)trim(substr($linha, 12));
+                return strlen($linha);
+            },
         ];
         if ($cafile) $opts[CURLOPT_CAINFO] = $cafile;
         if ($postJson !== null) {
@@ -54,11 +72,41 @@ function lp_http(string $url, ?string $postJson = null, array $headers = []): ?s
         $corpo = curl_exec($ch);
         $codigo = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        $ultima = microtime(true);
+        $ultima[$host] = microtime(true);
 
+        // Algumas lojas (Nuuvem) respondem 200 com uma página de "Client Challenge" (anti-robô em JavaScript)
+        // em vez dos dados: isso é um bloqueio, não "busca sem resultado".
+        if ($corpo !== false && $codigo > 0 && $codigo < 400 && $postJson === null
+            && strlen($corpo) < 20000 && str_contains($corpo, '<title>Client Challenge</title>')) {
+            $GLOBALS['lp_bloqueios'][$host] = 403;
+            $pausados[$host] = true;
+            lp_log("   $host exigiu verificação anti-robô (Client Challenge): pausando as consultas a esse site até o fim desta execução.");
+            return null;
+        }
         if ($corpo !== false && $codigo > 0 && $codigo < 400) return $corpo;
+        if ($codigo === 429 || $codigo === 403) $GLOBALS['lp_bloqueios'][$host] = $codigo; // loja barrou o robô
+        if ($codigo === 429) {
+            if ($tentativa === 1) { // respeita o tempo pedido pela loja e tenta mais uma vez
+                sleep(min(max($retryAfter, 5), LP_RETRY_AFTER_MAX));
+                continue;
+            }
+            $pausados[$host] = true;
+            lp_log("   $host limitou os acessos (429): pausando as consultas a esse site até o fim desta execução.");
+            return null;
+        }
         if ($codigo === 403 || $codigo === 404) return null; // não adianta insistir
         sleep(1);
+    }
+    return null;
+}
+
+/** Código HTTP (429/403) se a loja barrou o robô nesta execução, senão null. */
+function lp_loja_barrada(string $chave): ?int
+{
+    $dominios = ['steam' => 'steampowered.com', 'gog' => 'gog.com', 'xbox' => 'microsoft.com',
+                 'nuuvem' => 'nuuvem.com', 'epic' => 'epicgames.com'];
+    foreach ($GLOBALS['lp_bloqueios'] ?? [] as $host => $cod) {
+        if (isset($dominios[$chave]) && str_contains($host, $dominios[$chave])) return $cod;
     }
     return null;
 }
@@ -251,7 +299,7 @@ function lp_loja_nuuvem(array $jogo, ?array $ref): ?array
 {
     $busca = $ref['titulo'] ?? $jogo['nome'];
     $html = lp_http('https://www.nuuvem.com/br-en/catalog/page/1/search/' . rawurlencode(lp_norm($busca)));
-    if ($html === null) return null;
+    if ($html === null) return lp_itad_preco($jogo, 'nuuvem'); // bloqueou? plano B
 
     $partes = preg_split('/(?=data-wishlist-button-product-data-value=")/', $html);
     array_shift($partes);
@@ -290,7 +338,7 @@ function lp_loja_nuuvem(array $jogo, ?array $ref): ?array
 function lp_loja_epic(array $jogo, ?array $ref): ?array
 {
     static $bloqueado = false;
-    if ($bloqueado) return null;
+    if ($bloqueado) return lp_itad_preco($jogo, 'epic');
 
     $query = 'query($kw:String,$country:String!,$locale:String){Catalog{searchStore(keywords:$kw,country:$country,locale:$locale,count:10){'
         . 'elements{title id productSlug urlSlug catalogNs{mappings(pageType:"productHome"){pageSlug}} '
@@ -302,8 +350,8 @@ function lp_loja_epic(array $jogo, ?array $ref): ?array
     $j = $resp !== null ? json_decode($resp, true) : null;
     if (!is_array($j) || !isset($j['data']['Catalog']['searchStore']['elements'])) {
         $bloqueado = true;
-        lp_log('Epic Games bloqueou o acesso automático (proteção anti-robô). Preços da Epic mantidos como estão.');
-        return null;
+        lp_log('Epic Games bloqueou o acesso automático (proteção anti-robô). Usando o plano B (IsThereAnyDeal) se houver chave; senão os preços da Epic ficam como estão.');
+        return lp_itad_preco($jogo, 'epic');
     }
 
     $cands = [];
@@ -598,7 +646,7 @@ function lp_coletar(PDO $pdo, array &$resumo): void
             }
 
             if ($r === null) {
-                if (!$ref) lp_salvar_ref($pdo, $idJogo, $idLoja, null, null, false);
+                if (!$ref && !lp_loja_barrada($loja['chave'])) lp_salvar_ref($pdo, $idJogo, $idLoja, null, null, false);
                 $resumo['sem_preco']++;
                 continue;
             }
@@ -626,10 +674,17 @@ function lp_coletar(PDO $pdo, array &$resumo): void
     // Loja que não devolveu preço NENHUM nesta execução: o site dela provavelmente mudou (ou bloqueou o robô).
     // A Epic já é conhecida por bloquear (Cloudflare), então não conta como alerta.
     $resumo['lojas_sem_dados'] = [];
+    $resumo['lojas_bloqueadas'] = [];
     foreach ($lojas as $loja) {
         if ($loja['chave'] !== 'epic' && !isset($lojasFuncionaram[(int)$loja['id_loja']])) {
             $resumo['lojas_sem_dados'][] = $loja['nome'];
-            lp_log("ALERTA: {$loja['nome']} não devolveu nenhum preço nesta coleta. O site da loja pode ter mudado; revise includes/coletor.php.");
+            $bloqueio = lp_loja_barrada($loja['chave']);
+            if ($bloqueio) {
+                $resumo['lojas_bloqueadas'][] = $loja['nome'];
+                lp_log("ALERTA: {$loja['nome']} bloqueou o robô (HTTP $bloqueio, limite de acessos). Mantendo os últimos preços; tente de novo mais tarde.");
+            } else {
+                lp_log("ALERTA: {$loja['nome']} não devolveu nenhum preço nesta coleta. O site da loja pode ter mudado; revise includes/coletor.php.");
+            }
         }
     }
 

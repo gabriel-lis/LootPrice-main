@@ -1,59 +1,59 @@
-# Graph Report - LootPrice-main  (2026-11-21)
+# Graph Report - LootPrice-main  (2026-11-26)
 
 ## Corpus Check
-- 54 files · ~64,078 words
+- 54 files · ~66,181 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 20 file(s) not represented in the graph (top: .css 11, (none) 9)
 
 ## Summary
-- 515 nodes · 1026 edges · 53 communities (12 shown, 41 thin omitted)
-- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 182 edges (avg confidence: 0.87)
+- 521 nodes · 1042 edges · 56 communities (12 shown, 44 thin omitted)
+- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 188 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `18f89806`
+- Built from commit: `2dba57ca`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - LootPrice project
+- PDO
 - functions.php
 - SMTP
 - Ator: Administrador
 - PHPMailer
 - Game cover art
+- Throwable
 - menulateral.js
 - LootPrice brand
-- Metacritic
+- desatualizados.php
+- cadastro.php
+- admin/index.php
 - Search feature
-- Light theme
-- LootPrice-main README
-- coletor.php
-- .lang
+- jogo_form.php
+- precos.php
+- usuarios.php
 - perfil.php
-- Estrutura do projeto
-- lp_enviar_email
-- LootPrice — Relatório de correções
 
 ## God Nodes (most connected - your core abstractions)
-1. `PHPMailer` - 126 edges
+1. `PHPMailer` - 127 edges
 2. `SMTP` - 45 edges
 3. `Estrutura do projeto` - 31 edges
 4. `LootPrice project` - 24 edges
-5. `Exception` - 22 edges
+5. `Exception` - 23 edges
 6. `getDB()` - 20 edges
 7. `lp_enviar_email()` - 14 edges
 8. `lp_consulta()` - 13 edges
 9. `lp_descobrir_populares()` - 12 edges
-10. `lp_log_erro()` - 12 edges
+10. `lp_coletar()` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Estrutura do projeto` --references--> `idadeDoPreco()`  [INFERRED]
-  CLAUDE.md → includes/functions.php
 - `Crítico / alto` --references--> `refreshSessionUser()`  [INFERRED]
   documentacao/Relatorio-Correcoes-2026-11-21.md → includes/auth.php
-- `Estrutura do projeto` --references--> `lp_enviar_avisos_promocao()`  [INFERRED]
-  CLAUDE.md → includes/avisos.php
+- `Estrutura do projeto` --references--> `idadeDoPreco()`  [INFERRED]
+  CLAUDE.md → includes/functions.php
+- `Registro de alterações` --references--> `lp_melhor()`  [INFERRED]
+  CLAUDE.md → includes/coletor.php
 - `Estrutura do projeto` --references--> `lp_executar()`  [INFERRED]
   CLAUDE.md → includes/coletor.php
 - `Estrutura do projeto` --references--> `capaJogo()`  [INFERRED]
@@ -70,78 +70,78 @@
 - **Price comparison flow** — documentacao_lootprice2_rf04, documentacao_lootprice2_rf05, documentacao_lootprice2_rf06, documentacao_lootprice2_rf09 [INFERRED 0.85]
 - **Game cover gallery** — fotos_jogos_apex, fotos_jogos_dbd, fotos_jogos_ds, fotos_jogos_ds3, fotos_jogos_er, fotos_jogos_r6, fotos_jogos_ror2, fotos_jogos_sot, fotos_jogos_warframe, fotos_jogos_witcher [INFERRED 0.85]
 
-## Communities (53 total, 41 thin omitted)
+## Communities (56 total, 44 thin omitted)
 
 ### Community 0 - "LootPrice project"
 Cohesion: 0.06
-Nodes (41): Epic Games store, Steam store, Xbox store, Actor: savings-seeking consumer, Actor: content creators and streamers, Actor: Game Pass-checking consumer, Class diagram, DER (entity-relationship diagram) (+33 more)
+Nodes (54): linkPagina(), 1. Antes de responder ou alterar: consultar o Graphify, 2. Depois de qualquer alteração no código: atualizar Graphify e este arquivo, Convenções, Estrutura do projeto, LootPrice, Registro de alterações, Regras de trabalho (obrigatórias) (+46 more)
 
 ### Community 2 - "functions.php"
 Cohesion: 0.06
-Nodes (32): {closure#3}(), lerCampos(), adminErro(), adminNotaMeta(), lp_conta_admins(), lp_link_valido(), renderGameRowCard(), renderPosterCard() (+24 more)
+Nodes (31): {closure#3}(), lerCampos(), adminErro(), adminNotaMeta(), lp_conta_admins(), lp_link_valido(), renderGameRowCard(), renderPosterCard() (+23 more)
 
 ### Community 4 - "Ator: Administrador"
+Cohesion: 0.06
+Nodes (41): Epic Games store, Steam store, Xbox store, Actor: savings-seeking consumer, Actor: content creators and streamers, Actor: Game Pass-checking consumer, Class diagram, DER (entity-relationship diagram) (+33 more)
+
+### Community 5 - "PHPMailer"
+Cohesion: 0.16
+Nodes (33): lp_andamento(), lp_baixar_capa(), lp_categoria_id(), lp_categorias_do_jogo(), lp_coletar(), lp_core(), lp_data_lancamento(), lp_descobrir_populares() (+25 more)
+
+### Community 6 - "Game cover art"
+Cohesion: 0.14
+Nodes (20): {closure#3}(), ensureAvisosSchema(), lp_dinheiro(), lp_email_promocao(), lp_enviar_avisos_promocao(), lp_promocoes_atuais(), lp_token_descadastro(), lp_url_descadastro() (+12 more)
+
+### Community 9 - "menulateral.js"
 Cohesion: 0.16
 Nodes (16): Ator: Administrador, Caso de uso: Cadastro de jogos, Caso de uso: Cadastro de usuario, Caso de uso: Comentar/avaliar jogos, Banco: Banco de dados (usuarios), Banco: Jogos, Banco: Precos, Banco: Sinopse (+8 more)
 
-### Community 6 - "Game cover art"
+### Community 11 - "LootPrice brand"
 Cohesion: 0.18
 Nodes (11): Game cover art, Apex Legends game cover, Dead by Daylight game cover, Death Stranding game cover, Dark Souls III game cover, Elden Ring game cover, Rainbow Six Siege game cover, Risk of Rain 2 game cover (+3 more)
 
-### Community 9 - "menulateral.js"
-Cohesion: 0.29
-Nodes (4): menuBtn, sidebar, sidebarBackdrop, sidebarClose
+### Community 12 - "desatualizados.php"
+Cohesion: 0.18
+Nodes (10): Arquivos novos, Baixo / limpeza, Como foi verificado (e o que não foi), Crítico / alto, Documentação segundo as suas regras, Item a item (seguindo o relatório), LootPrice — Relatório de correções, Mudanças no banco local (aplicadas automaticamente na primeira abertura do site) (+2 more)
 
-### Community 11 - "LootPrice brand"
-Cohesion: 0.50
-Nodes (5): LootPrice brand, Dark theme, Dark mode icon (crescent moon), LootPrice site logo (white text, for dark theme), LootPrice site logo (dark text, for light theme)
-
-### Community 14 - "Metacritic"
-Cohesion: 1.00
-Nodes (3): Metacritic, Metacritic logo on black, Metacritic logo (white text, transparent)
-
-### Community 33 - "coletor.php"
-Cohesion: 0.19
-Nodes (29): lp_andamento(), lp_baixar_capa(), lp_categoria_id(), lp_categorias_do_jogo(), lp_coletar(), lp_core(), lp_data_lancamento(), lp_descobrir_populares() (+21 more)
-
-### Community 45 - "perfil.php"
+### Community 15 - "cadastro.php"
 Cohesion: 0.36
 Nodes (4): abrir(), aplicarZoom(), desenhar(), limitar()
 
-### Community 46 - "Estrutura do projeto"
-Cohesion: 0.06
-Nodes (53): linkPagina(), 1. Antes de responder ou alterar: consultar o Graphify, 2. Depois de qualquer alteração no código: atualizar Graphify e este arquivo, Convenções, Estrutura do projeto, LootPrice, Registro de alterações, Regras de trabalho (obrigatórias) (+45 more)
+### Community 16 - "admin/index.php"
+Cohesion: 0.29
+Nodes (4): menuBtn, sidebar, sidebarBackdrop, sidebarClose
 
-### Community 50 - "lp_enviar_email"
-Cohesion: 0.13
-Nodes (20): {closure#3}(), ensureAvisosSchema(), lp_dinheiro(), lp_email_promocao(), lp_enviar_avisos_promocao(), lp_promocoes_atuais(), lp_token_descadastro(), lp_url_descadastro() (+12 more)
+### Community 17 - "Search feature"
+Cohesion: 0.50
+Nodes (5): LootPrice brand, Dark theme, Dark mode icon (crescent moon), LootPrice site logo (white text, for dark theme), LootPrice site logo (dark text, for light theme)
 
-### Community 55 - "LootPrice — Relatório de correções"
-Cohesion: 0.18
-Nodes (10): Arquivos novos, Baixo / limpeza, Como foi verificado (e o que não foi), Crítico / alto, Documentação segundo as suas regras, Item a item (seguindo o relatório), LootPrice — Relatório de correções, Mudanças no banco local (aplicadas automaticamente na primeira abertura do site) (+2 more)
+### Community 20 - "jogo_form.php"
+Cohesion: 1.00
+Nodes (3): Metacritic, Metacritic logo on black, Metacritic logo (white text, transparent)
 
 ## Ambiguous Edges - Review These
 - `Fluxo: Cadastro do usuario` → `Passo: Sinopse do jogo`  [AMBIGUOUS]
   ideias/DCU_LOOTPRICE.drawio.png · relation: next_step
 
 ## Knowledge Gaps
-- **39 isolated node(s):** `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer`, `GOG store`, `Metacritic rating` (+34 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 164 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **39 isolated node(s):** `Apex Legends game cover`, `Dead by Daylight game cover`, `Death Stranding game cover`, `Dark Souls III game cover`, `Elden Ring game cover` (+34 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 165 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PHPMailer` connect `PHPMailer` to `SMTP`, `.mailSend`, `.lang`, `.preSend`, `.normalizeBreaks`, `.addOrEnqueueAnAddress`, `lp_enviar_email`, `.createBody`?**
-  _High betweenness centrality (0.307) - this node is a cross-community bridge._
+- **Why does `PHPMailer` connect `SMTP` to `PDO`, `Game cover art`, `verificar_email.php`, `Throwable`, `executar.php`, `.createBody`, `.addOrEnqueueAnAddress`, `Metacritic`?**
+  _High betweenness centrality (0.301) - this node is a cross-community bridge._
 - **Are the 30 inferred relationships involving `Estrutura do projeto` (e.g. with `getDB()` and `lp_cafile()`) actually correct?**
   _`Estrutura do projeto` has 30 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Actor: savings-seeking consumer`, `Actor: content creators and streamers`, `Actor: Game Pass-checking consumer` to the rest of the system?**
+- **What connects `Apex Legends game cover`, `Dead by Daylight game cover`, `Death Stranding game cover` to the rest of the system?**
   _39 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `LootPrice project` be split into smaller, more focused modules?**
-  _Cohesion score 0.05731707317073171 - nodes in this community are weakly interconnected._
-- **Why does `lp_enviar_email()` connect `lp_enviar_email` to `SMTP`, `.mailSend`, `PHPMailer`, `.addOrEnqueueAnAddress`, `Estrutura do projeto`?**
-  _High betweenness centrality (0.273) - this node is a cross-community bridge._
+  _Cohesion score 0.05765765765765766 - nodes in this community are weakly interconnected._
+- **Why does `lp_enviar_email()` connect `Game cover art` to `LootPrice project`, `PDO`, `SMTP`, `.addOrEnqueueAnAddress`, `Metacritic`?**
+  _High betweenness centrality (0.218) - this node is a cross-community bridge._
 - **Are the 18 inferred relationships involving `Exception` (e.g. with `.addAnAddress()` and `.addAttachment()`) actually correct?**
   _`Exception` has 18 INFERRED edges - model-reasoned connections that need verification._
 

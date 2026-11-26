@@ -21,9 +21,9 @@
 }
 .verif-btn {
   width: 100%; margin-top: 14px; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
-  background: var(--accent); color: var(--btn-text); font: 700 16px var(--font);
+  background: var(--btn-bg); color: var(--btn-text); font: 700 16px var(--font);
 }
-.verif-btn:hover { background: var(--accent-hover); }
+.verif-btn:hover { background: var(--btn-hover-bg); }
 .verif-link { background: none; border: none; padding: 0; cursor: pointer; font: inherit; font-weight: 600; color: var(--accent-text); text-decoration: underline; }
 .verif-link:disabled { color: var(--text-muted); text-decoration: none; cursor: default; }
 

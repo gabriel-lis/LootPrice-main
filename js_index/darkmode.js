@@ -42,38 +42,7 @@
     } catch (e) {}
     localStorage.setItem('theme', theme);
 
-    // troca o logo com crossfade
-    try {
-      const logo = document.getElementById('lootprice-logo');
-      if (logo) {
-        const nextSrc = theme === 'light'
-          ? 'fotos/extras/logoltlight.png'
-          : 'fotos/extras/logoltdark.png';
-
-        const overlay = document.createElement('img');
-        overlay.src = nextSrc;
-        overlay.style.position = 'absolute';
-        overlay.style.width = logo.offsetWidth + 'px';
-        overlay.style.height = logo.offsetHeight + 'px';
-        overlay.style.left = logo.getBoundingClientRect().left + 'px';
-        overlay.style.top = logo.getBoundingClientRect().top + 'px';
-        overlay.style.transition = 'opacity 0.25s ease';
-        overlay.style.opacity = '0';
-        overlay.style.pointerEvents = 'none';
-        document.body.appendChild(overlay);
-
-        requestAnimationFrame(() => {
-          overlay.style.opacity = '1';
-          logo.style.opacity = '0';
-        });
-
-        setTimeout(() => {
-          logo.src = nextSrc;
-          logo.style.opacity = '1';
-          if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        }, 260);
-      }
-    } catch (e) {}
+    // O logo (baú em SVG + nome em texto) usa as variáveis do tema: não precisa trocar de imagem.
   };
 
   const savedTheme = localStorage.getItem('theme') || 'dark';

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>LootPrice</title>
+  <path fill="#9461f5" d="M8 38V21C8 12 14 6 23 6H41C50 6 56 12 56 21V38Z"/>
+  <path fill="#5b2bb8" d="M13 38V22C13 15 17 11 24 11H40C47 11 51 15 51 22V38Z"/>
+  <path fill="#f5b941" d="M32 12C32 17 34 19 39 19C34 19 32 21 32 26C32 21 30 19 25 19C30 19 32 17 32 12Z"/>
+  <circle fill="#f5b941" cx="22" cy="33" r="5.5"/><circle fill="#d98f12" cx="22" cy="33" r="3.2"/>
+  <circle fill="#f5b941" cx="42" cy="33" r="5.5"/><circle fill="#d98f12" cx="42" cy="33" r="3.2"/>
+  <circle fill="#f5b941" cx="32" cy="30" r="5.5"/><circle fill="#d98f12" cx="32" cy="30" r="3.2"/>
+  <rect fill="#7c3aed" x="7" y="37" width="50" height="20" rx="4"/>
+  <rect fill="#4a2299" x="16" y="37" width="6" height="20"/>
+  <rect fill="#4a2299" x="42" y="37" width="6" height="20"/>
+  <rect fill="#2a1659" x="7" y="36" width="50" height="3.5"/>
+  <rect fill="#f5b941" x="27" y="43" width="10" height="9" rx="2.5"/>
+  <circle fill="#2a1659" cx="32" cy="46.5" r="1.5"/>
+</svg>

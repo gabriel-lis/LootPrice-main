@@ -16,6 +16,8 @@ $ultimosJogos = $pdo->query("SELECT * FROM jogos ORDER BY id_jogo DESC LIMIT 5")
 // Saúde da coleta: data do preço mais recente e último resultado do robô
 $ultimoPreco = $pdo->query("SELECT MAX(data_atualizacao) FROM precos")->fetchColumn() ?: null;
 $idade = idadeDoPreco($ultimoPreco);
+// Jogos com preço desatualizado (mais recente há mais de 3 dias, ou sem preço)
+$totalDesatualizados = (int)$pdo->query("SELECT COUNT(*) FROM (SELECT j.id_jogo FROM jogos j LEFT JOIN precos p ON p.id_jogo=j.id_jogo GROUP BY j.id_jogo HAVING MAX(p.data_atualizacao) IS NULL OR MAX(p.data_atualizacao) < NOW() - INTERVAL 3 DAY) t")->fetchColumn();
 $arqResumo = __DIR__ . '/../robo/logs/ultima_execucao.json';
 $ultimaColeta = is_file($arqResumo) ? json_decode(file_get_contents($arqResumo), true) : null;
 
@@ -46,13 +48,20 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
   <?php elseif ($ultimaColeta && !empty($ultimaColeta['lojas_sem_dados'])): ?>
     <div class="adm-aviso alerta" role="alert">
-      <strong>Atenção:</strong> a última coleta não trouxe preços de <?= sanitize(implode(', ', $ultimaColeta['lojas_sem_dados'])) ?>.
+      <strong>Atenção:</strong> a última coleta não trouxe preços de <?= sanitize(implode(', ', $ultimaColeta['lojas_sem_dados'])) ?>.<?php if (!empty($ultimaColeta['lojas_bloqueadas'])): ?> <?= sanitize(implode(', ', $ultimaColeta['lojas_bloqueadas'])) ?> bloqueou o robô (limite de acessos), tente de novo mais tarde.<?php endif; ?>
       <a href="atualizar_precos.php" style="color:inherit; font-weight:700;">Ver detalhes</a>
     </div>
   <?php elseif ($totalPrecos > 0 && $idade['velho']): ?>
     <div class="adm-aviso alerta" role="alert">
       <strong>Os preços estão desatualizados.</strong> O mais recente é de <?= sanitize($idade['texto']) ?>.
       <a href="atualizar_precos.php" style="color:inherit; font-weight:700;">Atualizar agora</a>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($totalDesatualizados > 0): ?>
+    <div class="adm-aviso alerta" role="alert">
+      <strong><?= $totalDesatualizados ?> jogo<?= $totalDesatualizados > 1 ? 's' : '' ?> com preço desatualizado.</strong>
+      <a href="desatualizados.php" style="color:inherit; font-weight:700;">Verificar lista</a>
     </div>
   <?php endif; ?>
 
@@ -123,6 +132,7 @@ require_once __DIR__ . '/../includes/header.php';
       <div class="adm-atalhos">
         <a href="jogos.php"><span>📦 Catálogo de Jogos</span><span>→</span></a>
         <a href="precos.php"><span>💰 Preços e Ofertas</span><span>→</span></a>
+        <a href="desatualizados.php"><span>⏰ Preços Desatualizados</span><span>→</span></a>
         <a href="cadastros.php"><span>🏷️ Lojas, Categorias e Assinaturas</span><span>→</span></a>
         <a href="usuarios.php"><span>👥 Usuários</span><span>→</span></a>
         <a href="../index.php"><span>🌐 Visualizar Site Público</span><span>→</span></a>

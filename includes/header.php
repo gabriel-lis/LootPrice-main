@@ -38,7 +38,7 @@ $pageDescription = $pageDescription ?? "Compare preços de jogos em Steam, Epic 
   <?php if (!empty($cssPerfil)): ?>
   <link rel="stylesheet" href="<?= $basePath ?>css_index/perfil.css?v=<?= @filemtime(__DIR__ . '/../css_index/perfil.css') ?>">
   <?php endif; ?>
-  <link rel="shortcut icon" href="<?= $basePath ?>fotos/extras/logoltdark.png" type="image/png">
+  <link rel="icon" href="<?= $basePath ?>fotos/extras/logo-bau.svg" type="image/svg+xml">
   <style>
     /* Estilos aprimorados para filtros, flash messages e badges */
     .flash-alert {
@@ -177,8 +177,9 @@ $pageDescription = $pageDescription ?? "Compare preços de jogos em Steam, Epic 
       <button id="menu-btn" class="menu-btn" aria-label="Abrir menu">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
-      <a href="<?= $basePath ?>index.php" target="_top">
-        <img id="lootprice-logo" src="<?= $basePath ?>fotos/extras/logoltdark.png" alt="LootPrice">
+      <a href="<?= $basePath ?>index.php" target="_top" class="logo-link" aria-label="LootPrice - início">
+        <img id="lootprice-logo" src="<?= $basePath ?>fotos/extras/logo-bau.svg" alt="">
+        <span class="logo-word">Loot<b>Price</b></span>
       </a>
     </div>
 
