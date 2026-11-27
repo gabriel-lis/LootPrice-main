@@ -62,6 +62,12 @@ Nós mais centrais no grafo: `getDB()`, `LootPrice Home`, `Catalogo de jogos`.
 
 ## Registro de alterações
 
+- 2026-11-27: roteiros da apresentação (`documentacao/Roteiro-Resumido-Falas.pdf` e `Roteiro-Apresentacao-Regras-e-Requisitos.pdf`) passam a chamar o robô de **"bot de preços"**; falas do Daniel ajustadas (8 jogos por vez para reduzir erro, sem RN22/RN28, botão do bot, três proteções do painel). Nenhum código alterado.
+
+- 2026-11-27: criado `documentacao/Roteiro-Resumido-Falas.pdf` (5 páginas): versão curta do roteiro de apresentação, com a fala escrita de cada integrante (Gabriel = conta/segurança, Pedro Duarte = catálogo/preços/lista de desejos, Daniel Cinquine = robô/admin), abertura, fechamento, cola de números e respostas rápidas. Gerado fora do projeto (reportlab).
+
+- 2026-11-26: criado `documentacao/Roteiro-Apresentacao-Regras-e-Requisitos.pdf` (13 páginas): roteiro de estudo para a apresentação sem slides de 15 min (regras de negócio e requisitos funcionais), dividido em 3 partes (conta/segurança, catálogo/preços/lista de desejos, robô/admin), com falas sugeridas, tabela de APIs/fontes do robô (Steam, GOG, Xbox, Nuuvem, Epic, SteamSpy, IsThereAnyDeal, Gmail SMTP), perguntas prováveis e cola de números. Gerado fora do projeto (reportlab).
+
 - 2026-11-26: corrigido o plano B da ITAD para a Nuuvem: ela passou a devolver HTTP 200 com página "Client Challenge" (anti-robô em JavaScript), que o robô lia como "sem resultado" (não acionava a ITAD e marcava o jogo como "não encontrado"). Agora `lp_http()` reconhece a página como bloqueio (pausa o site, registra em `lp_bloqueios`). Apagadas do banco as marcas "não encontrado" de Nuuvem/Epic criadas durante bloqueios. Resultado: Epic 0→18 e Nuuvem 16→20 jogos com preço. Arquivo: `includes/coletor.php`.
 
 - 2026-11-26: chave da IsThereAnyDeal configurada em `config/itad.php` (fora do git); plano B testado: Epic e Nuuvem devolvem preço pela ITAD quando a loja barra o robô e o jogo existe nela. Nenhum código alterado.
